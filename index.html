@@ -41,6 +41,33 @@
   #loading { position: absolute; inset: 0; display: grid; place-items: center; font-size: 20px; color: #cfe8c4; background: #1a2c1f; }
 
   footer { height: 88px; flex: none; }
+  body[data-device=iphone] footer { height: 74px; } body[data-device=iphone] .tbtn { padding: 4px 2px 5px; font-size: 12px; } body[data-device=iphone] .tbtn .ic { font-size: 22px; } body[data-device=iphone] #app { gap: 6px; max-width: 520px; }
+  body[data-device=iphone] .help, body[data-device=ipad] .help { display: none; }
+  body[data-device=iphone] header { gap: 4px; } body[data-device=iphone] header .stat { font-size: 14px; padding: 5px 6px; gap: 2px; } body[data-device=iphone] header .hbtn { font-size: 13px; padding: 7px 7px; }
+  body[data-device=ipad] #app { max-width: 1100px; gap: 10px; padding-left: calc(14px + env(safe-area-inset-left)); padding-right: calc(14px + env(safe-area-inset-right)); }
+  body[data-device=ipad] header .stat { font-size: 21px; padding: 8px 14px; } body[data-device=ipad] header .hbtn { font-size: 19px; padding: 11px 16px; }
+  body[data-device=ipad] footer { height: 112px; } body[data-device=ipad] .tbtn { font-size: 17px; } body[data-device=ipad] .tbtn .ic { font-size: 34px; } body[data-device=ipad] .tbtn .cost { font-size: 18px; }
+  body[data-device=ipad] .spell { width: 64px; height: 64px; } body[data-device=ipad] .spell .si { font-size: 26px; } body[data-device=ipad] .spell .sc { font-size: 14px; }
+  body[data-device=ipad] #panel .info .txt { font-size: 16px; } body[data-device=ipad] #panel .info .txt b { font-size: 21px; } body[data-device=ipad] .choice .ct { font-size: 19px; } body[data-device=ipad] .choice .cd { font-size: 15px; }
+  body[data-device=ipad] #lab { left: 50%; right: auto; width: 520px; transform: translateX(-50%); } body[data-device=ipad] .rrow .rt { font-size: 17px; }
+  #title { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 24px;
+    background: radial-gradient(ellipse at 50% 30%, rgba(40,80,50,.55), rgba(8,14,10,.92) 70%); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); text-align: center; }
+  #title.hide { display: none; }
+  #title .logo { white-space: nowrap; font-size: clamp(34px, 11vw, 56px); line-height: 1.05; color: #ffe08a; text-shadow: 0 4px 0 #3a2400, 0 0 30px #ffcf5a88; }
+  #title .sub { font-size: 16px; opacity: .8; margin-top: -6px; }
+  #title .q { font-size: 17px; margin-top: 10px; }
+  #title .devs { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .dev { font-family: inherit; color: #fff; cursor: pointer; width: 104px; padding: 14px 6px 12px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 17px;
+    background: linear-gradient(180deg, #34502f, #1f3220); border: 2px solid #6f9a5a; box-shadow: 0 4px 0 #142014; }
+  .dev .di { font-size: 38px; line-height: 1; }
+  .dev.last { border-color: #ffd75e; box-shadow: 0 4px 0 #142014, 0 0 16px #ffd75e66; }
+  .dev:active { transform: translateY(3px); box-shadow: 0 1px 0 #142014; }
+  #title .best { font-size: 15px; color: #ffd75e; }
+  #title .fit { display: none; align-items: center; gap: 8px; font-size: 14px; opacity: .9; }
+  #title .fit.show { display: flex; }
+  #title .fit button { font-family: inherit; width: 34px; height: 34px; border-radius: 10px; border: 1px solid #ffffff44; background: #ffffff18; color: #fff; font-size: 18px; }
+  #title .hint { font-size: 12px; opacity: .55; max-width: 320px; line-height: 1.45; }
+  #menuBtn { }
   @media (max-width: 440px) { footer { height: 74px; } .tbtn { padding: 4px 2px 5px; font-size: 12px; } .tbtn .ic { font-size: 22px; } .tbtn .cost { font-size: 13px; } #app { gap: 6px; } }
   #spells { position: absolute; right: 6px; bottom: 6px; display: flex; flex-direction: column; gap: 6px; z-index: 4; }
   .spell { position: relative; width: 48px; height: 48px; border-radius: 50%; font-family: inherit; color: #fff; cursor: pointer; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -125,6 +152,7 @@
     <div class="stat">💰 <span id="gold">0</span></div>
     <div class="stat">🌊 <span id="wave">0</span></div>
     <div class="spacer"></div>
+    <button class="hbtn" id="menuBtn">☰</button>
     <button class="hbtn" id="labBtn">🔨</button>
     <button class="hbtn" id="speedBtn">1×</button>
     <button class="hbtn" id="pauseBtn">⏸</button>
@@ -142,6 +170,19 @@
   <footer id="footer"></footer>
   <div class="help">단축키: 1~4 타워 · Space 웨이브 · U 강화 · S 판매 · R 능력 강화 · Q 메테오 · E 시간 정지 · F 배속 · Esc 취소</div>
 </div>
+<div id="title">
+  <div class="logo">🌲 수호의 숲 🌲</div>
+  <div class="sub">3D 타워 디펜스</div>
+  <div class="q">플레이할 기기를 골라 주세요</div>
+  <div class="devs">
+    <button class="dev" data-dev="pc"><span class="di">💻</span>PC</button>
+    <button class="dev" data-dev="iphone"><span class="di">📱</span>아이폰</button>
+    <button class="dev" data-dev="ipad"><span class="di">📲</span>아이패드</button>
+  </div>
+  <div class="fit" id="fitRow">📏 아이폰 아래 빈 공간 맞추기 <button id="fitMinus">−</button><b id="fitVal">0</b><button id="fitPlus">+</button></div>
+  <div class="hint" id="fitHint" style="display:none">게임 화면 아래에 빈 공간이 남으면 + 를, 버튼이 잘리면 − 를 눌러 맞춘 뒤 다시 아이폰을 누르세요. 값은 저장됩니다.</div>
+  <div class="best" id="titleBest"></div>
+</div>
 <div id="over"><div class="card">
   <h2>성문이 무너졌어요</h2>
   <p id="overMsg"></p>
@@ -157,15 +198,19 @@
 </script>
 <script>
 (() => {
-  const fixH = () => {
+  const fixH = window.fixH = () => {
     const app = document.getElementById('app'); if (!app) return;
+    const dev = document.body.dataset.device;
+    if (dev !== 'iphone' && dev !== 'ipad') { app.style.height = ''; app.style.bottom = ''; return; }
     const standalone = window.navigator.standalone || (window.matchMedia && matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches);
     const portrait = window.innerHeight >= window.innerWidth;
-    let h = window.innerHeight;
+    let h = Math.max(window.innerHeight, document.documentElement.clientHeight || 0);
     if (standalone && screen && screen.height) h = Math.max(h, portrait ? Math.max(screen.width, screen.height) : Math.min(screen.width, screen.height));
+    let adj = 0; try { adj = +localStorage.getItem('forestTD.fit') || 0; } catch (e) {}
+    if (dev === 'iphone') h += adj;
     app.style.bottom = 'auto'; app.style.height = h + 'px';
-  };
-  fixH(); window.addEventListener('resize', fixH); window.addEventListener('orientationchange', () => setTimeout(fixH, 300));
+    document.documentElement.style.height = document.body.style.height = h + 'px';
+  }; window.addEventListener('resize', fixH); window.addEventListener('orientationchange', () => setTimeout(fixH, 300));
 })();
 </script>
 <script>
@@ -1632,7 +1677,7 @@
   // ================== CAMERA ==================
   function fitCamera() {
     const w = wrap.clientWidth, h = wrap.clientHeight; if (!w || !h) return;
-    const portrait = w / h < .75;
+    const portrait = document.body.dataset.device === 'iphone' || w / h < .75;
     camera.fov = portrait ? 28 : 38;
     camera.clearViewOffset();
     renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
@@ -1848,7 +1893,7 @@
   let last = performance.now();
   function loop(now) {
     const rawDt = Math.min(.5, (now - last) / 1000), dt = Math.min(.05, rawDt); last = now; REAL_DT = dt;
-    if (!G.paused && !G.over) for (let i = 0; i < G.speed * BASE_SPEED; i++) update(dt);
+    if (G.started && !G.paused && !G.over) for (let i = 0; i < G.speed * BASE_SPEED; i++) update(dt);
     sync(G.paused ? 0 : dt * (G.over ? 1 : G.speed * BASE_SPEED));
     if (!G.paused && !G.over && !G.waveActive && G.autoT > 0) {
       G.autoT -= rawDt;
@@ -1860,6 +1905,27 @@
     renderer.render(scene, camera);
     requestAnimationFrame(loop);
   }
+  // ================== TITLE / DEVICE ==================
+  G.started = false;
+  let fitAdj = 0; try { fitAdj = +localStorage.getItem('forestTD.fit') || 0; } catch (e) {}
+  let lastDev = null; try { lastDev = localStorage.getItem('forestTD.device'); } catch (e) {}
+  const guess = /iPad/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)) ? 'ipad' : /iPhone/.test(navigator.userAgent) ? 'iphone' : 'pc';
+  const mark = d => document.querySelectorAll('.dev').forEach(b => b.classList.toggle('last', b.dataset.dev === d));
+  mark(lastDev || guess);
+  const showFit = d => { $('fitRow').classList.toggle('show', d === 'iphone'); $('fitHint').style.display = d === 'iphone' ? 'block' : 'none'; $('fitVal').textContent = (fitAdj > 0 ? '+' : '') + fitAdj; };
+  showFit(lastDev || guess);
+  $('titleBest').textContent = BEST ? `🏆 최고 기록: 웨이브 ${BEST}` : '';
+  const setFit = v => { fitAdj = Math.max(-120, Math.min(160, v)); try { localStorage.setItem('forestTD.fit', fitAdj); } catch (e) {} $('fitVal').textContent = (fitAdj > 0 ? '+' : '') + fitAdj; };
+  $('fitMinus').onclick = () => setFit(fitAdj - 10); $('fitPlus').onclick = () => setFit(fitAdj + 10);
+  function chooseDevice(d) {
+    document.body.dataset.device = d; try { localStorage.setItem('forestTD.device', d); } catch (e) {}
+    mark(d); window.fixH();
+    $('title').classList.add('hide');
+    G.started = true; G.paused = false; ui();
+    setTimeout(fitCamera, 30); setTimeout(fitCamera, 300);
+  }
+  document.querySelectorAll('.dev').forEach(b => b.onclick = () => { if (b.dataset.dev === 'iphone' && !$('fitRow').classList.contains('show')) showFit('iphone'); chooseDevice(b.dataset.dev); });
+  $('menuBtn').onclick = () => { G.paused = true; ui(); showFit(document.body.dataset.device); $('titleBest').textContent = BEST ? `🏆 최고 기록: 웨이브 ${BEST}` : ''; $('title').classList.remove('hide'); };
   window.__td = { spawn, THREEV: THREE.Vector3, canBuild, G, update, startWave, TT, attachTower, scene, camera, renderFooter, fit: fitCamera };
   reset(); fitCamera(); $('loading').remove();
   requestAnimationFrame(loop);
