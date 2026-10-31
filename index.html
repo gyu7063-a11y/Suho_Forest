@@ -15,13 +15,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; height: 100%; }
+  html, body { margin: 0; height: 100%; background: #0d1611; overscroll-behavior: none; }
   body {
     font-family: 'Jua', system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif;
     color: #f3f7ee; overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: manipulation;
     background: linear-gradient(#14231a, #0d1611);
   }
-  #app { height: 100%; max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; padding: calc(8px + env(safe-area-inset-top)) calc(8px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(8px + env(safe-area-inset-left)); gap: 8px; }
+  #app { position: fixed; top: 0; bottom: 0; left: 0; right: 0; max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; padding: calc(8px + env(safe-area-inset-top)) calc(8px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(8px + env(safe-area-inset-left)); gap: 8px; }
   header { display: flex; align-items: center; gap: 6px; }
   .stat { display: flex; align-items: center; gap: 4px; font-size: 16px; padding: 6px 9px; border-radius: 12px; white-space: nowrap; background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.12); }
   .spacer { flex: 1; }
@@ -40,11 +40,12 @@
   .ft { position: absolute; transform: translate(-50%, -50%); font-size: 17px; color: #ffd75e; text-shadow: 0 2px 0 #000, 0 0 6px #000; white-space: nowrap; }
   #loading { position: absolute; inset: 0; display: grid; place-items: center; font-size: 20px; color: #cfe8c4; background: #1a2c1f; }
 
-  footer { height: 92px; flex: none; }
-  #spells { position: absolute; right: 8px; top: 46%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 4; }
-  .spell { position: relative; width: 56px; height: 56px; border-radius: 50%; font-family: inherit; color: #fff; cursor: pointer; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  footer { height: 88px; flex: none; }
+  @media (max-width: 440px) { footer { height: 74px; } .tbtn { padding: 4px 2px 5px; font-size: 12px; } .tbtn .ic { font-size: 22px; } .tbtn .cost { font-size: 13px; } #app { gap: 6px; } }
+  #spells { position: absolute; right: 6px; bottom: 6px; display: flex; flex-direction: column; gap: 6px; z-index: 4; }
+  .spell { position: relative; width: 48px; height: 48px; border-radius: 50%; font-family: inherit; color: #fff; cursor: pointer; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
     background: radial-gradient(circle at 35% 30%, #6a4a9a, #2c1a4a 70%); border: 2px solid #ffd75e; box-shadow: 0 3px 0 #120a20, 0 0 10px #0008; }
-  .spell .si { font-size: 22px; line-height: 1; }
+  .spell .si { font-size: 19px; line-height: 1; }
   .spell .sc { font-size: 11px; color: #ffd75e; margin-top: 2px; }
   .spell.armed { border-color: #ff8a3a; box-shadow: 0 0 18px #ff8a3a; }
   .spell.poor .sc { color: #ff7a6a; }
@@ -1618,21 +1619,38 @@
   // ================== CAMERA ==================
   function fitCamera() {
     const w = wrap.clientWidth, h = wrap.clientHeight; if (!w || !h) return;
+    const portrait = w / h < .75;
+    camera.fov = portrait ? 28 : 38;
+    camera.clearViewOffset();
     renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
-    const tilt = 68 * Math.PI / 180, dir = new THREE.Vector3(0, Math.sin(tilt), Math.cos(tilt));
-    const target = new THREE.Vector3(0, 0, .55);
+    const tilt = (portrait ? 76 : 68) * Math.PI / 180, dir = new THREE.Vector3(0, Math.sin(tilt), Math.cos(tilt));
     const pts = [];
     for (const sx of [-1, 1]) for (const sz of [-1, 1]) pts.push(new THREE.Vector3(sx * (COLS / 2 + .1), 0, sz * (ROWS / 2 + .1)));
     for (const sx of [-1, 1]) pts.push(new THREE.Vector3(sx * (COLS / 2), 1.1, -ROWS / 2));
-    pts.push(new THREE.Vector3(1.45 - 0, 3.1, ROWS / 2 - .25));
-    let lo = 4, hi = 120;
-    for (let i = 0; i < 32; i++) {
-      const d = (lo + hi) / 2;
-      camera.position.copy(target).addScaledVector(dir, d); camera.lookAt(target); camera.updateMatrixWorld();
-      const fits = pts.every(p => { const v = p.clone().project(camera); return Math.abs(v.x) < .97 && Math.abs(v.y) < .97; });
-      if (fits) hi = d; else lo = d;
+    pts.push(new THREE.Vector3(1.45, 3.1, ROWS / 2 - .25), new THREE.Vector3(-1.45, 2.4, ROWS / 2 - .25));
+    for (const P of portals) { const v = P.g.position; pts.push(new THREE.Vector3(v.x, 1.5, v.z), new THREE.Vector3(v.x, 0, v.z)); for (const d of [-.8, .8]) pts.push(new THREE.Vector3(v.x + (P.g.rotation.y ? 0 : d), 1.4, v.z + (P.g.rotation.y ? d : 0))); }
+    const _v = new THREE.Vector3();
+    const fitDist = tg => { let lo = 4, hi = 120;
+      for (let i = 0; i < 26; i++) {
+        const d = (lo + hi) / 2;
+        camera.position.copy(tg).addScaledVector(dir, d); camera.lookAt(tg); camera.updateMatrixWorld();
+        const fits = pts.every(p => { _v.copy(p).project(camera); return Math.abs(_v.x) < .96 && Math.abs(_v.y) < .96; });
+        if (fits) hi = d; else lo = d;
+      } return hi; };
+    let best = null;
+    for (let tz = -2.5; tz <= 3.01; tz += .1) {
+      const tg = new THREE.Vector3(0, 0, tz), d = fitDist(tg);
+      camera.position.copy(tg).addScaledVector(dir, d); camera.lookAt(tg); camera.updateMatrixWorld();
+      let y0 = 9, y1 = -9; for (const p of pts) { _v.copy(p).project(camera); y0 = Math.min(y0, _v.y); y1 = Math.max(y1, _v.y); }
+      const score = d + Math.abs(y0 + y1) * .5;
+      if (!best || score < best.score) best = { d, tg, score };
     }
-    camera.position.copy(target).addScaledVector(dir, hi); camera.lookAt(target); camera.updateMatrixWorld();
+    const hi = best.d, tgt = best.tg;
+    camera.position.copy(tgt).addScaledVector(dir, hi); camera.lookAt(tgt); camera.updateMatrixWorld();
+    camera.clearViewOffset(); camera.updateProjectionMatrix();
+    let x0 = 9, x1 = -9, y0 = 9, y1 = -9;
+    for (const p of pts) { _v.copy(p).project(camera); x0 = Math.min(x0, _v.x); x1 = Math.max(x1, _v.x); y0 = Math.min(y0, _v.y); y1 = Math.max(y1, _v.y); }
+    camera.setViewOffset(w, h, (x0 + x1) / 2 * w / 2, -(y0 + y1) / 2 * h / 2, w, h); camera.updateProjectionMatrix();
     scene.fog.near = hi + 4; scene.fog.far = hi + 30;
   }
 
