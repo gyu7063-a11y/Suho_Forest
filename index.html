@@ -283,7 +283,7 @@
     </div>
     <div class="fit" id="fitRow">📏 아이폰 아래 빈 공간 맞추기 <button id="fitMinus">−</button><b id="fitVal">0</b><button id="fitPlus">+</button></div>
     <div class="hint" id="fitHint" style="display:none">게임 화면 아래에 빈 공간이 남으면 + 를, 버튼이 잘리면 − 를 눌러 맞춘 뒤 다시 아이폰을 누르세요. 값은 저장됩니다.</div>
-    <button class="ttab" id="ecoBtn" style="font-size:14px">🔋 절전 모드 꺼짐</button>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center"><button class="ttab" id="shadowBtn" style="font-size:14px">🌗 그림자 꺼짐</button><button class="ttab" id="ecoBtn" style="font-size:14px">🔋 절전 모드 꺼짐</button></div>
     <div class="best" id="titleBest"></div>
   </div>
   <div class="tpage" id="tp-guide"></div>
@@ -1378,6 +1378,7 @@
   }
 
   function attachTower(t) {
+    window.__dirty = true;
     if (t.obj) { scene.remove(t.obj); }
     t.obj = buildTower(t.type, t.lv, t.br); t.obj.scale.setScalar(1.1); t.obj.position.copy(W(t.x, t.y)); t.obj.userData.tower = t;
     t.obj.traverse(o => { o.userData.tower = t; });
@@ -1845,7 +1846,7 @@
     if (G.waveActive && !G.queue.length && !G.enemies.length && !G.over) {
       G.waveActive = false;
       G.autoT = 3;
-      if (G.wave % 5 === 0 && G.towers.length) { G.meterReset = true; setTimeout(() => { if (!G.over) showMeter(true); }, 900); }
+      if (G.wave % 5 === 0) for (const t of G.towers.concat(G.soldRec || [])) { t.dmgS = 0; t.asS = 0; }
       const bonus = 15 + G.wave * 2; G.gold += bonus; banner(`웨이브 ${G.wave} 클리어! +${bonus}💰`); sfx('clear');
       if (G.wave > BEST) { BEST = G.wave; try { localStorage.setItem('forestTD.best', BEST); } catch (e) {} }
       ui(); renderFooter();
@@ -1949,6 +1950,7 @@
 
   // ================== CAMERA ==================
   function fitCamera() {
+    window.__dirty = true;
     const w = wrap.clientWidth, h = wrap.clientHeight; if (!w || !h) return;
     const portrait = document.body.dataset.device === 'iphone' || w / h < .75;
     camera.fov = portrait ? 28 : 38;
@@ -2008,9 +2010,10 @@
     return { tower, cell, gp };
   }
   const cvs = renderer.domElement;
-  cvs.addEventListener('pointermove', ev => { if (ev.pointerType === 'mouse') { const { cell } = pick(ev); G.hover = cell; } });
+  cvs.addEventListener('pointermove', ev => { if (ev.pointerType === 'mouse') { window.__dirty = true; const { cell } = pick(ev); G.hover = cell; } });
   cvs.addEventListener('pointerleave', () => { G.hover = null; });
   cvs.addEventListener('pointerdown', ev => {
+    window.__dirty = true;
     if (G.over) return;
     const { tower, cell, gp } = pick(ev);
     if (G.placing) {
@@ -2042,6 +2045,7 @@
     if (G.res) document.querySelectorAll('#lab button[data-k]').forEach(b => { const r = RES.find(x => x.k === b.dataset.k); const l = G.res[r.k]; b.disabled = (!r.repeat && l >= r.max) || G.gold < r.cost(l); });
   }
   function renderFooter() {
+    window.__dirty = true;
     const f = $('panel'), ff = $('footer'); f.innerHTML = ''; f.classList.toggle('show', !!G.selTower);
     const t = G.selTower;
     if (!t && document.body.classList.contains('dock-side')) { f.classList.add('show'); f.innerHTML = '<div class="dcard"><h5>🏰 타워 정보</h5><div class="ph">맵의 타워를 누르면<br>정보 · 강화 · 판매가 여기 표시돼요</div></div>'; }
@@ -2160,19 +2164,25 @@
   // ================== LOOP ==================
   const BASE_SPEED = 3; // 1× now equals the old 3×
   let last = performance.now();
-  let lastDraw = 0, ECO = false; try { ECO = localStorage.getItem('forestTD.eco') === '1'; } catch (e) {}
+  let lastDraw = 0, ECO = false, SHADOW = false;
+  try { ECO = localStorage.getItem('forestTD.eco') === '1'; SHADOW = localStorage.getItem('forestTD.shadow') === '1'; } catch (e) {}
+  const refreshMats = () => scene.traverse(o => { if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m.needsUpdate = true); });
+  function setShadow(on) {
+    SHADOW = on; try { localStorage.setItem('forestTD.shadow', on ? '1' : '0'); } catch (e) {}
+    renderer.shadowMap.enabled = on; sun.castShadow = on; refreshMats(); window.__dirty = true;
+    $('shadowBtn').classList.toggle('on', on); $('shadowBtn').textContent = on ? '🌗 그림자 켜짐' : '🌗 그림자 꺼짐';
+  }
   function setEco(on) {
     ECO = on; try { localStorage.setItem('forestTD.eco', on ? '1' : '0'); } catch (e) {}
-    renderer.shadowMap.enabled = !on; sun.castShadow = !on;
-    scene.traverse(o => { if (o.material) { (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m.needsUpdate = true); } });
     renderer.setPixelRatio(on ? 1 : Math.min(window.devicePixelRatio || 1, 2)); fitCamera();
-    $('ecoBtn').classList.toggle('on', on); $('ecoBtn').textContent = on ? '🔋 절전 모드 켜짐 (30fps · 그림자 끔)' : '🔋 절전 모드 꺼짐';
+    $('ecoBtn').classList.toggle('on', on); $('ecoBtn').textContent = on ? '🔋 절전 모드 켜짐 (30fps · 저해상도)' : '🔋 절전 모드 꺼짐';
   }
   function loop(now) {
     requestAnimationFrame(loop);
     // idle (title / pause / result window): redraw only twice a second
     const idle = !G.started || G.paused || G.over || !$('title').classList.contains('hide') || !$('meter').classList.contains('hide');
-    if (idle && now - lastDraw < 500) return;
+    if (idle && !window.__dirty) { last = now; return; }
+    window.__dirty = false;
     if (ECO && now - lastDraw < 31) return;
     lastDraw = now;
     const rawDt = Math.min(.5, (now - last) / 1000), dt = Math.min(.05, rawDt); last = now; REAL_DT = dt;
@@ -2497,6 +2507,7 @@
   window.__td = { spawn, THREEV: THREE.Vector3, canBuild, G, update, startWave, TT, attachTower, scene, camera, renderFooter, fit: fitCamera };
   reset(); fitCamera(); $('loading').remove();
   $('ecoBtn').onclick = () => setEco(!ECO); if (ECO) setEco(true);
+  $('shadowBtn').onclick = () => setShadow(!SHADOW); setShadow(SHADOW);
   requestAnimationFrame(loop);
 })();
 </script>
