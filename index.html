@@ -359,12 +359,14 @@
     ghost: { hp: 70,  speed: 1.25, gold: 9, armor: 0, h: .72, color: 0xd8ecff, name: '유령', info: '주기적으로 사라져 공격을 받지 않음' },
     shaman:{ hp: 80,  speed: .9,  gold: 11, armor: 1, h: .42, color: 0x6aa84a, name: '고블린 주술사', info: '주변 몬스터를 치유함' },
   };
-  const maxLv = t => 6;
+  const TRANS_WAVE = 55;
+  const maxLv = t => (typeof G !== 'undefined' && (G.wave >= TRANS_WAVE || G.transOpen)) ? 7 : 6;
   const stat = t => {
     const b = TT[t.type], k = t.lv - 1;
     const s = { range: b.range + .25 * Math.min(k, 2) + .15 * Math.max(0, k - 2), dmg: b.dmg * (1 + .65 * k), rate: b.rate * Math.pow(.88, k), slow: b.slow ? Math.min(.75, b.slow + .07 * k) : 0 };
     if (t.br && t.lv >= 4) { const m = BR[t.type][t.br].mod; s.range += m.range || 0; s.dmg *= m.dmg || 1; s.rate *= m.rate || 1; }
     if (t.lv >= 6) { s.dmg *= 1.6; s.rate *= .85; s.range += .2; }
+    if (t.lv >= 7) { s.dmg *= 1.9; s.rate *= .85; s.range += .3; }
     if (t.raw) return s;
     const R = (typeof G !== 'undefined' && G.res) || {};
     if (typeof G !== 'undefined' && G.buff) { if (G.buff.rage > 0) s.dmg *= 1.7; if (G.buff.haste > 0) s.rate *= .6; }
@@ -372,7 +374,10 @@
     return s;
   };
   const hexFx = t => {
-    const lv = t.lv;
+    const lv = Math.min(t.lv, 6), tr = t.lv >= 7;
+    const f = hexFx0(t, lv); if (tr) { f.shred = Math.round(f.shred * 1.5); f.vuln = +(f.vuln * 1.4).toFixed(2); } return f;
+  };
+  const hexFx0 = (t, lv) => {
     if (t.br === 'A' && lv >= 4) return { shred: [12, 18, 24][lv - 4], vuln: [.2, .25, .3][lv - 4], rad: .6, strip: true };
     if (t.br === 'B' && lv >= 4) return { shred: [5, 7, 9][lv - 4], vuln: [.3, .4, .5][lv - 4], rad: 0, aura: true };
     return { shred: [3, 5, 7][lv - 1], vuln: [.1, .15, .2][lv - 1], rad: .7 };
@@ -380,7 +385,7 @@
   function applyHex(e, fx) {
     e.hexBy = curT; e.debT = 3; e.shred = Math.max(e.debT > 0 ? e.shred || 0 : 0, fx.shred); e.vuln = Math.max(e.vuln || 0, fx.vuln); if (fx.strip) e.strip = 3;
   }
-  const upCost = t => Math.round(TT[t.type].cost * [.75, 1.25, 2.2, 3.2, 8][t.lv - 1]);
+  const upCost = t => Math.round(TT[t.type].cost * [.75, 1.25, 2.2, 3.2, 8, 16][t.lv - 1]);
   const sellValue = t => Math.round(t.spent * .7);
 
   // ================== PATH ==================
@@ -1093,10 +1098,20 @@
       B: { name: ['폭풍 소환사', '하늘의 심판자'], icon: '🌩️', desc: '하늘에서 번개를 여러 곳에 내리꽂음 (2 → 4곳, 범위 피해)', mod: { dmg: 1.35 } },
     },
   };
-  const tname = (t, lv = t.lv) => lv <= 3 ? LVN[t.type][lv - 1] : lv >= 6 ? '각성한 ' + BR[t.type][t.br].name[1] : BR[t.type][t.br].name[lv - 4];
+  const tname = (t, lv = t.lv) => lv <= 3 ? LVN[t.type][lv - 1] : lv >= 7 ? '초월한 ' + BR[t.type][t.br].name[1] : lv >= 6 ? '각성한 ' + BR[t.type][t.br].name[1] : BR[t.type][t.br].name[lv - 4];
 
   function buildTower(type, lv, br) {
     if (lv <= 3 || !br) return buildBase(type, Math.min(lv, 3));
+    if (lv >= 7) {
+      const g = buildTower(type, 6, br); g.scale.setScalar(1.06);
+      const U = g.userData.U; U.spin = U.spin || [];
+      const halo = new THREE.Group(); halo.position.y = 1.15; g.add(halo); U.spin.push([halo, -1.1]);
+      const cols = [0xff5a5a, 0xffb84a, 0xfff06a, 0x6aff7a, 0x6ac8ff, 0xb07aff];
+      for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2; halo.add(mesh(geo('tcrys', () => new THREE.OctahedronGeometry(.075)), new THREE.MeshStandardMaterial({ color: cols[k], emissive: cols[k], emissiveIntensity: .9 }), Math.cos(a) * .55, Math.sin(a * 3) * .06, Math.sin(a) * .55, false)); }
+      const rr = mesh(geo('tring', () => new THREE.TorusGeometry(.62, .03, 6, 48)), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xc8a0ff, emissiveIntensity: .8, metalness: .5 }), 0, .26, 0, false); rr.rotation.x = Math.PI / 2; g.add(rr);
+      const tg = glow(0xd8b8ff, 1.6, .22); tg.position.y = .9; g.add(tg);
+      return g;
+    }
     if (lv >= 6) {
       const g = buildTower(type, 5, br); g.scale.setScalar(1.08);
       const pillar = new THREE.Mesh(geo('apil', () => new THREE.CylinderGeometry(.32, .42, 2.6, 20, 1, true)), new THREE.MeshBasicMaterial({ color: 0xffd75e, transparent: true, opacity: .16, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
@@ -1544,7 +1559,7 @@
     if (w > 30) for (let k = 0; k < Math.floor((w - 30) / 3); k++) list.push(k % 3 === 2 ? 'golem' : k % 3 ? 'bat' : 'slime');
     return list;
   }
-  const hpScale = w => (1 + .25 * (w - 1) + .03 * (w - 1) * (w - 1)) * Math.pow(1.085, Math.max(0, w - 22));
+  const hpScale = w => (1 + .25 * (w - 1) + .03 * (w - 1) * (w - 1)) * Math.pow(1.085, Math.max(0, Math.min(w, 58) - 22)) * Math.pow(1.035, Math.max(0, w - 58));
   function peekNext() { if (!G.nextQ || G.nextQW !== G.wave + 1) { G.nextQ = makeWave(G.wave + 1); G.nextQW = G.wave + 1; } return G.nextQ; }
   function startWave() {
     if (G.waveActive || G.over) return;
@@ -1554,6 +1569,7 @@
     if (stageUp) { G.stage = st; applyTheme(st); }
     const ni = OPEN_AT.indexOf(G.wave);
     if (ni > 0) { setPortal(ni, true); const pp = PATHS[ni].pts[1]; burst(pp.x, pp.y, .8, 0xb080ff, 24); G.gold += 120; banner(`⚠️ 새 차원문이 열렸다! +120💰`); sfx('leak'); }
+    else if (G.wave === TRANS_WAVE) { banner('🌈 초월(7단계) 해금! 각성 타워를 한 번 더 강화할 수 있어요'); sfx('clear'); renderFooter(); }
     else if (stageUp) banner(`🌄 스테이지 ${st + 1} · ${theme.name}`);
     else if (INTRO[G.wave]) { const m = ET[INTRO[G.wave]]; banner(`👾 새 몬스터: ${m.name} — ${m.info}`); }
     else banner(G.wave % 10 === 0 ? `웨이브 ${G.wave} — 마왕 출현!` : `웨이브 ${G.wave}`);
@@ -1652,7 +1668,7 @@
       for (const e of list) { const x = e.x, y = e.y; addBolt([W(x, y, 7.5), W(x + (Math.random() - .5) * .3, y, 3.5), W(x, y, .05)]); for (const o of G.enemies) if (o.alive && Math.hypot(o.x - x, o.y - y) <= .8) damage(o, st.dmg * 3, true); addBlast(x, y, .8, 0xffe08a, false); }
     }
     floatText(t.x, t.y, 2.3, `${S.icon} ${S.name}!`); sfx(k.startsWith('bolt') ? 'zap' : k.startsWith('frost') ? 'frost' : k.startsWith('hex') ? 'hex' : 'boom');
-    t.sk = S.cd * cdMul();
+    t.sk = S.cd * cdMul() * (t.lv >= 7 ? .6 : 1);
   }
 
   let curT = null;
@@ -2122,9 +2138,9 @@
     if (t) {
       const b = TT[t.type], st = stat(t), choosing = t.lv === 3, nxt = !choosing && t.lv < maxLv(t) ? stat({ ...t, lv: t.lv + 1 }) : null;
       const icon = t.br ? BR[t.type][t.br].icon : b.icon, desc = t.br ? BR[t.type][t.br].desc : b.desc;
-      const upHtml = choosing ? '' : `<button class="hbtn go" id="upBtn">${t.lv >= maxLv(t) ? '최대 레벨' : t.lv === 5 ? `✨ 각성 ${upCost(t)}💰` : `⬆ 강화 ${upCost(t)}💰`}</button>`;
+      const upHtml = choosing ? '' : `<button class="hbtn go" id="upBtn">${t.lv >= maxLv(t) ? (t.lv === 6 ? `🔒 초월: 웨이브 ${TRANS_WAVE}` : '최대 레벨') : t.lv === 6 ? `🌈 초월 ${upCost(t)}💰` : t.lv === 5 ? `✨ 각성 ${upCost(t)}💰` : `⬆ 강화 ${upCost(t)}💰`}</button>`;
       f.innerHTML = `<div class="info"><div class="bigic">${icon}</div>
-        <div class="txt"><b>${tname(t)} <span style="font-size:13px;opacity:.7">Lv.${t.lv}</span></b><br>공격력 ${Math.round(st.dmg)}${nxt ? ` → ${Math.round(nxt.dmg)}` : ''} · 사거리 ${st.range.toFixed(1)} · 공속 ${(1 / st.rate).toFixed(1)}/초<br><span style="opacity:.7">${desc}</span>${tskOf(t) ? `<br><span style="color:#ffe08a">${tskOf(t).icon} 스킬 · ${tskOf(t).name}: ${tskOf(t).desc} · 쿨타임 ${(tskOf(t).cd * cdMul() / BASE_SPEED).toFixed(1)}초</span>` : (t.lv === 5 ? '<br><span style="color:#ffe08a;opacity:.8">✨ 각성하면 전용 스킬이 생겨요</span>' : '')}</div>
+        <div class="txt"><b>${tname(t)} <span style="font-size:13px;opacity:.7">Lv.${t.lv}</span></b><br>공격력 ${Math.round(st.dmg)}${nxt ? ` → ${Math.round(nxt.dmg)}` : ''} · 사거리 ${st.range.toFixed(1)} · 공속 ${(1 / st.rate).toFixed(1)}/초<br><span style="opacity:.7">${desc}</span>${tskOf(t) ? `<br><span style="color:#ffe08a">${tskOf(t).icon} 스킬 · ${tskOf(t).name}: ${tskOf(t).desc} · 쿨타임 ${(tskOf(t).cd * cdMul() * (t.lv >= 7 ? .6 : 1) / BASE_SPEED).toFixed(1)}초</span>` : (t.lv === 5 ? '<br><span style="color:#ffe08a;opacity:.8">✨ 각성하면 전용 스킬이 생겨요</span>' : '')}</div>
         <div class="btns">${upHtml}<button class="hbtn sell" id="sellBtn">판매 +${sellValue(t)}</button></div>
         <button class="x" id="closeBtn">✕</button></div>` +
         (choosing ? `<div class="choices">${['A', 'B'].map(k => { const o = BR[t.type][k]; return `<button class="choice" data-br="${k}"><div class="ct">${o.icon} ${o.name[0]}</div><div class="cd">${o.desc}</div><div class="cc">진화 ${upCost(t)}💰</div></button>`; }).join('')}</div>` : '');
@@ -2377,7 +2393,7 @@
     };
     let h = `<div class="gscroll"><table class="gtbl"><tr><th>Lv</th><th>이름</th><th>공격력</th><th>사거리</th><th>공속/초</th><th>비용</th><th>특수</th></tr>`;
     for (let lv = 1; lv <= 3; lv++) h += row(lv);
-    for (const br of ['A', 'B']) for (let lv = 4; lv <= 6; lv++) h += row(lv, br, 'br');
+    for (const br of ['A', 'B']) for (let lv = 4; lv <= 7; lv++) h += row(lv, br, 'br');
     return h + '</table></div>';
   }
   let guideDone = false;
@@ -2388,7 +2404,7 @@
       <li>몬스터를 잡거나 웨이브를 클리어하면 💰 골드를 얻어요. 웨이브가 끝나면 3초 뒤 다음 웨이브가 자동 시작.</li>
       <li>5웨이브마다 스테이지(배경)가 바뀌고, 웨이브 10·20에 새 입구(차원문)가 열려요.</li>
       <li>타워는 <b>3단계 → 4단계에서 두 갈래 중 하나 선택 → 5단계 → 6단계 각성</b>. 판매하면 들인 골드의 70%를 돌려받아요.</li>
-      <li>웨이브 22부터 몬스터 체력이 웨이브마다 8.5%씩 늘고, 웨이브 30부터는 붉은 <b>정예 몬스터</b>(체력 2.3배·방어력 추가·골드 2배)가 섞여 나와요.</li>
+      <li>웨이브 22~58은 몬스터 체력이 웨이브마다 8.5%씩, 그 뒤로는 3.5%씩 늘고, 웨이브 30부터는 붉은 <b>정예 몬스터</b>(체력 2.3배·방어력 추가·골드 2배)가 섞여 나와요.</li>
       <li><b>물리 공격</b>(궁수·대포)은 방어력만큼 피해가 깎이고, <b>마법 공격</b>(얼음·번개, 저격수)은 방어력을 무시해요. 방어력은 10웨이브마다 +2.</li></ul></div>`;
     h += `<div class="gsec">🏰 타워</div>`;
     const notes = {
@@ -2399,7 +2415,7 @@
       bolt: '여러 적에게 이어지는 연쇄 번개, 방어 무시. 갈래 A 라그나로크는 연쇄 수·거리 대폭 증가, 갈래 B 심판자는 하늘에서 여러 곳에 낙뢰 범위 피해.',
     };
     for (const k of ORDER) h += `<div class="gcard"><h4>${TT[k].icon} ${TT[k].name} <small style="font-size:13px;opacity:.7">건설 ${TT[k].cost}💰</small></h4><p>${notes[k]}</p>${towerTable(k)}</div>`;
-    h += `<div class="gcard"><p>· 표의 수치는 능력 강화·스킬 효과를 빼고 계산한 기본값이에요. 비용은 그 단계로 올리는 데 드는 골드. 4~6단계 회색 줄 위 3줄이 갈래 A, 아래 3줄이 갈래 B.<br>· 6단계 각성: 공격력 ×1.6, 공격 속도 +18%, 사거리 +0.2</p></div>`;
+    h += `<div class="gcard"><p>· 표의 수치는 능력 강화·스킬 효과를 빼고 계산한 기본값이에요. 비용은 그 단계로 올리는 데 드는 골드. 4~7단계 회색 줄 위 4줄이 갈래 A, 아래 4줄이 갈래 B.<br>· 6단계 각성: 공격력 ×1.6, 공격 속도 +18%, 사거리 +0.2, 전용 스킬<br>· 7단계 초월(웨이브 55부터 가능): 공격력 추가 ×1.9, 공격 속도 +18%, 사거리 +0.3, 스킬 쿨타임 40% 감소</p></div>`;
     h += `<div class="gsec">👾 몬스터</div><div class="gcard"><div class="gscroll"><table class="gtbl"><tr><th></th><th>이름</th><th>체력</th><th>속도</th><th>방어</th><th>골드</th><th>등장</th><th>특징</th></tr>`;
     for (const k of ['slime', 'bat', 'wolf', 'golem', 'knight', 'kingslime', 'ghost', 'shaman', 'boss']) {
       const e = ET[k];
