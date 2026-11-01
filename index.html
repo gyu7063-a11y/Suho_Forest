@@ -102,6 +102,45 @@
   .edmsg { min-height: 38px; font-size: 13px; text-align: center; line-height: 1.45; opacity: .9; }
   .edbtns { display: flex; gap: 6px; } .edbtns .hbtn { flex: 1; font-size: 14px; padding: 10px 4px; }
   #menuBtn { }
+  #mid { flex: 1; min-height: 0; display: flex; gap: 10px; }
+  #mid > #wrap { flex: 1; min-width: 0; }
+  .dock { display: none; flex-direction: column; gap: 10px; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .spell .sl { display: none; }
+  .dcard { background: linear-gradient(180deg, rgba(42,59,44,.95), rgba(28,40,30,.95)); border: 2px solid #3f5a41; border-radius: 14px; padding: 10px 12px; font-size: 14px; line-height: 1.55; }
+  .dcard h5 { margin: 0 0 6px; font-weight: 400; font-size: 16px; color: #ffe08a; }
+  .dcard .row { display: flex; justify-content: space-between; gap: 8px; } .dcard .row span:last-child { color: #ffd75e; }
+  .dcard .nq { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 14px; }
+  .dcard .ph { opacity: .6; font-size: 13px; text-align: center; padding: 14px 4px; }
+  /* side layout (PC / iPad landscape) */
+  body.dock-side #app { max-width: 1680px; }
+  body.dock-side .dock { display: flex; }
+  body.dock-side #mid > #wrap { flex: none; width: min(calc((100vh - 110px) * .72), 58vw); }
+  body.dock-side #dockL, body.dock-side #dockR { flex: 1 1 0; min-width: 250px; max-width: 440px; }
+  body.dock-side #mid { justify-content: center; }
+  body.dock-side .dock #spells { flex-direction: column; }
+  body.dock-side footer { height: auto; }
+  body.dock-side .palette { grid-template-columns: 1fr 1fr; }
+  body.dock-side .tbtn { padding: 8px 4px; }
+  body.dock-side #labBtn { display: none; }
+  body.dock-side #panel, body.dock-bottom #lab, body.dock-side #lab { position: static; display: block; transform: none; width: auto; left: auto; right: auto; top: auto; bottom: auto; }
+  body.dock-side #panel .info { flex-wrap: wrap; }
+  body.dock-side #panel .info .btns { flex-direction: row; width: 100%; } body.dock-side #panel .info .btns .hbtn { flex: 1; }
+  body.dock-side #panel .x { display: none; }
+  body.dock-side .choices { grid-template-columns: 1fr; }
+  .dock #labClose { display: none; }
+  .dock #spells { position: static; flex-direction: row; gap: 8px; }
+  .dock .spell { flex: 1; width: auto; height: 60px; border-radius: 14px; flex-direction: row; gap: 8px; padding: 0 10px; justify-content: flex-start; }
+  .dock .spell .si { font-size: 24px; } .dock .spell .sl { display: block; text-align: left; font-size: 14px; flex: 1; line-height: 1.2; } .dock .spell .sl small { display: block; font-size: 11px; opacity: .7; }
+  .dock .spell .sc { font-size: 13px; margin: 0; } .dock .spell .cdm { border-radius: 14px; font-size: 20px; }
+  .dock .rrow .hbtn { min-width: 74px; }
+  body.dock-side .dock .spell, body.dock-bottom .dock .spell { width: auto; height: 58px; flex: 1 0 auto; } body.dock-side .dock #spells .spell { width: 100%; flex: none; }
+  body.dock-side .dock .spell .si, body.dock-bottom .dock .spell .si { font-size: 24px; } body.dock-side .dock .spell .sc, body.dock-bottom .dock .spell .sc { font-size: 14px; }
+  /* bottom layout (iPad portrait) */
+  body.dock-bottom #mid { flex-direction: column; }
+  body.dock-bottom #dockR { display: flex; flex: none; max-height: 42%; }
+  body.dock-bottom #dockL { display: none; }
+  body.dock-bottom #lab .rlist { display: grid; grid-template-columns: 1fr 1fr; column-gap: 12px; }
+  body.dock-bottom #labBtn { display: none; }
   @media (max-width: 440px) { footer { height: 74px; } .tbtn { padding: 4px 2px 5px; font-size: 12px; } .tbtn .ic { font-size: 22px; } .tbtn .cost { font-size: 13px; } #app { gap: 6px; } }
   #spells { position: absolute; right: 6px; bottom: 6px; display: flex; flex-direction: column; gap: 6px; z-index: 4; }
   .spell { position: relative; width: 48px; height: 48px; border-radius: 50%; font-family: inherit; color: #fff; cursor: pointer; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -194,14 +233,18 @@
     <button class="hbtn" id="pauseBtn">⏸</button>
     <button class="hbtn go" id="startBtn">▶ 시작</button>
   </header>
+  <div id="mid">
+  <div id="dockL" class="dock"><div id="infoCard" class="dcard"></div></div>
   <div id="wrap">
     <div id="loading">숲을 불러오는 중…</div>
     <div id="floaters"></div>
     <div id="pauseOv">일시정지</div>
     <div id="banner"></div>
-    <div id="spells"><button class="spell" id="spRage"><div class="si">⚔️</div><div class="sc" id="scRage"></div><div class="cdm" id="cdRage"></div></button><button class="spell" id="spHaste"><div class="si">⚡</div><div class="sc" id="scHaste"></div><div class="cdm" id="cdHaste"></div></button></div>
+    <div id="spells"><button class="spell" id="spRage"><div class="si">⚔️</div><div class="sl">공격력 증폭<small>10초 · +70%</small></div><div class="sc" id="scRage"></div><div class="cdm" id="cdRage"></div></button><button class="spell" id="spHaste"><div class="si">⚡</div><div class="sl">속사<small>10초 · 공속 +67%</small></div><div class="sc" id="scHaste"></div><div class="cdm" id="cdHaste"></div></button></div>
     <div id="panel"></div>
     <div id="lab"></div>
+  </div>
+  <div id="dockR" class="dock"></div>
   </div>
   <footer id="footer"></footer>
   <div class="help">단축키: 1~4 타워 · Space 웨이브 · U 강화 · S 판매 · R 능력 강화 · Q 공격력 증폭 · E 속사 · F 배속 · Esc 취소</div>
@@ -1352,7 +1395,7 @@
     if (G.fx) G.fx.forEach(f => killFx(f));
     if (G.parts) G.parts.forEach(q => scene.remove(q.obj));
     portals.forEach((P, i) => setPortal(i, i === 0)); applyTheme(0);
-    Object.assign(G, { autoT: 0, cd: { rage: 0, haste: 0 }, buff: { rage: 0, haste: 0 }, casting: null, stage: 0, res: { dmg: 0, range: 0, spd: 0, gold: 0, heal: 0 }, spawnIdx: 0, gold: 150, lives: 20, wave: 0, towers: [], enemies: [], projs: [], fx: [], parts: [], queue: [], spawnT: 0, waveActive: false, speed: 1, paused: false, over: false, placing: null, selTower: null, hover: null, time: 0 });
+    Object.assign(G, { kills: 0, earned: 0, nextQ: null, nextQW: 0, autoT: 0, cd: { rage: 0, haste: 0 }, buff: { rage: 0, haste: 0 }, casting: null, stage: 0, res: { dmg: 0, range: 0, spd: 0, gold: 0, heal: 0 }, spawnIdx: 0, gold: 150, lives: 20, wave: 0, towers: [], enemies: [], projs: [], fx: [], parts: [], queue: [], spawnT: 0, waveActive: false, speed: 1, paused: false, over: false, placing: null, selTower: null, hover: null, time: 0 });
     $('floaters').innerHTML = ''; floaters.length = 0;
     $('over').classList.remove('show');
     ui(); renderFooter();
@@ -1376,10 +1419,11 @@
     return list;
   }
   const hpScale = w => (1 + .25 * (w - 1) + .03 * (w - 1) * (w - 1)) * Math.pow(1.085, Math.max(0, w - 22));
+  function peekNext() { if (!G.nextQ || G.nextQW !== G.wave + 1) { G.nextQ = makeWave(G.wave + 1); G.nextQW = G.wave + 1; } return G.nextQ; }
   function startWave() {
     if (G.waveActive || G.over) return;
     G.autoT = 0;
-    G.wave++; G.queue = makeWave(G.wave); G.spawnT = 0; G.waveActive = true;
+    G.wave++; G.queue = peekNext().slice(); G.nextQ = null; G.spawnT = 0; G.waveActive = true;
     const st = Math.floor((G.wave - 1) / 5), stageUp = st !== G.stage;
     if (stageUp) { G.stage = st; applyTheme(st); }
     const ni = OPEN_AT.indexOf(G.wave);
@@ -1410,7 +1454,7 @@
     if (e.hp <= 0) {
       e.alive = false;
       const g = Math.round((ET[e.type].gold + Math.floor(G.wave / 10)) * (e.elite ? 2 : 1) * (1 + .1 * (G.res.gold || 0)));
-      G.gold += g; floatText(e.x, e.y, ET[e.type].h + .4, '+' + g);
+      G.gold += g; G.kills++; G.earned += g; floatText(e.x, e.y, ET[e.type].h + .4, '+' + g);
       burst(e.x, e.y, ET[e.type].h, ET[e.type].color, e.type === 'boss' ? 30 : 12); sfx('pop'); ui();
       if (e.type === 'kingslime') for (let k = 0; k < 3; k++) spawn('slime', e);
     }
@@ -1854,6 +1898,7 @@
   function renderFooter() {
     const f = $('panel'), ff = $('footer'); f.innerHTML = ''; f.classList.toggle('show', !!G.selTower);
     const t = G.selTower;
+    if (!t && document.body.classList.contains('dock-side')) { f.classList.add('show'); f.innerHTML = '<div class="dcard"><h5>🏰 타워 정보</h5><div class="ph">맵의 타워를 누르면<br>정보 · 강화 · 판매가 여기 표시돼요</div></div>'; }
     if (t) {
       const b = TT[t.type], st = stat(t), choosing = t.lv === 3, nxt = !choosing && t.lv < maxLv(t) ? stat({ ...t, lv: t.lv + 1 }) : null;
       const icon = t.br ? BR[t.type][t.br].icon : b.icon, desc = t.br ? BR[t.type][t.br].desc : b.desc;
@@ -1900,11 +1945,11 @@
   ];
   function renderLab() {
     const L = $('lab'); if (!L.classList.contains('show')) return;
-    L.innerHTML = `<h3><span>🔨 능력 강화 <small style="font-size:12px;opacity:.7">모든 타워에 적용</small></span><button class="x" id="labClose">✕</button></h3>` + RES.map(r => {
+    L.innerHTML = `<h3><span>🔨 능력 강화 <small style="font-size:12px;opacity:.7">모든 타워에 적용</small></span><button class="x" id="labClose">✕</button></h3><div class="rlist">` + RES.map(r => {
       const l = G.res[r.k], maxed = !r.repeat && l >= r.max, c = r.cost(l);
       const pips = r.repeat ? `${l}회 수리함` : `${l} / ${r.max}단계`;
       return `<div class="rrow"><div class="ri">${r.icon}</div><div class="rt">${r.name} <b>${r.repeat ? '' : r.eff(l)}</b><br><span class="pips">${pips}</span> <small>${maxed ? '' : '다음: ' + r.eff(l + 1)}</small></div><button class="hbtn go" data-k="${r.k}" ${maxed || G.gold < c ? 'disabled' : ''}>${maxed ? '최대' : c + '💰'}</button></div>`;
-    }).join('');
+    }).join('') + '</div>';
     $('labClose').onclick = () => { L.classList.remove('show'); };
     L.querySelectorAll('button[data-k]').forEach(b => b.onclick = () => buyRes(b.dataset.k));
   }
@@ -1977,10 +2022,54 @@
       if (sb.textContent !== txt) sb.textContent = txt;
       if (G.autoT <= 0) startWave();
     }
-    spellUI();
+    spellUI(); infoUI();
     renderer.render(scene, camera);
     requestAnimationFrame(loop);
   }
+  // ================== WIDE-SCREEN DOCK LAYOUT ==================
+  let dockMode = 'none';
+  function applyLayout() {
+    const dev = document.body.dataset.device, w = window.innerWidth, h = window.innerHeight;
+    const mode = (dev === 'pc' || dev === 'ipad') && w >= 980 && w / h > 1.1 ? 'side' : dev === 'ipad' ? 'bottom' : 'none';
+    if (mode === dockMode) return;
+    dockMode = mode;
+    document.body.classList.toggle('dock-side', mode === 'side'); document.body.classList.toggle('dock-bottom', mode === 'bottom');
+    const L = $('dockL'), R = $('dockR'), wr = $('wrap'), app = $('app'), mid = $('mid');
+    if (mode === 'side') {
+      L.appendChild($('infoCard')); L.appendChild($('panel'));
+      R.appendChild($('footer')); R.appendChild($('spells')); R.appendChild($('lab'));
+    } else if (mode === 'bottom') {
+      L.appendChild($('infoCard')); wr.appendChild($('panel'));
+      mid.after($('footer')); R.appendChild($('spells')); R.appendChild($('lab'));
+    } else {
+      L.appendChild($('infoCard')); wr.appendChild($('panel')); wr.appendChild($('spells')); wr.appendChild($('lab'));
+      mid.after($('footer')); $('lab').classList.remove('show');
+    }
+    if (mode !== 'none') { $('lab').classList.add('show'); renderLab(); }
+    renderFooter(); infoUI(true);
+    setTimeout(fitCamera, 30);
+  }
+  window.addEventListener('resize', () => { if (G.started) applyLayout(); });
+  let _info = '', _infoT = 0;
+  function infoUI(force) {
+    if (dockMode !== 'side') return;
+    const now = performance.now(); if (!force && now - _infoT < 300) return; _infoT = now;
+    const cnt = {}; for (const k of peekNext()) cnt[k] = (cnt[k] || 0) + 1;
+    const nq = Object.keys(cnt).map(k => `<span>${MICON[k]} ${ET[k].name} ×${cnt[k]}</span>`).join('');
+    const alive = G.enemies.filter(e => e.alive).length;
+    const h = `<h5>🌊 웨이브 ${G.wave} <small style="font-size:12px;opacity:.7">· ${theme.name}</small></h5>
+      <div class="row"><span>필드의 몬스터</span><span>${alive}${G.queue.length ? ` (+${G.queue.length} 대기)` : ''}</span></div>
+      <div class="row"><span>생명</span><span>❤️ ${G.lives}</span></div>
+      <div class="row"><span>처치 수</span><span>${G.kills}</span></div>
+      <div class="row"><span>획득 골드</span><span>💰 ${G.earned}</span></div>
+      <div class="row"><span>설치한 타워</span><span>${G.towers.length}개</span></div>
+      <div class="row"><span>맵</span><span>${MAP_NAME}</span></div>
+      <div class="row"><span>최고 기록</span><span>🏆 웨이브 ${BEST}</span></div>
+      <h5 style="margin-top:10px">👀 다음 웨이브 ${G.wave + 1}${(G.wave + 1) % 10 === 0 ? ' — 마왕!' : ''}</h5><div class="nq">${nq}</div>
+      ${G.buff.rage > 0 || G.buff.haste > 0 ? `<h5 style="margin-top:10px">✨ 효과 중</h5>${G.buff.rage > 0 ? '<div>⚔️ 공격력 증폭</div>' : ''}${G.buff.haste > 0 ? '<div>⚡ 속사</div>' : ''}` : ''}`;
+    if (h !== _info) { _info = h; $('infoCard').innerHTML = h; }
+  }
+
   // ================== TITLE TABS ==================
   const MICON = { slime: '🟢', bat: '🦇', golem: '🗿', wolf: '🐺', knight: '🛡️', kingslime: '👑', ghost: '👻', shaman: '🧙', boss: '😈' };
   const MFIRST = { slime: '1', bat: '3', golem: '5', wolf: '7', knight: '12', kingslime: '15', ghost: '18', shaman: '24', boss: '10, 20, 30…' };
@@ -2201,7 +2290,7 @@
   $('fitMinus').onclick = () => setFit(fitAdj - 10); $('fitPlus').onclick = () => setFit(fitAdj + 10);
   function chooseDevice(d) {
     document.body.dataset.device = d; try { localStorage.setItem('forestTD.device', d); } catch (e) {}
-    mark(d); window.fixH();
+    mark(d); window.fixH(); applyLayout();
     $('title').classList.add('hide');
     G.started = true; G.paused = false; ui();
     setTimeout(fitCamera, 30); setTimeout(fitCamera, 300);
