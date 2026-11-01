@@ -115,7 +115,8 @@
   body.dock-side #app { max-width: 1680px; }
   body.dock-side .dock { display: flex; }
   body.dock-side #mid > #wrap { flex: none; width: min(calc((100vh - 110px) * .72), 58vw); }
-  body.dock-side #dockL, body.dock-side #dockR { flex: 1 1 0; min-width: 250px; max-width: 440px; }
+  body.dock-side #dockL { display: none; } body.dock-side #dockR { flex: 0 1 640px; min-width: 300px; flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
+  .dcol { display: flex; flex-direction: column; gap: 10px; flex: 1 1 280px; min-width: 0; }
   body.dock-side #mid { justify-content: center; }
   body.dock-side .dock #spells { flex-direction: column; }
   body.dock-side footer { height: auto; }
@@ -244,7 +245,7 @@
     <div id="panel"></div>
     <div id="lab"></div>
   </div>
-  <div id="dockR" class="dock"></div>
+  <div id="dockR" class="dock"><div id="dockR1" class="dcol"></div><div id="dockR2" class="dcol"></div></div>
   </div>
   <footer id="footer"></footer>
   <div class="help">단축키: 1~4 타워 · Space 웨이브 · U 강화 · S 판매 · R 능력 강화 · Q 공격력 증폭 · E 속사 · F 배속 · Esc 취소</div>
@@ -1909,6 +1910,7 @@
         <button class="x" id="closeBtn">✕</button></div>` +
         (choosing ? `<div class="choices">${['A', 'B'].map(k => { const o = BR[t.type][k]; return `<button class="choice" data-br="${k}"><div class="ct">${o.icon} ${o.name[0]}</div><div class="cd">${o.desc}</div><div class="cc">진화 ${upCost(t)}💰</div></button>`; }).join('')}</div>` : '');
       if ($('upBtn')) $('upBtn').onclick = () => upgrade();
+      if (document.body.classList.contains('dock-side')) setTimeout(() => f.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 30);
       f.querySelectorAll('.choice').forEach(c => { c.onclick = () => upgrade(c.dataset.br); c.disabled = G.gold < upCost(t); });
       $('sellBtn').onclick = sellTower; $('closeBtn').onclick = () => { G.selTower = null; renderFooter(); };
     }
@@ -2036,11 +2038,10 @@
     document.body.classList.toggle('dock-side', mode === 'side'); document.body.classList.toggle('dock-bottom', mode === 'bottom');
     const L = $('dockL'), R = $('dockR'), wr = $('wrap'), app = $('app'), mid = $('mid');
     if (mode === 'side') {
-      L.appendChild($('infoCard')); L.appendChild($('panel'));
-      R.appendChild($('footer')); R.appendChild($('spells')); R.appendChild($('lab'));
+      const R1 = $('dockR1'), R2 = $('dockR2'); R1.appendChild($('footer')); R1.appendChild($('spells')); R1.appendChild($('lab')); R2.appendChild($('infoCard')); R2.appendChild($('panel'));
     } else if (mode === 'bottom') {
       L.appendChild($('infoCard')); wr.appendChild($('panel'));
-      mid.after($('footer')); R.appendChild($('spells')); R.appendChild($('lab'));
+      mid.after($('footer')); $('dockR1').appendChild($('spells')); $('dockR1').appendChild($('lab'));
     } else {
       L.appendChild($('infoCard')); wr.appendChild($('panel')); wr.appendChild($('spells')); wr.appendChild($('lab'));
       mid.after($('footer')); $('lab').classList.remove('show');
