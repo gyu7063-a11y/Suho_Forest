@@ -283,6 +283,7 @@
     </div>
     <div class="fit" id="fitRow">📏 아이폰 아래 빈 공간 맞추기 <button id="fitMinus">−</button><b id="fitVal">0</b><button id="fitPlus">+</button></div>
     <div class="hint" id="fitHint" style="display:none">게임 화면 아래에 빈 공간이 남으면 + 를, 버튼이 잘리면 − 를 눌러 맞춘 뒤 다시 아이폰을 누르세요. 값은 저장됩니다.</div>
+    <button class="ttab" id="ecoBtn" style="font-size:14px">🔋 절전 모드 꺼짐</button>
     <div class="best" id="titleBest"></div>
   </div>
   <div class="tpage" id="tp-guide"></div>
@@ -2159,7 +2160,21 @@
   // ================== LOOP ==================
   const BASE_SPEED = 3; // 1× now equals the old 3×
   let last = performance.now();
+  let lastDraw = 0, ECO = false; try { ECO = localStorage.getItem('forestTD.eco') === '1'; } catch (e) {}
+  function setEco(on) {
+    ECO = on; try { localStorage.setItem('forestTD.eco', on ? '1' : '0'); } catch (e) {}
+    renderer.shadowMap.enabled = !on; sun.castShadow = !on;
+    scene.traverse(o => { if (o.material) { (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m.needsUpdate = true); } });
+    renderer.setPixelRatio(on ? 1 : Math.min(window.devicePixelRatio || 1, 2)); fitCamera();
+    $('ecoBtn').classList.toggle('on', on); $('ecoBtn').textContent = on ? '🔋 절전 모드 켜짐 (30fps · 그림자 끔)' : '🔋 절전 모드 꺼짐';
+  }
   function loop(now) {
+    requestAnimationFrame(loop);
+    // idle (title / pause / result window): redraw only twice a second
+    const idle = !G.started || G.paused || G.over || !$('title').classList.contains('hide') || !$('meter').classList.contains('hide');
+    if (idle && now - lastDraw < 500) return;
+    if (ECO && now - lastDraw < 31) return;
+    lastDraw = now;
     const rawDt = Math.min(.5, (now - last) / 1000), dt = Math.min(.05, rawDt); last = now; REAL_DT = dt;
     if (G.started && !G.paused && !G.over) for (let i = 0; i < G.speed * BASE_SPEED; i++) update(dt);
     sync(G.paused ? 0 : dt * (G.over ? 1 : G.speed * BASE_SPEED));
@@ -2171,7 +2186,6 @@
     }
     spellUI(); infoUI();
     renderer.render(scene, camera);
-    requestAnimationFrame(loop);
   }
   // ================== DAMAGE METER ==================
   const TCOL = { arrow: '#7bd23a', cannon: '#ff9a3a', frost: '#5fd0f0', hex: '#b07aff', bolt: '#f0d040' };
@@ -2482,6 +2496,7 @@
   $('menuBtn').onclick = () => { G.paused = true; ui(); showFit(document.body.dataset.device); $('titleBest').textContent = BEST ? `🏆 최고 기록: 웨이브 ${BEST}` : ''; setTab('play'); $('title').classList.remove('hide'); };
   window.__td = { spawn, THREEV: THREE.Vector3, canBuild, G, update, startWave, TT, attachTower, scene, camera, renderFooter, fit: fitCamera };
   reset(); fitCamera(); $('loading').remove();
+  $('ecoBtn').onclick = () => setEco(!ECO); if (ECO) setEco(true);
   requestAnimationFrame(loop);
 })();
 </script>
