@@ -387,6 +387,15 @@
   // ---- maps (default + user-made)
   const GATE = [5, 17], WALLS = ['4,17', '6,17'];
   const MAPS_KEY = 'forestTD.maps', SEL_KEY = 'forestTD.mapSel';
+  // maps baked into the game file — visible on every device
+  const BUILTIN_MAPS = [];
+  const encMap = m => 'SUHO1:' + btoa(unescape(encodeURIComponent(JSON.stringify({ n: m.name, p: m.paths.map(pt => pt.map(c => c[0].toString(36) + c[1].toString(36)).join('.')) })))).replace(/=+$/, '');
+  function decMap(code) {
+    const raw = String(code).trim().replace(/^SUHO1:/, '');
+    const o = JSON.parse(decodeURIComponent(escape(atob(raw))));
+    return { name: String(o.n || '불러온 맵').slice(0, 14), paths: o.p.map(str => str ? str.split('.').map(c => [parseInt(c[0], 36), parseInt(c.slice(1), 36)]) : []) };
+  }
+  const allMaps = () => BUILTIN_MAPS.concat(loadMaps());
   const loadMaps = () => { try { const m = JSON.parse(localStorage.getItem(MAPS_KEY) || '[]'); return Array.isArray(m) ? m : []; } catch (e) { return []; } };
   const saveMaps = m => { try { localStorage.setItem(MAPS_KEY, JSON.stringify(m)); return true; } catch (e) { return false; } };
   const isEdge = (x, y) => y === 0 || ((x === 0 || x === COLS - 1) && y <= ROWS - 3);
@@ -411,7 +420,7 @@
   let MAP_NAME = '기본 맵', MAP_SEL = 'default';
   try { MAP_SEL = localStorage.getItem(SEL_KEY) || 'default'; } catch (e) {}
   if (MAP_SEL !== 'default') {
-    const m = loadMaps().find(x => x.id === MAP_SEL), routes = m && mapRoutes(m.paths);
+    const m = allMaps().find(x => x.id === MAP_SEL), routes = m && mapRoutes(m.paths);
     if (routes && typeof routes !== 'string') {
       MAP_NAME = m.name;
       PATHDEFS = routes.map(r => [vStart(r[0])].concat(r));
@@ -1510,7 +1519,7 @@
     Object.assign(G, { soldRec: [], meterReset: false, kills: 0, earned: 0, nextQ: null, nextQW: 0, autoT: 0, cd: { rage: 0, haste: 0 }, buff: { rage: 0, haste: 0 }, casting: null, stage: 0, res: { dmg: 0, range: 0, spd: 0, gold: 0, heal: 0 }, spawnIdx: 0, gold: 150, lives: 20, wave: 0, towers: [], enemies: [], projs: [], fx: [], parts: [], queue: [], spawnT: 0, waveActive: false, speed: 1, paused: false, over: false, placing: null, selTower: null, hover: null, time: 0 });
     $('floaters').innerHTML = ''; floaters.length = 0;
     $('over').classList.remove('show');
-    ui(); renderFooter();
+    ui(); renderFooter(); if (typeof renderLab === 'function') renderLab();
   }
 
   // ================== WAVES ==================
@@ -1599,6 +1608,47 @@
     if (kind === 'bolt') U.arm.rotation.x = prev;
     return _hp.clone();
   }
+  // ================== AWAKENED (Lv6) TOWER SKILLS ==================
+  const TSK = {
+    arrowA: { name: '정밀 미사일', icon: '🚀', cd: 12, desc: '가장 앞선 적에게 대형 미사일 (공격력 ×6, 범위 피해)' },
+    arrowB: { name: '화살비', icon: '🌧️', cd: 10, desc: '사거리 안 모든 적에게 화살비 (공격력 ×3)' },
+    cannonA: { name: '미사일 일제사격', icon: '🚀', cd: 12, desc: '적 4마리에게 미사일 4발 (공격력 ×2.5, 범위 피해)' },
+    cannonB: { name: '광분', icon: '🔥', cd: 14, desc: '5초 동안 공격 속도 2.5배' },
+    frostA: { name: '절대영도', icon: '🧊', cd: 15, desc: '사거리 안 모든 적을 2.5초 동안 얼림 (마왕 1초)' },
+    frostB: { name: '대눈폭풍', icon: '🌪️', cd: 12, desc: '넓은 범위에 공격력 ×8 피해 + 강한 감속' },
+    hexA: { name: '산성 폭발', icon: '🧪', cd: 12, desc: '사거리 안 모든 적의 방어력 -30 · 마법 저항 제거 (5초)' },
+    hexB: { name: '역병 확산', icon: '☠️', cd: 15, desc: '사거리 안 모든 적이 받는 피해 +80% (5초)' },
+    boltA: { name: '신의 분노', icon: '⚡', cd: 12, desc: '10명에게 튀는 거대 번개 (공격력 ×4)' },
+    boltB: { name: '천벌', icon: '🌩️', cd: 12, desc: '넓은 범위의 적 8곳에 낙뢰 (공격력 ×3)' },
+  };
+  const tskOf = t => t.lv >= 6 && t.br ? TSK[t.type + t.br] : null;
+  function launchMissile(t, e, dmg, splash) {
+    const p = { kind: 'meteor', src: t, x: t.x, y: t.y, h0: 2.4, tx: e.x, ty: e.y, th: .1, speed: 9, arc: 0, target: null, alive: true, splash, dmg };
+    p.total = Math.max(.01, Math.hypot(p.tx - p.x, p.ty - p.y)); p.obj = projMesh('meteor'); p.obj.scale.setScalar(.55); p.obj.position.copy(W(p.x, p.y, p.h0)); scene.add(p.obj); G.projs.push(p);
+  }
+  function castTowerSkill(t, st, tg) {
+    const k = t.type + t.br, S = TSK[k]; curT = t;
+    const inR = (r = st.range) => G.enemies.filter(e => e.alive && Math.hypot(e.x - t.x, e.y - t.y) <= r);
+    if (k === 'arrowA') launchMissile(t, tg, st.dmg * 6, 1.2);
+    else if (k === 'cannonA') { const list = inR().sort((a, b) => b.d - a.d).slice(0, 4); list.forEach(e => launchMissile(t, e, st.dmg * 2.5, .9)); }
+    else if (k === 'arrowB') { for (const e of inR()) { damage(e, st.dmg * 3, true); addBlast(e.x, e.y, .3, 0xd8f0a0, false); } }
+    else if (k === 'cannonB') { t.frenzy = 5; burst(t.x, t.y, .8, 0xff6a2a, 16); }
+    else if (k === 'frostA') { for (const e of inR()) { e.frozenT = Math.max(e.frozenT, e.type === 'boss' ? 1 : 2.5); damage(e, st.dmg * 3, true); } addBlast(t.x, t.y, st.range, 0x9ff0ff, false); }
+    else if (k === 'frostB') { for (const e of inR(st.range * 1.35)) { damage(e, st.dmg * 8, true); e.slowT = Math.max(e.slowT, 3); e.slowAmt = Math.max(e.slowAmt, .7); } addBlast(t.x, t.y, st.range * 1.3, 0x6fb8d8, false); addBlast(t.x, t.y, st.range * .7, 0xdff6ff, false); }
+    else if (k === 'hexA') { for (const e of inR()) { e.hexBy = t; e.debT = 5; e.shred = Math.max(e.shred || 0, 30); e.vuln = Math.max(e.vuln || 0, .3); e.strip = 5; damage(e, st.dmg * 2, true); } addBlast(t.x, t.y, st.range, 0x6aff3a, false); }
+    else if (k === 'hexB') { for (const e of inR()) { e.hexBy = t; e.debT = 5; e.vuln = Math.max(e.vuln || 0, .8); e.shred = Math.max(e.shred || 0, 9); } addBlast(t.x, t.y, st.range, 0x9a4aff, false); addBlast(t.x, t.y, st.range * .5, 0x9a4aff, false); }
+    else if (k === 'boltA') {
+      const hit = [tg], pts = [heroPoint(t, 'bolt'), W(tg.x, tg.y, ET[tg.type].h)]; damage(tg, st.dmg * 4, true); let last = tg;
+      for (let i = 1; i < 10; i++) { let nx = null, nd = 3; for (const o of G.enemies) { if (!o.alive || hit.includes(o)) continue; const d = Math.hypot(o.x - last.x, o.y - last.y); if (d < nd) { nd = d; nx = o; } } if (!nx) break; hit.push(nx); pts.push(W(nx.x, nx.y, ET[nx.type].h)); damage(nx, st.dmg * 4, true); last = nx; }
+      addBolt(pts); addBolt(pts);
+    } else if (k === 'boltB') {
+      const list = inR(st.range * 1.4).sort(() => Math.random() - .5).slice(0, 8);
+      for (const e of list) { const x = e.x, y = e.y; addBolt([W(x, y, 7.5), W(x + (Math.random() - .5) * .3, y, 3.5), W(x, y, .05)]); for (const o of G.enemies) if (o.alive && Math.hypot(o.x - x, o.y - y) <= .8) damage(o, st.dmg * 3, true); addBlast(x, y, .8, 0xffe08a, false); }
+    }
+    floatText(t.x, t.y, 2.3, `${S.icon} ${S.name}!`); sfx(k.startsWith('bolt') ? 'zap' : k.startsWith('frost') ? 'frost' : k.startsWith('hex') ? 'hex' : 'boom');
+    t.sk = S.cd;
+  }
+
   let curT = null;
   function fire(t, e, st) {
     const b = TT[t.type]; curT = t;
@@ -1824,8 +1874,10 @@
         const want = Math.atan2(tg.y - t.y, tg.x - t.x);
         let da = want - t.angle; while (da > Math.PI) da -= Math.PI * 2; while (da < -Math.PI) da += Math.PI * 2;
         t.angle += da * Math.min(1, dt * 12);
-        if (t.cd <= 0) { fire(t, tg, st); t.cd = st.rate; }
+        if (t.cd <= 0) { fire(t, tg, st); t.cd = st.rate * (t.frenzy > 0 ? .4 : 1); }
+        if (t.lv >= 6 && t.br && (t.sk || 0) <= 0) castTowerSkill(t, st, tg);
       }
+      if (t.lv >= 6) { t.sk = (t.sk || 0) - dt; if (t.frenzy > 0) t.frenzy -= dt; }
     }
     for (const p of G.projs) {
       if (p.target && p.target.alive) { p.tx = p.target.x; p.ty = p.target.y; }
@@ -2054,7 +2106,7 @@
       const icon = t.br ? BR[t.type][t.br].icon : b.icon, desc = t.br ? BR[t.type][t.br].desc : b.desc;
       const upHtml = choosing ? '' : `<button class="hbtn go" id="upBtn">${t.lv >= maxLv(t) ? '최대 레벨' : t.lv === 5 ? `✨ 각성 ${upCost(t)}💰` : `⬆ 강화 ${upCost(t)}💰`}</button>`;
       f.innerHTML = `<div class="info"><div class="bigic">${icon}</div>
-        <div class="txt"><b>${tname(t)} <span style="font-size:13px;opacity:.7">Lv.${t.lv}</span></b><br>공격력 ${Math.round(st.dmg)}${nxt ? ` → ${Math.round(nxt.dmg)}` : ''} · 사거리 ${st.range.toFixed(1)} · 공속 ${(1 / st.rate).toFixed(1)}/초<br><span style="opacity:.7">${desc}</span></div>
+        <div class="txt"><b>${tname(t)} <span style="font-size:13px;opacity:.7">Lv.${t.lv}</span></b><br>공격력 ${Math.round(st.dmg)}${nxt ? ` → ${Math.round(nxt.dmg)}` : ''} · 사거리 ${st.range.toFixed(1)} · 공속 ${(1 / st.rate).toFixed(1)}/초<br><span style="opacity:.7">${desc}</span>${tskOf(t) ? `<br><span style="color:#ffe08a">${tskOf(t).icon} 스킬 · ${tskOf(t).name}: ${tskOf(t).desc} · 쿨타임 ${Math.round(tskOf(t).cd / BASE_SPEED)}초</span>` : (t.lv === 5 ? '<br><span style="color:#ffe08a;opacity:.8">✨ 각성하면 전용 스킬이 생겨요</span>' : '')}</div>
         <div class="btns">${upHtml}<button class="hbtn sell" id="sellBtn">판매 +${sellValue(t)}</button></div>
         <button class="x" id="closeBtn">✕</button></div>` +
         (choosing ? `<div class="choices">${['A', 'B'].map(k => { const o = BR[t.type][k]; return `<button class="choice" data-br="${k}"><div class="ct">${o.icon} ${o.name[0]}</div><div class="cd">${o.desc}</div><div class="cc">진화 ${upCost(t)}💰</div></button>`; }).join('')}</div>` : '');
@@ -2340,6 +2392,7 @@
     h += `<div class="gsec">🔨 능력 강화 (모든 타워)</div><div class="gcard"><div class="gscroll"><table class="gtbl"><tr><th>항목</th><th>단계당</th><th>최대</th><th>첫 비용</th></tr>`;
     for (const r of RES) h += `<tr><td>${r.icon} ${r.name}</td><td>${r.eff(1)}</td><td class="n">${r.repeat ? '무제한' : r.max + '단계'}</td><td class="n">${r.cost(0)}</td></tr>`;
     h += `</table></div><p>단계가 오를수록 비용이 빠르게 비싸져요.</p></div>`;
+    h += `<div class="gsec">🌟 각성(6단계) 타워 전용 스킬</div><div class="gcard"><p>6단계로 각성한 타워는 적이 사거리에 들어오면 쿨타임마다 자동으로 스킬을 써요. (쿨타임은 1배속 기준 실제 초)</p><div class="gscroll"><table class="gtbl"><tr><th>타워</th><th>스킬</th><th>효과</th><th>쿨</th></tr>` + Object.keys(TSK).map(k => { const S = TSK[k], ty = k.slice(0, -1), br = k.slice(-1); return `<tr><td>${BR[ty][br].icon} ${BR[ty][br].name[1]}</td><td>${S.icon} ${S.name}</td><td>${S.desc}</td><td class="n">${Math.round(S.cd / BASE_SPEED)}초</td></tr>`; }).join('') + `</table></div></div>`;
     h += `<div class="gsec">✨ 스킬 (화면 오른쪽 아래)</div><div class="gcard"><ul>`;
     for (const k in SPELLS) { const S = SPELLS[k]; h += `<li>${S.icon} <b>${S.name}</b> — ${S.desc}. 비용 80💰 + 웨이브×10, 재사용 30초 (1배속 기준)</li>`; }
     h += `</ul></div>`;
@@ -2355,12 +2408,17 @@
   function renderMapList() {
     const maps = loadMaps(), P = $('tp-maps');
     let h = `<div class="mrow ${MAP_SEL === 'default' ? 'sel' : ''}"><div class="mn">🌲 기본 맵<small>입구 3개 · 처음부터 있는 맵</small></div><button class="hbtn go" data-sel="default">${MAP_SEL === 'default' ? '✓ 사용 중' : '선택'}</button></div>`;
+    for (const m of BUILTIN_MAPS) {
+      const n = m.paths.filter(p => p.length).length;
+      h += `<div class="mrow ${MAP_SEL === m.id ? 'sel' : ''}"><div class="mn">🌍 ${m.name.replace(/</g, '&lt;')}<small>입구 ${n}개 · 모든 기기 공용</small></div><button class="hbtn go" data-sel="${m.id}">${MAP_SEL === m.id ? '✓ 사용 중' : '선택'}</button><button class="hbtn" data-copy="${m.id}">복사해 편집</button></div>`;
+    }
     for (const m of maps) {
       const n = m.paths.filter(p => p.length).length;
-      h += `<div class="mrow ${MAP_SEL === m.id ? 'sel' : ''}"><div class="mn">🗺️ ${m.name.replace(/</g, '&lt;')}<small>입구 ${n}개</small></div><button class="hbtn go" data-sel="${m.id}">${MAP_SEL === m.id ? '✓ 사용 중' : '선택'}</button><button class="hbtn" data-edit="${m.id}">편집</button><button class="hbtn sell" data-del="${m.id}">삭제</button></div>`;
+      h += `<div class="mrow ${MAP_SEL === m.id ? 'sel' : ''}"><div class="mn">🗺️ ${m.name.replace(/</g, '&lt;')}<small>입구 ${n}개 · 이 기기</small></div><button class="hbtn go" data-sel="${m.id}">${MAP_SEL === m.id ? '✓ 사용 중' : '선택'}</button><button class="hbtn" data-edit="${m.id}">편집</button><button class="hbtn" data-share="${m.id}">공유</button><button class="hbtn sell" data-del="${m.id}">삭제</button></div>`;
     }
-    h += `<button class="hbtn go" id="newMap" style="font-size:17px;padding:12px 22px">＋ 새 맵 만들기</button>
-      <div class="hint" style="max-width:420px;text-align:center">맵을 바꾸면 진행 중인 게임은 처음부터 시작돼요.<br>만든 맵은 이 기기(브라우저)에만 저장됩니다.</div>`;
+    h += `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="hbtn go" id="newMap" style="font-size:17px;padding:12px 22px">＋ 새 맵 만들기</button><button class="hbtn" id="importMap" style="font-size:17px;padding:12px 22px">📥 맵 코드 불러오기</button></div>
+      <div id="codeBox" style="display:none;width:100%;max-width:520px"><div class="hint" id="codeHint" style="max-width:none;text-align:center;margin-bottom:6px"></div><textarea id="codeTxt" style="width:100%;height:84px;font-family:monospace;font-size:12px;border-radius:10px;padding:8px;background:#ffffff10;color:#fff;border:1px solid #ffffff44"></textarea><div style="display:flex;gap:8px;justify-content:center;margin-top:6px"><button class="hbtn go" id="codeOk">불러오기</button><button class="hbtn" id="codeCancel">닫기</button></div></div>
+      <div class="hint" style="max-width:440px;text-align:center">맵을 바꾸면 진행 중인 게임은 처음부터 시작돼요.<br>직접 만든 맵은 이 기기에만 저장돼요. <b>공유</b>로 맵 코드를 복사해 다른 기기에서 <b>맵 코드 불러오기</b>로 붙여넣으면 PC·아이패드·아이폰 어디서든 쓸 수 있어요.</div>`;
     P.innerHTML = h;
     P.querySelectorAll('[data-sel]').forEach(b => b.onclick = () => selectMap(b.dataset.sel));
     P.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openEditor(loadMaps().find(m => m.id === b.dataset.edit)));
@@ -2371,6 +2429,23 @@
       renderMapList();
     });
     $('newMap').onclick = () => openEditor(null);
+    const box = $('codeBox'), txt = $('codeTxt');
+    P.querySelectorAll('[data-share]').forEach(b => b.onclick = () => {
+      const m = loadMaps().find(x => x.id === b.dataset.share), code = encMap(m);
+      box.style.display = 'block'; txt.value = code; $('codeOk').style.display = 'none';
+      try { navigator.clipboard.writeText(code).then(() => { $('codeHint').textContent = `✅ "${m.name}" 맵 코드를 복사했어요. 다른 기기의 '맵 코드 불러오기'에 붙여넣으세요.`; }, () => { $('codeHint').textContent = '아래 코드를 길게 눌러 복사하세요.'; }); } catch (e) { $('codeHint').textContent = '아래 코드를 길게 눌러 복사하세요.'; }
+      $('codeHint').textContent = '아래 코드를 복사해서 다른 기기에서 불러오세요.'; txt.select();
+    });
+    P.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => { const m = BUILTIN_MAPS.find(x => x.id === b.dataset.copy); openEditor({ id: null, name: m.name + ' 사본', paths: m.paths }); ED.id = null; });
+    $('importMap').onclick = () => { box.style.display = 'block'; txt.value = ''; $('codeOk').style.display = ''; $('codeHint').textContent = '다른 기기에서 복사한 맵 코드(SUHO1:…)를 붙여넣으세요.'; txt.focus(); };
+    $('codeCancel').onclick = () => { box.style.display = 'none'; };
+    $('codeOk').onclick = () => {
+      let m; try { m = decMap(txt.value); } catch (e) { $('codeHint').textContent = '⚠️ 코드가 올바르지 않아요. 전체를 빠짐없이 붙여넣었는지 확인해 주세요.'; return; }
+      const r = mapRoutes(m.paths); if (typeof r === 'string') { $('codeHint').textContent = '⚠️ 맵 길이 올바르지 않아요: ' + r; return; }
+      const maps = loadMaps(); m.id = 'm' + Date.now().toString(36); maps.push(m);
+      if (!saveMaps(maps)) { $('codeHint').textContent = '⚠️ 저장하지 못했어요'; return; }
+      renderMapList(); const h2 = document.createElement('div'); h2.className = 'hint'; h2.style.cssText = 'max-width:none;color:#9f9'; h2.textContent = `✅ "${m.name}" 맵을 불러왔어요. 선택을 누르면 플레이할 수 있어요.`; $('tp-maps').prepend(h2);
+    };
   }
 
   // ---------- map editor ----------
