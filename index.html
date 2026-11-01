@@ -1516,7 +1516,7 @@
     if (G.fx) G.fx.forEach(f => killFx(f));
     if (G.parts) G.parts.forEach(q => scene.remove(q.obj));
     portals.forEach((P, i) => setPortal(i, i === 0)); applyTheme(0);
-    Object.assign(G, { soldRec: [], meterReset: false, kills: 0, earned: 0, nextQ: null, nextQW: 0, autoT: 0, cd: { rage: 0, haste: 0 }, buff: { rage: 0, haste: 0 }, casting: null, stage: 0, res: { dmg: 0, range: 0, spd: 0, gold: 0, heal: 0 }, spawnIdx: 0, gold: 150, lives: 20, wave: 0, towers: [], enemies: [], projs: [], fx: [], parts: [], queue: [], spawnT: 0, waveActive: false, speed: 1, paused: false, over: false, placing: null, selTower: null, hover: null, time: 0 });
+    Object.assign(G, { soldRec: [], meterReset: false, kills: 0, earned: 0, nextQ: null, nextQW: 0, autoT: 0, cd: { rage: 0, haste: 0 }, buff: { rage: 0, haste: 0 }, casting: null, stage: 0, res: { dmg: 0, range: 0, spd: 0, cdr: 0, gold: 0, heal: 0 }, spawnIdx: 0, gold: 150, lives: 20, wave: 0, towers: [], enemies: [], projs: [], fx: [], parts: [], queue: [], spawnT: 0, waveActive: false, speed: 1, paused: false, over: false, placing: null, selTower: null, hover: null, time: 0 });
     $('floaters').innerHTML = ''; floaters.length = 0;
     $('over').classList.remove('show');
     ui(); renderFooter(); if (typeof renderLab === 'function') renderLab();
@@ -1621,6 +1621,7 @@
     boltA: { name: '신의 분노', icon: '⚡', cd: 12, desc: '10명에게 튀는 거대 번개 (공격력 ×4)' },
     boltB: { name: '천벌', icon: '🌩️', cd: 12, desc: '넓은 범위의 적 8곳에 낙뢰 (공격력 ×3)' },
   };
+  const cdMul = () => 1 - .05 * ((G.res && G.res.cdr) || 0);
   const tskOf = t => t.lv >= 6 && t.br ? TSK[t.type + t.br] : null;
   function launchMissile(t, e, dmg, splash) {
     const p = { kind: 'meteor', src: t, x: t.x, y: t.y, h0: 2.4, tx: e.x, ty: e.y, th: .1, speed: 9, arc: 0, target: null, alive: true, splash, dmg };
@@ -1646,7 +1647,7 @@
       for (const e of list) { const x = e.x, y = e.y; addBolt([W(x, y, 7.5), W(x + (Math.random() - .5) * .3, y, 3.5), W(x, y, .05)]); for (const o of G.enemies) if (o.alive && Math.hypot(o.x - x, o.y - y) <= .8) damage(o, st.dmg * 3, true); addBlast(x, y, .8, 0xffe08a, false); }
     }
     floatText(t.x, t.y, 2.3, `${S.icon} ${S.name}!`); sfx(k.startsWith('bolt') ? 'zap' : k.startsWith('frost') ? 'frost' : k.startsWith('hex') ? 'hex' : 'boom');
-    t.sk = S.cd;
+    t.sk = S.cd * cdMul();
   }
 
   let curT = null;
@@ -2106,7 +2107,7 @@
       const icon = t.br ? BR[t.type][t.br].icon : b.icon, desc = t.br ? BR[t.type][t.br].desc : b.desc;
       const upHtml = choosing ? '' : `<button class="hbtn go" id="upBtn">${t.lv >= maxLv(t) ? '최대 레벨' : t.lv === 5 ? `✨ 각성 ${upCost(t)}💰` : `⬆ 강화 ${upCost(t)}💰`}</button>`;
       f.innerHTML = `<div class="info"><div class="bigic">${icon}</div>
-        <div class="txt"><b>${tname(t)} <span style="font-size:13px;opacity:.7">Lv.${t.lv}</span></b><br>공격력 ${Math.round(st.dmg)}${nxt ? ` → ${Math.round(nxt.dmg)}` : ''} · 사거리 ${st.range.toFixed(1)} · 공속 ${(1 / st.rate).toFixed(1)}/초<br><span style="opacity:.7">${desc}</span>${tskOf(t) ? `<br><span style="color:#ffe08a">${tskOf(t).icon} 스킬 · ${tskOf(t).name}: ${tskOf(t).desc} · 쿨타임 ${Math.round(tskOf(t).cd / BASE_SPEED)}초</span>` : (t.lv === 5 ? '<br><span style="color:#ffe08a;opacity:.8">✨ 각성하면 전용 스킬이 생겨요</span>' : '')}</div>
+        <div class="txt"><b>${tname(t)} <span style="font-size:13px;opacity:.7">Lv.${t.lv}</span></b><br>공격력 ${Math.round(st.dmg)}${nxt ? ` → ${Math.round(nxt.dmg)}` : ''} · 사거리 ${st.range.toFixed(1)} · 공속 ${(1 / st.rate).toFixed(1)}/초<br><span style="opacity:.7">${desc}</span>${tskOf(t) ? `<br><span style="color:#ffe08a">${tskOf(t).icon} 스킬 · ${tskOf(t).name}: ${tskOf(t).desc} · 쿨타임 ${(tskOf(t).cd * cdMul() / BASE_SPEED).toFixed(1)}초</span>` : (t.lv === 5 ? '<br><span style="color:#ffe08a;opacity:.8">✨ 각성하면 전용 스킬이 생겨요</span>' : '')}</div>
         <div class="btns">${upHtml}<button class="hbtn sell" id="sellBtn">판매 +${sellValue(t)}</button></div>
         <button class="x" id="closeBtn">✕</button></div>` +
         (choosing ? `<div class="choices">${['A', 'B'].map(k => { const o = BR[t.type][k]; return `<button class="choice" data-br="${k}"><div class="ct">${o.icon} ${o.name[0]}</div><div class="cd">${o.desc}</div><div class="cc">진화 ${upCost(t)}💰</div></button>`; }).join('')}</div>` : '');
@@ -2144,6 +2145,7 @@
     { k: 'dmg', icon: '⚔️', name: '공격력', max: 30, eff: l => `+${l * 8}%`, cost: l => Math.round(60 * Math.pow(1.32, l)) },
     { k: 'range', icon: '🎯', name: '사거리', max: 10, eff: l => `+${l * 4}%`, cost: l => Math.round(80 * Math.pow(1.4, l)) },
     { k: 'spd', icon: '⚡', name: '공격 속도', max: 15, eff: l => `+${l * 5}%`, cost: l => Math.round(80 * Math.pow(1.36, l)) },
+    { k: 'cdr', icon: '⏱️', name: '스킬 쿨타임', max: 8, eff: l => `-${l * 5}%`, cost: l => Math.round(150 * Math.pow(1.45, l)) },
     { k: 'gold', icon: '💰', name: '골드 획득', max: 6, eff: l => `+${l * 10}%`, cost: l => Math.round(100 * Math.pow(1.5, l)) },
     { k: 'heal', icon: '❤️', name: '성문 수리', max: 999, eff: () => '생명 +3', cost: l => Math.round(150 * Math.pow(1.25, l)), repeat: true },
   ];
@@ -2175,7 +2177,7 @@
     const S = SPELLS[k], c = S.cost();
     if (G.over || !G.started || G.cd[k] > 0) return;
     if (G.gold < c) { banner('골드가 부족해요'); return; }
-    G.gold -= c; G.buff[k] = S.dur; G.cd[k] = S.cd;
+    G.gold -= c; G.buff[k] = S.dur; G.cd[k] = S.cd * cdMul();
     for (const t of G.towers) burst(t.x, t.y, .8, S.col, 6);
     banner(`${S.icon} ${S.name}! (10초)`); sfx('clear'); ui();
   }
