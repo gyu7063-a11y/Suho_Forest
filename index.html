@@ -114,7 +114,8 @@
   /* side layout (PC / iPad landscape) */
   body.dock-side #app { max-width: 1680px; }
   body.dock-side .dock { display: flex; }
-  body.dock-side #mid > #wrap { flex: none; width: min(calc((100vh - 110px) * .72), 58vw); }
+  body.dock-side #mid > #wrap { flex: none; width: min(calc((100vh - 50px) * .72), 58vw); }
+  body.dock-side #hdr { flex-wrap: wrap; gap: 6px; padding: 8px; border-radius: 14px; background: rgba(0,0,0,.25); border: 1px solid #ffffff18; }
   body.dock-side #dockL { display: none; } body.dock-side #dockR { flex: 0 1 560px; min-width: 380px; flex-direction: column; }
   body.dock-side .dcol { flex: none; }
   .dcol { display: flex; flex-direction: column; gap: 10px; flex: 1 1 280px; min-width: 0; }
@@ -224,7 +225,7 @@
 </head>
 <body>
 <div id="app">
-  <header>
+  <header id="hdr">
     <div class="stat">❤️ <span id="lives">20</span></div>
     <div class="stat">💰 <span id="gold">0</span></div>
     <div class="stat">🌊 <span id="wave">0</span></div>
@@ -2039,12 +2040,13 @@
     document.body.classList.toggle('dock-side', mode === 'side'); document.body.classList.toggle('dock-bottom', mode === 'bottom');
     const L = $('dockL'), R = $('dockR'), wr = $('wrap'), app = $('app'), mid = $('mid');
     if (mode === 'side') {
-      const R1 = $('dockR1'), R2 = $('dockR2'); R1.appendChild($('footer')); R1.appendChild($('panel')); R1.appendChild($('spells')); R1.appendChild($('lab')); R2.appendChild($('infoCard'));
+      const R1 = $('dockR1'), R2 = $('dockR2'); R1.appendChild($('hdr')); R1.appendChild($('footer')); R1.appendChild($('panel')); R1.appendChild($('spells')); R1.appendChild($('lab')); R2.appendChild($('infoCard'));
     } else if (mode === 'bottom') {
+      app.prepend($('hdr'));
       L.appendChild($('infoCard')); wr.appendChild($('panel'));
       mid.after($('footer')); $('dockR1').appendChild($('spells')); $('dockR1').appendChild($('lab'));
     } else {
-      L.appendChild($('infoCard')); wr.appendChild($('panel')); wr.appendChild($('spells')); wr.appendChild($('lab'));
+      app.prepend($('hdr')); L.appendChild($('infoCard')); wr.appendChild($('panel')); wr.appendChild($('spells')); wr.appendChild($('lab'));
       mid.after($('footer')); $('lab').classList.remove('show');
     }
     if (mode !== 'none') { $('lab').classList.add('show'); renderLab(); }
