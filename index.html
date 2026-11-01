@@ -115,10 +115,11 @@
   body.dock-side #app { max-width: 1680px; }
   body.dock-side .dock { display: flex; }
   body.dock-side #mid > #wrap { flex: none; width: min(calc((100vh - 110px) * .72), 58vw); }
-  body.dock-side #dockL { display: none; } body.dock-side #dockR { flex: 0 1 640px; min-width: 300px; flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
+  body.dock-side #dockL { display: none; } body.dock-side #dockR { flex: 0 1 560px; min-width: 380px; flex-direction: column; }
+  body.dock-side .dcol { flex: none; }
   .dcol { display: flex; flex-direction: column; gap: 10px; flex: 1 1 280px; min-width: 0; }
   body.dock-side #mid { justify-content: center; }
-  body.dock-side .dock #spells { flex-direction: column; }
+  body.dock-side .dock #spells { flex-direction: row; }
   body.dock-side footer { height: auto; }
   body.dock-side .palette { grid-template-columns: 1fr 1fr; }
   body.dock-side .tbtn { padding: 8px 4px; }
@@ -134,7 +135,7 @@
   .dock .spell .si { font-size: 24px; } .dock .spell .sl { display: block; text-align: left; font-size: 14px; flex: 1; line-height: 1.2; } .dock .spell .sl small { display: block; font-size: 11px; opacity: .7; }
   .dock .spell .sc { font-size: 13px; margin: 0; } .dock .spell .cdm { border-radius: 14px; font-size: 20px; }
   .dock .rrow .hbtn { min-width: 74px; }
-  body.dock-side .dock .spell, body.dock-bottom .dock .spell { width: auto; height: 58px; flex: 1 0 auto; } body.dock-side .dock #spells .spell { width: 100%; flex: none; }
+  body.dock-side .dock .spell, body.dock-bottom .dock .spell { width: auto; height: 58px; flex: 1 0 auto; } body.dock-side .dock #spells .spell { flex: 1 1 0; }
   body.dock-side .dock .spell .si, body.dock-bottom .dock .spell .si { font-size: 24px; } body.dock-side .dock .spell .sc, body.dock-bottom .dock .spell .sc { font-size: 14px; }
   /* bottom layout (iPad portrait) */
   body.dock-bottom #mid { flex-direction: column; }
