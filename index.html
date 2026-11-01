@@ -50,7 +50,7 @@
   body[data-device=ipad] .spell { width: 64px; height: 64px; } body[data-device=ipad] .spell .si { font-size: 26px; } body[data-device=ipad] .spell .sc { font-size: 14px; }
   body[data-device=ipad] #panel .info .txt { font-size: 16px; } body[data-device=ipad] #panel .info .txt b { font-size: 21px; } body[data-device=ipad] .choice .ct { font-size: 19px; } body[data-device=ipad] .choice .cd { font-size: 15px; }
   body[data-device=ipad] #lab { left: 50%; right: auto; width: 520px; transform: translateX(-50%); } body[data-device=ipad] .rrow .rt { font-size: 17px; }
-  #title { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 24px;
+  #title { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 12px; padding: calc(18px + env(safe-area-inset-top)) 14px calc(12px + env(safe-area-inset-bottom));
     background: radial-gradient(ellipse at 50% 30%, rgba(40,80,50,.55), rgba(8,14,10,.92) 70%); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); text-align: center; }
   #title.hide { display: none; }
   #title .logo { white-space: nowrap; font-size: clamp(34px, 11vw, 56px); line-height: 1.05; color: #ffe08a; text-shadow: 0 4px 0 #3a2400, 0 0 30px #ffcf5a88; }
@@ -67,6 +67,40 @@
   #title .fit.show { display: flex; }
   #title .fit button { font-family: inherit; width: 34px; height: 34px; border-radius: 10px; border: 1px solid #ffffff44; background: #ffffff18; color: #fff; font-size: 18px; }
   #title .hint { font-size: 12px; opacity: .55; max-width: 320px; line-height: 1.45; }
+  .ttabs { display: flex; gap: 6px; margin-top: 4px; }
+  .ttab { font-family: inherit; font-size: 16px; color: #fff; padding: 9px 14px; border-radius: 14px; border: 1px solid #ffffff30; background: #ffffff12; cursor: pointer; }
+  .ttab.on { background: linear-gradient(180deg, #f6c445, #e09a1a); color: #3a2400; border-color: #ffe08a; }
+  .tpage { display: none; width: 100%; max-width: 720px; flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .tpage.on { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  #tp-play.on { justify-content: center; }
+  .curmap { font-size: 15px; padding: 6px 14px; border-radius: 12px; background: #00000040; border: 1px solid #ffffff22; }
+  #tp-guide.on { display: block; text-align: left; padding: 0 2px 30px; }
+  .gsec { margin: 14px 0 6px; font-size: 20px; color: #ffe08a; }
+  .gcard { background: rgba(20,32,22,.85); border: 1px solid #ffffff22; border-radius: 14px; padding: 10px 12px; margin: 8px 0; }
+  .gcard h4 { margin: 0 0 4px; font-weight: 400; font-size: 18px; }
+  .gcard p, .gcard li { font-size: 13px; line-height: 1.55; opacity: .9; margin: 2px 0; }
+  .gcard ul { margin: 4px 0; padding-left: 18px; }
+  .gtbl { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+  .gtbl th { text-align: left; font-weight: 400; color: #ffd75e; padding: 4px 4px; border-bottom: 1px solid #ffffff33; white-space: nowrap; }
+  .gtbl td { padding: 4px 4px; border-bottom: 1px solid #ffffff14; vertical-align: top; }
+  .gtbl tr.br td { background: #ffffff08; }
+  .gtbl td.n { white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+  .gscroll { overflow-x: auto; }
+  #tp-maps.on { justify-content: flex-start; padding-bottom: 30px; }
+  .mrow { width: 100%; display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 14px; background: rgba(20,32,22,.85); border: 1px solid #ffffff22; }
+  .mrow.sel { border-color: #ffd75e; box-shadow: 0 0 12px #ffd75e44; }
+  .mrow .mn { flex: 1; font-size: 16px; } .mrow .mn small { display: block; font-size: 12px; opacity: .65; }
+  .mrow .hbtn { font-size: 13px; padding: 7px 9px; }
+  #editor { position: fixed; inset: 0; z-index: 110; display: flex; flex-direction: column; gap: 8px; padding: calc(10px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom)); background: #0d1611; }
+  #editor.hide { display: none; }
+  .edtop { display: flex; gap: 8px; align-items: center; }
+  .edtop input { flex: 1; min-width: 0; font-family: inherit; font-size: 17px; padding: 8px 10px; border-radius: 10px; border: 1px solid #ffffff44; background: #ffffff10; color: #fff; }
+  .edtools { display: flex; gap: 6px; } .edp { flex: 1; font-family: inherit; font-size: 13px; color: #fff; padding: 8px 4px; border-radius: 12px; border: 2px solid #ffffff22; background: #ffffff10; }
+  .edp.on { border-color: #ffd75e; background: #ffd75e22; }
+  .edcvwrap { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  #edCv { touch-action: none; border-radius: 10px; box-shadow: 0 6px 20px #0008; }
+  .edmsg { min-height: 38px; font-size: 13px; text-align: center; line-height: 1.45; opacity: .9; }
+  .edbtns { display: flex; gap: 6px; } .edbtns .hbtn { flex: 1; font-size: 14px; padding: 10px 4px; }
   #menuBtn { }
   @media (max-width: 440px) { footer { height: 74px; } .tbtn { padding: 4px 2px 5px; font-size: 12px; } .tbtn .ic { font-size: 22px; } .tbtn .cost { font-size: 13px; } #app { gap: 6px; } }
   #spells { position: absolute; right: 6px; bottom: 6px; display: flex; flex-direction: column; gap: 6px; z-index: 4; }
@@ -74,7 +108,9 @@
     background: radial-gradient(circle at 35% 30%, #6a4a9a, #2c1a4a 70%); border: 2px solid #ffd75e; box-shadow: 0 3px 0 #120a20, 0 0 10px #0008; }
   .spell .si { font-size: 19px; line-height: 1; }
   .spell .sc { font-size: 11px; color: #ffd75e; margin-top: 2px; }
-  .spell.armed { border-color: #ff8a3a; box-shadow: 0 0 18px #ff8a3a; }
+  .spell.on { border-color: #7cff7c; box-shadow: 0 0 18px #7cff7c; }
+  .spell .cdm.act { display: grid; background: rgba(40,140,40,.55); }
+  #wrap.rage { outline: 3px solid #ff6a3a; outline-offset: -3px; } #wrap.haste { outline: 3px solid #6ac8ff; outline-offset: -3px; } #wrap.rage.haste { outline: 3px solid #d88aff; outline-offset: -3px; }
   .spell.poor .sc { color: #ff7a6a; }
   .spell .cdm { position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,.6); display: none; place-items: center; font-size: 16px; }
   .spell .cdm.on { display: grid; }
@@ -163,25 +199,38 @@
     <div id="floaters"></div>
     <div id="pauseOv">일시정지</div>
     <div id="banner"></div>
-    <div id="spells"><button class="spell" id="spMeteor"><div class="si">☄️</div><div class="sc" id="scMeteor"></div><div class="cdm" id="cdMeteor"></div></button><button class="spell" id="spStop"><div class="si">⏳</div><div class="sc" id="scStop"></div><div class="cdm" id="cdStop"></div></button></div>
+    <div id="spells"><button class="spell" id="spRage"><div class="si">⚔️</div><div class="sc" id="scRage"></div><div class="cdm" id="cdRage"></div></button><button class="spell" id="spHaste"><div class="si">⚡</div><div class="sc" id="scHaste"></div><div class="cdm" id="cdHaste"></div></button></div>
     <div id="panel"></div>
     <div id="lab"></div>
   </div>
   <footer id="footer"></footer>
-  <div class="help">단축키: 1~4 타워 · Space 웨이브 · U 강화 · S 판매 · R 능력 강화 · Q 메테오 · E 시간 정지 · F 배속 · Esc 취소</div>
+  <div class="help">단축키: 1~4 타워 · Space 웨이브 · U 강화 · S 판매 · R 능력 강화 · Q 공격력 증폭 · E 속사 · F 배속 · Esc 취소</div>
 </div>
 <div id="title">
   <div class="logo">🌲 수호의 숲 🌲</div>
   <div class="sub">3D 타워 디펜스</div>
-  <div class="q">플레이할 기기를 골라 주세요</div>
-  <div class="devs">
-    <button class="dev" data-dev="pc"><span class="di">💻</span>PC</button>
-    <button class="dev" data-dev="iphone"><span class="di">📱</span>아이폰</button>
-    <button class="dev" data-dev="ipad"><span class="di">📲</span>아이패드</button>
+  <div class="ttabs"><button class="ttab on" data-tab="play">🎮 플레이</button><button class="ttab" data-tab="guide">📖 설명서</button><button class="ttab" data-tab="maps">🗺️ 맵</button></div>
+  <div class="tpage on" id="tp-play">
+    <div class="curmap" id="curMap"></div>
+    <div class="q">플레이할 기기를 골라 주세요</div>
+    <div class="devs">
+      <button class="dev" data-dev="pc"><span class="di">💻</span>PC</button>
+      <button class="dev" data-dev="iphone"><span class="di">📱</span>아이폰</button>
+      <button class="dev" data-dev="ipad"><span class="di">📲</span>아이패드</button>
+    </div>
+    <div class="fit" id="fitRow">📏 아이폰 아래 빈 공간 맞추기 <button id="fitMinus">−</button><b id="fitVal">0</b><button id="fitPlus">+</button></div>
+    <div class="hint" id="fitHint" style="display:none">게임 화면 아래에 빈 공간이 남으면 + 를, 버튼이 잘리면 − 를 눌러 맞춘 뒤 다시 아이폰을 누르세요. 값은 저장됩니다.</div>
+    <div class="best" id="titleBest"></div>
   </div>
-  <div class="fit" id="fitRow">📏 아이폰 아래 빈 공간 맞추기 <button id="fitMinus">−</button><b id="fitVal">0</b><button id="fitPlus">+</button></div>
-  <div class="hint" id="fitHint" style="display:none">게임 화면 아래에 빈 공간이 남으면 + 를, 버튼이 잘리면 − 를 눌러 맞춘 뒤 다시 아이폰을 누르세요. 값은 저장됩니다.</div>
-  <div class="best" id="titleBest"></div>
+  <div class="tpage" id="tp-guide"></div>
+  <div class="tpage" id="tp-maps"></div>
+</div>
+<div id="editor" class="hide">
+  <div class="edtop"><button class="hbtn" id="edBack">← 메뉴</button><input id="edName" maxlength="14" placeholder="맵 이름"></div>
+  <div class="edtools"><button class="edp on" data-p="0">🟨 길 1 · 필수</button><button class="edp" data-p="1">🟧 길 2 · 웨이브10</button><button class="edp" data-p="2">🟪 길 3 · 웨이브20</button></div>
+  <div class="edcvwrap"><canvas id="edCv"></canvas></div>
+  <div class="edmsg" id="edMsg"></div>
+  <div class="edbtns"><button class="hbtn" id="edUndo">↶ 한 칸</button><button class="hbtn sell" id="edClear">🗑 이 길 지우기</button><button class="hbtn" id="edSave">💾 저장</button><button class="hbtn go" id="edPlay">▶ 저장 후 플레이</button></div>
 </div>
 <div id="over"><div class="card">
   <h2>성문이 무너졌어요</h2>
@@ -229,10 +278,10 @@
   };
   const ORDER = ['arrow', 'cannon', 'frost', 'bolt'];
   const ET = {
-    slime: { hp: 32,  speed: 1.0, gold: 4,  armor: 0, h: .26, color: 0x5fd86b },
-    bat:   { hp: 20,  speed: 1.9, gold: 4,  armor: 0, h: .95, color: 0xd05fb0, fly: true },
-    golem: { hp: 120, speed: .6,  gold: 10, armor: 4, h: .45, color: 0x9a948c },
-    boss:  { hp: 700, speed: .5,  gold: 70, armor: 6, h: .7,  color: 0xc8352e, lives: 5 },
+    slime: { hp: 32,  speed: 1.0, gold: 4,  armor: 0, h: .26, color: 0x5fd86b, name: '슬라임', info: '가장 기본적인 몬스터' },
+    bat:   { hp: 20,  speed: 1.9, gold: 4,  armor: 0, h: .95, color: 0xd05fb0, fly: true, name: '박쥐', info: '공중 유닛 · 대포(전차)는 못 맞춤' },
+    golem: { hp: 120, speed: .6,  gold: 10, armor: 4, h: .45, color: 0x9a948c, name: '돌 골렘', info: '느리지만 단단함 · 방어력' },
+    boss:  { hp: 700, speed: .5,  gold: 70, armor: 6, h: .7,  color: 0xc8352e, lives: 5, name: '마왕', info: '10웨이브마다 등장 · 성문 도달 시 생명 -5 · 얼음에 덜 얼음' },
     wolf:  { hp: 28,  speed: 2.5, gold: 5,  armor: 0, h: .3,  color: 0x8a8a92, name: '질주 늑대', info: '매우 빠름' },
     knight:{ hp: 170, speed: .7,  gold: 12, armor: 9, h: .45, color: 0x7a8aa8, mres: .5, name: '방패 기사', info: '방어력 높음 · 마법 피해 절반' },
     kingslime: { hp: 170, speed: .8, gold: 10, armor: 2, h: .42, color: 0x3fbf5a, name: '왕슬라임', info: '죽으면 작은 슬라임 3마리로 갈라짐' },
@@ -245,7 +294,9 @@
     const s = { range: b.range + .25 * Math.min(k, 2) + .15 * Math.max(0, k - 2), dmg: b.dmg * (1 + .65 * k), rate: b.rate * Math.pow(.88, k), slow: b.slow ? Math.min(.75, b.slow + .07 * k) : 0 };
     if (t.br && t.lv >= 4) { const m = BR[t.type][t.br].mod; s.range += m.range || 0; s.dmg *= m.dmg || 1; s.rate *= m.rate || 1; }
     if (t.lv >= 6) { s.dmg *= 1.6; s.rate *= .85; s.range += .2; }
+    if (t.raw) return s;
     const R = (typeof G !== 'undefined' && G.res) || {};
+    if (typeof G !== 'undefined' && G.buff) { if (G.buff.rage > 0) s.dmg *= 1.7; if (G.buff.haste > 0) s.rate *= .6; }
     s.dmg *= 1 + .08 * (R.dmg || 0); s.range *= 1 + .04 * (R.range || 0); s.rate /= 1 + .05 * (R.spd || 0);
     return s;
   };
@@ -253,8 +304,41 @@
   const sellValue = t => Math.round(t.spent * .7);
 
   // ================== PATH ==================
-  const PATHDEFS = [WP, [[11,6],[7,6],[7,9],[9,9],[9,12],[2,12],[2,15],[5,15],[5,18]], [[-1,12],[2,12],[2,15],[5,15],[5,18]]];
-  const OPEN_AT = [1, 10, 20];
+  // ---- maps (default + user-made)
+  const GATE = [5, 17], WALLS = ['4,17', '6,17'];
+  const MAPS_KEY = 'forestTD.maps', SEL_KEY = 'forestTD.mapSel';
+  const loadMaps = () => { try { const m = JSON.parse(localStorage.getItem(MAPS_KEY) || '[]'); return Array.isArray(m) ? m : []; } catch (e) { return []; } };
+  const saveMaps = m => { try { localStorage.setItem(MAPS_KEY, JSON.stringify(m)); return true; } catch (e) { return false; } };
+  const isEdge = (x, y) => y === 0 || ((x === 0 || x === COLS - 1) && y <= ROWS - 3);
+  function vStart([x, y]) { return y === 0 ? [x, -1] : x === 0 ? [-1, y] : [COLS, y]; }
+  function mapRoutes(paths) { // -> full cell routes incl. virtual end, or error text
+    const p0 = paths[0] || [];
+    if (p0.length < 2 || !isEdge(...p0[0])) return '길 1은 맵 가장자리(위·왼쪽·오른쪽)에서 시작해야 해요';
+    const l0 = p0[p0.length - 1]; if (l0[0] !== GATE[0] || l0[1] !== GATE[1]) return '길 1은 아래쪽 성문까지 이어져야 해요';
+    const routes = [p0.concat([[GATE[0], ROWS]])];
+    for (let i = 1; i < 3; i++) {
+      const p = paths[i] || []; if (!p.length) continue;
+      if (!isEdge(...p[0])) return `길 ${i + 1}은 맵 가장자리에서 시작해야 해요`;
+      const last = p[p.length - 1]; let joined = null;
+      for (const r of routes) { const k = r.findIndex(c => c[0] === last[0] && c[1] === last[1]); if (k >= 0) { joined = p.concat(r.slice(k + 1)); break; } }
+      if (!joined) return `길 ${i + 1}은 다른 길에 연결되어야 해요`;
+      routes.push(joined);
+    }
+    return routes;
+  }
+  let PATHDEFS = [WP, [[11,6],[7,6],[7,9],[9,9],[9,12],[2,12],[2,15],[5,15],[5,18]], [[-1,12],[2,12],[2,15],[5,15],[5,18]]];
+  let PORTALDEFS = [[9.5, .05, 0], [10.95, 6.5, Math.PI / 2], [.05, 12.5, Math.PI / 2]];
+  let MAP_NAME = '기본 맵', MAP_SEL = 'default';
+  try { MAP_SEL = localStorage.getItem(SEL_KEY) || 'default'; } catch (e) {}
+  if (MAP_SEL !== 'default') {
+    const m = loadMaps().find(x => x.id === MAP_SEL), routes = m && mapRoutes(m.paths);
+    if (routes && typeof routes !== 'string') {
+      MAP_NAME = m.name;
+      PATHDEFS = routes.map(r => [vStart(r[0])].concat(r));
+      PORTALDEFS = routes.map(r => { const [x, y] = r[0], v = vStart(r[0]); return v[1] === -1 ? [x + .5, .05, 0] : v[0] === -1 ? [.05, y + .5, Math.PI / 2] : [COLS - .05, y + .5, Math.PI / 2]; });
+    } else MAP_SEL = 'default';
+  }
+  const OPEN_AT = [1, 10, 20].slice(0, PATHDEFS.length);
   const PATHS = PATHDEFS.map(wp => {
     const pts = wp.map(([c, r]) => ({ x: c + .5, y: r + .5 })), seg = []; let len = 0;
     for (let i = 0; i < pts.length - 1; i++) { const a = pts[i], b = pts[i + 1], l = Math.hypot(b.x - a.x, b.y - a.y); seg.push({ a, b, len: l, start: len }); len += l; }
@@ -521,7 +605,7 @@
   })();
   // portals (one per entrance)
   const ringOn = mat(0x5c3a8f, { emissive: 0x4a1f8a, emissiveIntensity: .6, roughness: .4 }), ringOff = mat(0x55525e, { roughness: .8, flatShading: true });
-  const portals = [[9.5, .05, 0], [10.95, 6.5, Math.PI / 2], [.05, 12.5, Math.PI / 2]].map(([gx, gy, ry]) => {
+  const portals = PORTALDEFS.map(([gx, gy, ry]) => {
     const g = new THREE.Group(), p = W(gx, gy); g.position.set(p.x, .75, p.z); g.rotation.y = ry;
     const ring = mesh(geo('ptor', () => new THREE.TorusGeometry(.55, .09, 10, 32)), ringOff); g.add(ring);
     const disc = new THREE.Mesh(new THREE.CircleGeometry(.5, 32), new THREE.MeshBasicMaterial({ color: 0x3a3844, transparent: true, opacity: .9, side: THREE.DoubleSide })); g.add(disc);
@@ -1268,7 +1352,7 @@
     if (G.fx) G.fx.forEach(f => killFx(f));
     if (G.parts) G.parts.forEach(q => scene.remove(q.obj));
     portals.forEach((P, i) => setPortal(i, i === 0)); applyTheme(0);
-    Object.assign(G, { autoT: 0, cd: { meteor: 0, stop: 0 }, casting: null, stage: 0, res: { dmg: 0, range: 0, spd: 0, gold: 0, heal: 0 }, spawnIdx: 0, gold: 150, lives: 20, wave: 0, towers: [], enemies: [], projs: [], fx: [], parts: [], queue: [], spawnT: 0, waveActive: false, speed: 1, paused: false, over: false, placing: null, selTower: null, hover: null, time: 0 });
+    Object.assign(G, { autoT: 0, cd: { rage: 0, haste: 0 }, buff: { rage: 0, haste: 0 }, casting: null, stage: 0, res: { dmg: 0, range: 0, spd: 0, gold: 0, heal: 0 }, spawnIdx: 0, gold: 150, lives: 20, wave: 0, towers: [], enemies: [], projs: [], fx: [], parts: [], queue: [], spawnT: 0, waveActive: false, speed: 1, paused: false, over: false, placing: null, selTower: null, hover: null, time: 0 });
     $('floaters').innerHTML = ''; floaters.length = 0;
     $('over').classList.remove('show');
     ui(); renderFooter();
@@ -1530,7 +1614,7 @@
   // ================== UPDATE ==================
   let shakeT = 0;
   function update(dt) {
-    G.time += dt; G.cd.meteor = Math.max(0, G.cd.meteor - dt); G.cd.stop = Math.max(0, G.cd.stop - dt);
+    G.time += dt; for (const k of ['rage', 'haste']) { G.cd[k] = Math.max(0, G.cd[k] - dt); G.buff[k] = Math.max(0, G.buff[k] - dt); }
     if (G.queue.length) {
       G.spawnT -= dt;
       if (G.spawnT <= 0) { const type = G.queue.shift(); spawn(type); G.spawnT = type === 'boss' ? 1.2 : Math.max(.38, .95 - G.wave * .02) * (type === 'golem' ? 1.3 : 1); }
@@ -1664,7 +1748,6 @@
     for (const k in ghosts) ghosts[k].visible = false;
     for (const k in hints) hints[k].visible = !!G.placing && !towerAt(...k.split(',').map(Number));
     if (G.selTower) { showRange(G.selTower.x, G.selTower.y, stat(G.selTower).range); selBox.visible = true; selBox.position.copy(W(G.selTower.x, G.selTower.y, .02)); }
-    if (G.casting === 'meteor' && G.hover) showRange(G.hover.x + .5, G.hover.y + .5, 1.7, true);
     if (G.placing && G.hover) {
       const { x, y } = G.hover, ok = canBuild(x, y) && G.gold >= TT[G.placing].cost;
       if (x >= 0 && y >= 0 && x < COLS && y < ROWS) {
@@ -1740,7 +1823,6 @@
   cvs.addEventListener('pointerdown', ev => {
     if (G.over) return;
     const { tower, cell, gp } = pick(ev);
-    if (G.casting === 'meteor') { if (gp) castMeteor(gp.x + COLS / 2, gp.z + ROWS / 2); return; }
     if (G.placing) {
       if (cell && canBuild(cell.x, cell.y)) {
         const b = TT[G.placing];
@@ -1835,39 +1917,33 @@
   }
   $('labBtn').onclick = () => { $('lab').classList.toggle('show'); renderLab(); };
 
-  // ================== SPELLS ==================
-  const SPELLS = { meteor: { cost: () => 100 + 12 * G.wave, cd: 45 }, stop: { cost: () => 220 + 20 * G.wave, cd: 100 } };
-  function castMeteor(gx, gy) {
-    const c = SPELLS.meteor.cost(); G.casting = null;
-    if (G.gold < c || G.cd.meteor > 0) { banner('골드가 부족해요'); return; }
-    G.gold -= c; G.cd.meteor = SPELLS.meteor.cd;
-    const p = { kind: 'meteor', x: gx - 1.6, y: gy - 2.2, tx: gx, ty: gy, h0: 9, th: .1, speed: 6, arc: 0, target: null, alive: true, splash: 1.7, dmg: 90 * hpScale(Math.max(1, G.wave)) * (1 + .08 * (G.res.dmg || 0)) };
-    p.total = Math.hypot(p.tx - p.x, p.ty - p.y); p.obj = projMesh('meteor'); p.obj.position.copy(W(p.x, p.y, p.h0)); scene.add(p.obj); G.projs.push(p);
-    ui();
-  }
-  function castStop() {
-    const c = SPELLS.stop.cost();
-    if (G.over || G.cd.stop > 0) return; if (G.gold < c) { banner('골드가 부족해요'); return; }
-    G.gold -= c; G.cd.stop = SPELLS.stop.cd;
-    for (const e of G.enemies) if (e.alive) e.frozenT = Math.max(e.frozenT, e.type === 'boss' ? 1.8 : 3.5);
-    addBlast(COLS / 2, ROWS / 2, 7, 0x9fd8ff, false); banner('⏳ 시간 정지!'); sfx('frost'); ui();
-  }
-  $('spMeteor').onclick = () => {
-    if (G.over || G.cd.meteor > 0) return;
-    if (G.gold < SPELLS.meteor.cost()) { banner('골드가 부족해요'); return; }
-    G.casting = G.casting === 'meteor' ? null : 'meteor'; G.placing = null; G.selTower = null; renderFooter();
-    if (G.casting) banner('☄️ 떨어뜨릴 곳을 누르세요');
+  // ================== SPELLS (temporary buffs) ==================
+  const SPELLS = {
+    rage: { name: '공격력 증폭', icon: '⚔️', cost: () => 80 + 10 * G.wave, dur: 30, cd: 90, desc: '10초 동안 모든 타워 공격력 +70%', col: 0xff6a3a },
+    haste: { name: '속사', icon: '⚡', cost: () => 80 + 10 * G.wave, dur: 30, cd: 90, desc: '10초 동안 모든 타워 공격 속도 +67%', col: 0x6ac8ff },
   };
-  $('spStop').onclick = castStop;
+  function castBuff(k) {
+    const S = SPELLS[k], c = S.cost();
+    if (G.over || !G.started || G.cd[k] > 0) return;
+    if (G.gold < c) { banner('골드가 부족해요'); return; }
+    G.gold -= c; G.buff[k] = S.dur; G.cd[k] = S.cd;
+    for (const t of G.towers) burst(t.x, t.y, .8, S.col, 6);
+    banner(`${S.icon} ${S.name}! (10초)`); sfx('clear'); ui();
+  }
+  $('spRage').onclick = () => castBuff('rage');
+  $('spHaste').onclick = () => castBuff('haste');
   const _spl = {};
   function spellUI() {
     const set = (id, v, prop = 'textContent') => { if (_spl[id + prop] !== v) { _spl[id + prop] = v; $(id)[prop] = v; } };
-    for (const [k, idS, idC, btn] of [['meteor', 'scMeteor', 'cdMeteor', 'spMeteor'], ['stop', 'scStop', 'cdStop', 'spStop']]) {
-      const c = SPELLS[k].cost(), cd = G.cd[k];
-      set(idS, c + '💰'); set(idC, cd > 0 ? Math.ceil(cd / BASE_SPEED) + '' : '');
-      set(idC, cd > 0 ? 'cdm on' : 'cdm', 'className');
-      set(btn, 'spell' + (G.casting === k ? ' armed' : '') + (G.gold < c ? ' poor' : ''), 'className');
+    for (const [k, idS, idC, btn] of [['rage', 'scRage', 'cdRage', 'spRage'], ['haste', 'scHaste', 'cdHaste', 'spHaste']]) {
+      const c = SPELLS[k].cost(), cd = G.cd[k], on = G.buff[k] > 0;
+      set(idS, c + '💰');
+      set(idC, on ? Math.ceil(G.buff[k] / BASE_SPEED) + '' : cd > 0 ? Math.ceil(cd / BASE_SPEED) + '' : '');
+      set(idC, on ? 'cdm act' : cd > 0 ? 'cdm on' : 'cdm', 'className');
+      set(btn, 'spell' + (on ? ' on' : '') + (G.gold < c ? ' poor' : ''), 'className');
     }
+    const w = 'rage haste'.split(' ').filter(k => G.buff[k] > 0).join(' ');
+    if (_spl.wrap !== w) { _spl.wrap = w; wrap.classList.toggle('rage', G.buff.rage > 0); wrap.classList.toggle('haste', G.buff.haste > 0); }
   }
   $('startBtn').onclick = startWave;
   $('speedBtn').onclick = () => { G.speed = G.speed === 1 ? 2 : G.speed === 2 ? 3 : 1; ui(); };
@@ -1880,8 +1956,8 @@
     else if (k === 'u') upgrade(); else if (k === 's') sellTower();
     else if (k === 'r') $('labBtn').click();
     else if (k === 'f') $('speedBtn').click(); else if (k === 'p') $('pauseBtn').click();
-    else if (k === 'q') $('spMeteor').click();
-    else if (k === 'e') castStop();
+    else if (k === 'q') castBuff('rage');
+    else if (k === 'e') castBuff('haste');
     else if (k === 'escape') { G.placing = null; G.selTower = null; G.casting = null; renderFooter(); }
   });
   document.addEventListener('visibilitychange', () => { if (document.hidden && G.waveActive) { G.paused = true; ui(); } });
@@ -1905,6 +1981,212 @@
     renderer.render(scene, camera);
     requestAnimationFrame(loop);
   }
+  // ================== TITLE TABS ==================
+  const MICON = { slime: '🟢', bat: '🦇', golem: '🗿', wolf: '🐺', knight: '🛡️', kingslime: '👑', ghost: '👻', shaman: '🧙', boss: '😈' };
+  const MFIRST = { slime: '1', bat: '3', golem: '5', wolf: '7', knight: '12', kingslime: '15', ghost: '18', shaman: '24', boss: '10, 20, 30…' };
+  function setTab(t) {
+    document.querySelectorAll('.ttab').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+    document.querySelectorAll('.tpage').forEach(p => p.classList.toggle('on', p.id === 'tp-' + t));
+    if (t === 'guide') renderGuide();
+    if (t === 'maps') renderMapList();
+  }
+  document.querySelectorAll('.ttab').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+  $('curMap').textContent = `🗺️ 현재 맵: ${MAP_NAME}`;
+
+  // ---------- guide ----------
+  function towerTable(type) {
+    const b = TT[type], f = (n, d = 0) => (+n).toFixed(d);
+    const row = (lv, br, cls = '') => {
+      const t = { type, lv, br, raw: true }, s = stat(t);
+      const cost = lv === 1 ? b.cost : upCost({ type, lv: lv - 1 });
+      let extra = '';
+      if (type === 'frost') extra = `감속 ${Math.round(s.slow * 100)}%`;
+      if (type === 'bolt' && br !== 'B') extra = `연쇄 ${b.chain + Math.min(2, lv - 1) + (br === 'A' ? (lv >= 5 ? 6 : 3) : 0)}명`;
+      if (type === 'bolt' && br === 'B') extra = `낙뢰 ${lv >= 5 ? 4 : 2}곳`;
+      if (type === 'arrow' && br === 'B') extra = `동시 ${lv >= 5 ? 5 : 3}발`;
+      if (type === 'frost' && br === 'A') extra += ` · 빙결 ${lv >= 5 ? 45 : 30}%`;
+      if (type === 'cannon' && br === 'B') extra = `산탄 ${lv >= 5 ? 12 : 8}발`;
+      if (type === 'cannon' && br === 'A') extra = '폭발 범위 ↑';
+      return `<tr class="${cls}"><td>${lv}</td><td>${tname({ type, lv, br }, lv)}</td><td class="n">${f(s.dmg)}</td><td class="n">${f(s.range, 1)}</td><td class="n">${f(1 / s.rate, 2)}</td><td class="n">${cost}</td><td>${extra}</td></tr>`;
+    };
+    let h = `<div class="gscroll"><table class="gtbl"><tr><th>Lv</th><th>이름</th><th>공격력</th><th>사거리</th><th>공속/초</th><th>비용</th><th>특수</th></tr>`;
+    for (let lv = 1; lv <= 3; lv++) h += row(lv);
+    for (const br of ['A', 'B']) for (let lv = 4; lv <= 6; lv++) h += row(lv, br, 'br');
+    return h + '</table></div>';
+  }
+  let guideDone = false;
+  function renderGuide() {
+    if (guideDone) return; guideDone = true;
+    let h = `<div class="gsec">📜 기본 규칙</div><div class="gcard"><ul>
+      <li>몬스터가 아래쪽 <b>성문</b>에 닿으면 생명이 줄어요 (마왕은 -5). 생명 0이면 패배.</li>
+      <li>몬스터를 잡거나 웨이브를 클리어하면 💰 골드를 얻어요. 웨이브가 끝나면 3초 뒤 다음 웨이브가 자동 시작.</li>
+      <li>5웨이브마다 스테이지(배경)가 바뀌고, 웨이브 10·20에 새 입구(차원문)가 열려요.</li>
+      <li>타워는 <b>3단계 → 4단계에서 두 갈래 중 하나 선택 → 5단계 → 6단계 각성</b>. 판매하면 들인 골드의 70%를 돌려받아요.</li>
+      <li>웨이브 22부터 몬스터 체력이 웨이브마다 8.5%씩 늘고, 웨이브 30부터는 붉은 <b>정예 몬스터</b>(체력 2.3배·방어력 추가·골드 2배)가 섞여 나와요.</li>
+      <li><b>물리 공격</b>(궁수·대포)은 방어력만큼 피해가 깎이고, <b>마법 공격</b>(얼음·번개, 저격수)은 방어력을 무시해요. 방어력은 10웨이브마다 +2.</li></ul></div>`;
+    h += `<div class="gsec">🏰 타워</div>`;
+    const notes = {
+      arrow: '빠른 단일 공격. 공중(박쥐)도 맞힘. 갈래 A는 사거리·한 방 위주(5단계부터 저격총 용병, 방어 무시), 갈래 B는 여러 적에게 동시에 화살.',
+      cannon: '범위 폭발 피해. 기본은 지상만 공격. 갈래 A 전차는 사거리·폭발 범위 강화(지상만), 갈래 B 샷건 사냥꾼은 부채꼴 산탄으로 공중도 공격.',
+      frost: '맞은 적을 느리게 함, 방어 무시. 갈래 A 여왕은 확률로 완전히 얼림, 갈래 B 눈보라 술사는 사거리 안 모든 적에게 지속 피해 + 감속.',
+      bolt: '여러 적에게 이어지는 연쇄 번개, 방어 무시. 갈래 A 라그나로크는 연쇄 수·거리 대폭 증가, 갈래 B 심판자는 하늘에서 여러 곳에 낙뢰 범위 피해.',
+    };
+    for (const k of ORDER) h += `<div class="gcard"><h4>${TT[k].icon} ${TT[k].name} <small style="font-size:13px;opacity:.7">건설 ${TT[k].cost}💰</small></h4><p>${notes[k]}</p>${towerTable(k)}</div>`;
+    h += `<div class="gcard"><p>· 표의 수치는 능력 강화·스킬 효과를 빼고 계산한 기본값이에요. 비용은 그 단계로 올리는 데 드는 골드. 4~6단계 회색 줄 위 3줄이 갈래 A, 아래 3줄이 갈래 B.<br>· 6단계 각성: 공격력 ×1.6, 공격 속도 +18%, 사거리 +0.2</p></div>`;
+    h += `<div class="gsec">👾 몬스터</div><div class="gcard"><div class="gscroll"><table class="gtbl"><tr><th></th><th>이름</th><th>체력</th><th>속도</th><th>방어</th><th>골드</th><th>등장</th><th>특징</th></tr>`;
+    for (const k of ['slime', 'bat', 'wolf', 'golem', 'knight', 'kingslime', 'ghost', 'shaman', 'boss']) {
+      const e = ET[k];
+      h += `<tr><td>${MICON[k]}</td><td>${e.name}</td><td class="n">${e.hp}</td><td class="n">${e.speed}</td><td class="n">${e.armor}</td><td class="n">${e.gold}</td><td class="n">${MFIRST[k]}</td><td>${e.info}</td></tr>`;
+    }
+    h += `</table></div><p style="margin-top:8px">체력은 웨이브 1 기준. 웨이브가 오르면 아래 배율만큼 늘어나요.</p><div class="gscroll"><table class="gtbl"><tr><th>웨이브</th>`;
+    const ws = [1, 5, 10, 15, 20, 25, 30, 40, 50];
+    h += ws.map(w => `<th>${w}</th>`).join('') + '</tr><tr><td>체력 배율</td>' + ws.map(w => `<td class="n">×${hpScale(w).toFixed(1)}</td>`).join('') + '</tr><tr><td>추가 방어</td>' + ws.map(w => `<td class="n">+${Math.floor(w / 10) * 2}</td>`).join('') + '</tr></table></div></div>';
+    h += `<div class="gsec">🔨 능력 강화 (모든 타워)</div><div class="gcard"><div class="gscroll"><table class="gtbl"><tr><th>항목</th><th>단계당</th><th>최대</th><th>첫 비용</th></tr>`;
+    for (const r of RES) h += `<tr><td>${r.icon} ${r.name}</td><td>${r.eff(1)}</td><td class="n">${r.repeat ? '무제한' : r.max + '단계'}</td><td class="n">${r.cost(0)}</td></tr>`;
+    h += `</table></div><p>단계가 오를수록 비용이 빠르게 비싸져요.</p></div>`;
+    h += `<div class="gsec">✨ 스킬 (화면 오른쪽 아래)</div><div class="gcard"><ul>`;
+    for (const k in SPELLS) { const S = SPELLS[k]; h += `<li>${S.icon} <b>${S.name}</b> — ${S.desc}. 비용 80💰 + 웨이브×10, 재사용 30초 (1배속 기준)</li>`; }
+    h += `</ul></div>`;
+    $('tp-guide').innerHTML = h;
+  }
+
+  // ---------- map list ----------
+  function selectMap(id) {
+    try { localStorage.setItem(SEL_KEY, id); } catch (e) {}
+    if (id === MAP_SEL) { setTab('play'); return; }
+    location.reload();
+  }
+  function renderMapList() {
+    const maps = loadMaps(), P = $('tp-maps');
+    let h = `<div class="mrow ${MAP_SEL === 'default' ? 'sel' : ''}"><div class="mn">🌲 기본 맵<small>입구 3개 · 처음부터 있는 맵</small></div><button class="hbtn go" data-sel="default">${MAP_SEL === 'default' ? '✓ 사용 중' : '선택'}</button></div>`;
+    for (const m of maps) {
+      const n = m.paths.filter(p => p.length).length;
+      h += `<div class="mrow ${MAP_SEL === m.id ? 'sel' : ''}"><div class="mn">🗺️ ${m.name.replace(/</g, '&lt;')}<small>입구 ${n}개</small></div><button class="hbtn go" data-sel="${m.id}">${MAP_SEL === m.id ? '✓ 사용 중' : '선택'}</button><button class="hbtn" data-edit="${m.id}">편집</button><button class="hbtn sell" data-del="${m.id}">삭제</button></div>`;
+    }
+    h += `<button class="hbtn go" id="newMap" style="font-size:17px;padding:12px 22px">＋ 새 맵 만들기</button>
+      <div class="hint" style="max-width:420px;text-align:center">맵을 바꾸면 진행 중인 게임은 처음부터 시작돼요.<br>만든 맵은 이 기기(브라우저)에만 저장됩니다.</div>`;
+    P.innerHTML = h;
+    P.querySelectorAll('[data-sel]').forEach(b => b.onclick = () => selectMap(b.dataset.sel));
+    P.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openEditor(loadMaps().find(m => m.id === b.dataset.edit)));
+    P.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+      if (b.dataset.armed !== '1') { b.dataset.armed = '1'; b.textContent = '정말?'; return; }
+      saveMaps(loadMaps().filter(m => m.id !== b.dataset.del));
+      if (MAP_SEL === b.dataset.del) { try { localStorage.setItem(SEL_KEY, 'default'); } catch (e) {} location.reload(); return; }
+      renderMapList();
+    });
+    $('newMap').onclick = () => openEditor(null);
+  }
+
+  // ---------- map editor ----------
+  const ED = { id: null, paths: [[], [], []], cur: 0, drawing: false, cs: 20 };
+  const edCv = $('edCv'), edCtx = edCv.getContext('2d');
+  const key = c => c[0] + ',' + c[1];
+  const same = (a, b) => a && b && a[0] === b[0] && a[1] === b[1];
+  function edOwner(c) { for (let i = 0; i < 3; i++) if (ED.paths[i].some(x => same(x, c))) return i; return -1; }
+  function edDone(i) {
+    const p = ED.paths[i]; if (!p.length) return false;
+    const l = p[p.length - 1];
+    if (i === 0) return same(l, GATE);
+    for (let j = 0; j < i; j++) if (ED.paths[j].some(x => same(x, l))) return true;
+    return false;
+  }
+  function openEditor(m) {
+    ED.id = m ? m.id : null; ED.paths = m ? m.paths.map(p => p.map(c => c.slice())) : [[], [], []];
+    while (ED.paths.length < 3) ED.paths.push([]);
+    $('edName').value = m ? m.name : `내 맵 ${loadMaps().length + 1}`;
+    setCur(0); $('editor').classList.remove('hide'); edResize();
+  }
+  function setCur(i) {
+    ED.cur = i; document.querySelectorAll('.edp').forEach(b => b.classList.toggle('on', +b.dataset.p === i)); edMsg(); edDraw();
+  }
+  function edMsg(err) {
+    const i = ED.cur, p = ED.paths[i];
+    let m;
+    if (err) m = '⚠️ ' + err;
+    else if (i > 0 && !edDone(0)) m = '먼저 길 1을 성문까지 완성해 주세요.';
+    else if (!p.length) m = i === 0 ? '맵 가장자리(위·왼쪽·오른쪽) 칸을 눌러 입구를 정한 뒤, 손가락으로 끌어서 아래 성문(🏰)까지 길을 그려요.' : `길 ${i + 1}: 가장자리에서 시작해 기존 길에 닿을 때까지 그려요. (웨이브 ${i * 10}에 열림 · 비워둬도 돼요)`;
+    else if (edDone(i)) m = `✅ 길 ${i + 1} 완성! ${i === 0 ? '길 2·3은 선택 사항이에요.' : ''}`;
+    else m = i === 0 ? `계속 그려서 아래쪽 성문(🏰)까지 이어 주세요. (${p.length}칸)` : `계속 그려서 다른 길에 연결해 주세요. (${p.length}칸)`;
+    $('edMsg').textContent = m;
+  }
+  function edResize() {
+    const W = edCv.parentElement.clientWidth, H = edCv.parentElement.clientHeight;
+    ED.cs = Math.max(12, Math.floor(Math.min(W / COLS, H / ROWS)));
+    const d = Math.min(window.devicePixelRatio || 1, 2);
+    edCv.style.width = COLS * ED.cs + 'px'; edCv.style.height = ROWS * ED.cs + 'px';
+    edCv.width = COLS * ED.cs * d; edCv.height = ROWS * ED.cs * d; edCtx.setTransform(d, 0, 0, d, 0, 0);
+    edDraw();
+  }
+  const PCOL = ['#e8c27a', '#f08a3a', '#b07ae8'];
+  function edDraw() {
+    const c = edCtx, s = ED.cs;
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) { c.fillStyle = (x + y) % 2 ? '#4f8a3c' : '#579640'; c.fillRect(x * s, y * s, s, s); }
+    // edges where a path may start
+    c.fillStyle = 'rgba(255,255,255,.08)';
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (isEdge(x, y)) c.fillRect(x * s + 2, y * s + 2, s - 4, s - 4);
+    for (let i = 2; i >= 0; i--) {
+      const p = ED.paths[i];
+      p.forEach((q, k) => {
+        c.fillStyle = PCOL[i]; c.globalAlpha = i === ED.cur ? 1 : .75; c.fillRect(q[0] * s + 1, q[1] * s + 1, s - 2, s - 2);
+        if (k > 0) { const a = p[k - 1]; c.fillRect(Math.min(a[0], q[0]) * s + 1, Math.min(a[1], q[1]) * s + 1, (Math.abs(a[0] - q[0]) + 1) * s - 2, (Math.abs(a[1] - q[1]) + 1) * s - 2); }
+      });
+      c.globalAlpha = 1;
+      if (p.length) {
+        const [x, y] = p[0]; c.font = `${Math.round(s * .75)}px sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('🌀', x * s + s / 2, y * s + s / 2);
+        if (i === ED.cur && !edDone(i)) { const l = p[p.length - 1]; c.strokeStyle = '#fff'; c.lineWidth = 2; c.strokeRect(l[0] * s + 2, l[1] * s + 2, s - 4, s - 4); }
+      }
+    }
+    // castle
+    c.fillStyle = '#9a9890'; for (const w of WALLS) { const [x, y] = w.split(',').map(Number); c.fillRect(x * s, y * s, s, s); }
+    c.font = `${Math.round(s * .8)}px sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('🏰', GATE[0] * s + s / 2, GATE[1] * s + s / 2);
+  }
+  function edCell(ev) { const r = edCv.getBoundingClientRect(); return [Math.floor((ev.clientX - r.left) / ED.cs), Math.floor((ev.clientY - r.top) / ED.cs)]; }
+  function edAdd(c) {
+    const [x, y] = c, i = ED.cur, p = ED.paths[i];
+    if (x < 0 || y < 0 || x >= COLS || y >= ROWS) return;
+    if (WALLS.includes(key(c))) return;
+    if (i > 0 && !edDone(0)) { edMsg(); return; }
+    if (!p.length) {
+      if (!isEdge(x, y)) { edMsg('입구는 맵 가장자리(위·왼쪽·오른쪽) 칸에서 시작해야 해요'); return; }
+      if (edOwner(c) >= 0) { edMsg('이미 길이 있는 칸이에요'); return; }
+      if (same(c, GATE)) return;
+      p.push(c); if (i === 0) { ED.paths[1] = []; ED.paths[2] = []; }
+      edMsg(); edDraw(); return;
+    }
+    const l = p[p.length - 1];
+    if (same(c, l)) return;
+    if (p.length > 1 && same(c, p[p.length - 2])) { p.pop(); edMsg(); edDraw(); return; }
+    if (edDone(i)) return;
+    if (Math.abs(c[0] - l[0]) + Math.abs(c[1] - l[1]) !== 1) return;
+    const own = edOwner(c);
+    if (i === 0) { if (own >= 0) return; if (same(c, GATE) || true) p.push(c); if (ED.paths[1].length || ED.paths[2].length) { ED.paths[1] = []; ED.paths[2] = []; } }
+    else { if (own === i || own > i) return; if (same(c, GATE) && own < 0) return; p.push(c); }
+    edMsg(); edDraw();
+  }
+  edCv.addEventListener('pointerdown', ev => { ev.preventDefault(); ED.drawing = true; try { edCv.setPointerCapture(ev.pointerId); } catch (e) {} edAdd(edCell(ev)); });
+  edCv.addEventListener('pointermove', ev => { if (ED.drawing) edAdd(edCell(ev)); });
+  const edUp = () => { ED.drawing = false; };
+  edCv.addEventListener('pointerup', edUp); edCv.addEventListener('pointercancel', edUp);
+  document.querySelectorAll('.edp').forEach(b => b.onclick = () => setCur(+b.dataset.p));
+  $('edUndo').onclick = () => { const p = ED.paths[ED.cur]; if (p.length) { p.pop(); if (ED.cur === 0 && (ED.paths[1].length || ED.paths[2].length)) { ED.paths[1] = []; ED.paths[2] = []; } } edMsg(); edDraw(); };
+  $('edClear').onclick = () => { ED.paths[ED.cur] = []; if (ED.cur === 0) { ED.paths[1] = []; ED.paths[2] = []; } edMsg(); edDraw(); };
+  function edSave() {
+    for (let i = 1; i < 3; i++) if (ED.paths[i].length && !edDone(i)) { setCur(i); edMsg(`길 ${i + 1}이 다른 길에 연결되지 않았어요. 완성하거나 지워 주세요.`); return null; }
+    const r = mapRoutes(ED.paths); if (typeof r === 'string') { setCur(0); edMsg(r); return null; }
+    // keep optional paths contiguous (2 before 3)
+    const paths = [ED.paths[0]].concat(ED.paths.slice(1).filter(p => p.length));
+    const maps = loadMaps(), name = ($('edName').value || '내 맵').trim().slice(0, 14);
+    if (!ED.id) ED.id = 'm' + Date.now().toString(36);
+    const m = { id: ED.id, name, paths }, k = maps.findIndex(x => x.id === ED.id);
+    if (k >= 0) maps[k] = m; else maps.push(m);
+    if (!saveMaps(maps)) { edMsg('저장하지 못했어요 (브라우저 저장소를 쓸 수 없음)'); return null; }
+    edMsg(`💾 "${name}" 저장했어요`); return m;
+  }
+  $('edSave').onclick = () => edSave();
+  $('edPlay').onclick = () => { const m = edSave(); if (m) { try { localStorage.setItem(SEL_KEY, m.id); } catch (e) {} location.reload(); } };
+  $('edBack').onclick = () => { $('editor').classList.add('hide'); renderMapList(); };
+  window.addEventListener('resize', () => { if (!$('editor').classList.contains('hide')) edResize(); });
+
   // ================== TITLE / DEVICE ==================
   G.started = false;
   let fitAdj = 0; try { fitAdj = +localStorage.getItem('forestTD.fit') || 0; } catch (e) {}
@@ -1925,7 +2207,7 @@
     setTimeout(fitCamera, 30); setTimeout(fitCamera, 300);
   }
   document.querySelectorAll('.dev').forEach(b => b.onclick = () => { if (b.dataset.dev === 'iphone' && !$('fitRow').classList.contains('show')) showFit('iphone'); chooseDevice(b.dataset.dev); });
-  $('menuBtn').onclick = () => { G.paused = true; ui(); showFit(document.body.dataset.device); $('titleBest').textContent = BEST ? `🏆 최고 기록: 웨이브 ${BEST}` : ''; $('title').classList.remove('hide'); };
+  $('menuBtn').onclick = () => { G.paused = true; ui(); showFit(document.body.dataset.device); $('titleBest').textContent = BEST ? `🏆 최고 기록: 웨이브 ${BEST}` : ''; setTab('play'); $('title').classList.remove('hide'); };
   window.__td = { spawn, THREEV: THREE.Vector3, canBuild, G, update, startWave, TT, attachTower, scene, camera, renderFooter, fit: fitCamera };
   reset(); fitCamera(); $('loading').remove();
   requestAnimationFrame(loop);
