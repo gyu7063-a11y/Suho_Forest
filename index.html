@@ -121,8 +121,8 @@
   body.dock-side #mid { justify-content: center; }
   body.dock-side .dock #spells { flex-direction: row; }
   body.dock-side footer { height: auto; }
-  body.dock-side .palette { grid-template-columns: 1fr 1fr; }
-  body.dock-side .tbtn { padding: 8px 4px; }
+  body.dock-side .palette { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  body.dock-side .tbtn { padding: 5px 2px; font-size: 12px; } body.dock-side .tbtn .ic { font-size: 22px; line-height: 1.1; } body.dock-side .tbtn .cost { font-size: 13px; }
   body.dock-side #labBtn { display: none; }
   body.dock-side #panel, body.dock-bottom #lab, body.dock-side #lab { position: static; display: block; transform: none; width: auto; left: auto; right: auto; top: auto; bottom: auto; }
   body.dock-side #panel .info { flex-wrap: wrap; }
@@ -135,7 +135,7 @@
   .dock .spell .si { font-size: 24px; } .dock .spell .sl { display: block; text-align: left; font-size: 14px; flex: 1; line-height: 1.2; } .dock .spell .sl small { display: block; font-size: 11px; opacity: .7; }
   .dock .spell .sc { font-size: 13px; margin: 0; } .dock .spell .cdm { border-radius: 14px; font-size: 20px; }
   .dock .rrow .hbtn { min-width: 74px; }
-  body.dock-side .dock .spell, body.dock-bottom .dock .spell { width: auto; height: 58px; flex: 1 0 auto; } body.dock-side .dock #spells .spell { flex: 1 1 0; }
+  body.dock-side .dock .spell, body.dock-bottom .dock .spell { width: auto; height: 58px; flex: 1 0 auto; } body.dock-side .dock #spells .spell { flex: 1 1 0; height: 78px; } body.dock-side .dock .spell .si { font-size: 32px; } body.dock-side .dock .spell .sl { font-size: 17px; } body.dock-side .dock .spell .sl small { font-size: 13px; } body.dock-side .dock .spell .sc { font-size: 16px; }
   body.dock-side .dock .spell .si, body.dock-bottom .dock .spell .si { font-size: 24px; } body.dock-side .dock .spell .sc, body.dock-bottom .dock .spell .sc { font-size: 14px; }
   /* bottom layout (iPad portrait) */
   body.dock-bottom #mid { flex-direction: column; }
@@ -2039,7 +2039,7 @@
     document.body.classList.toggle('dock-side', mode === 'side'); document.body.classList.toggle('dock-bottom', mode === 'bottom');
     const L = $('dockL'), R = $('dockR'), wr = $('wrap'), app = $('app'), mid = $('mid');
     if (mode === 'side') {
-      const R1 = $('dockR1'), R2 = $('dockR2'); R1.appendChild($('footer')); R1.appendChild($('spells')); R1.appendChild($('lab')); R2.appendChild($('infoCard')); R2.appendChild($('panel'));
+      const R1 = $('dockR1'), R2 = $('dockR2'); R1.appendChild($('footer')); R1.appendChild($('panel')); R1.appendChild($('spells')); R1.appendChild($('lab')); R2.appendChild($('infoCard'));
     } else if (mode === 'bottom') {
       L.appendChild($('infoCard')); wr.appendChild($('panel'));
       mid.after($('footer')); $('dockR1').appendChild($('spells')); $('dockR1').appendChild($('lab'));
