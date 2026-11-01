@@ -102,6 +102,17 @@
   .edmsg { min-height: 38px; font-size: 13px; text-align: center; line-height: 1.45; opacity: .9; }
   .edbtns { display: flex; gap: 6px; } .edbtns .hbtn { flex: 1; font-size: 14px; padding: 10px 4px; }
   #menuBtn { }
+  #testPanel { position: absolute; left: 8px; top: 8px; z-index: 8; width: 270px; border-radius: 14px; background: rgba(40,12,40,.92); border: 2px solid #ff7ad0; box-shadow: 0 8px 20px #0008; font-size: 13px; }
+  #testPanel.hide { display: none; }
+  #testPanel .tph { display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; color: #ffb8e8; }
+  #testPanel .tph button, #testPanel .tpr button { font-family: inherit; font-size: 12px; color: #fff; border-radius: 8px; border: 1px solid #ffffff40; background: #ffffff18; padding: 5px 7px; cursor: pointer; }
+  #testPanel .tpr button.on { background: #ff7ad0; color: #2a0a2a; }
+  #testPanel .tpb { padding: 0 10px 8px; display: flex; flex-direction: column; gap: 6px; }
+  #testPanel.fold .tpb { display: none; }
+  #testPanel .tpr { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+  #testPanel input { width: 54px; font-family: inherit; font-size: 13px; border-radius: 8px; border: 1px solid #ffffff55; background: #00000040; color: #fff; padding: 4px 6px; }
+  #testPanel .tpn { font-size: 11px; opacity: .6; }
+  body[data-device=iphone] #testPanel { width: 230px; }
   body[data-device=iphone] header { gap: 3px; } body[data-device=iphone] header .stat { font-size: 13px; padding: 5px 5px; } body[data-device=iphone] header .hbtn { font-size: 12px; padding: 7px 6px; } body[data-device=iphone] header .spacer { min-width: 0; } body[data-device=iphone] #startBtn { white-space: nowrap; }
   #meter { position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; background: rgba(5,10,6,.6); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); padding: 14px; }
   #meter.hide { display: none; }
@@ -261,6 +272,15 @@
     <div id="pauseOv">일시정지</div>
     <div id="banner"></div>
     <div id="spells"><button class="spell" id="spRage"><div class="si">⚔️</div><div class="sl">공격력 증폭<small>10초 · +70%</small></div><div class="sc" id="scRage"></div><div class="cdm" id="cdRage"></div></button><button class="spell" id="spHaste"><div class="si">⚡</div><div class="sl">속사<small>10초 · 공속 +67%</small></div><div class="sc" id="scHaste"></div><div class="cdm" id="cdHaste"></div></button></div>
+    <div id="testPanel" class="hide"><div class="tph"><b>🧪 테스트 모드</b><button id="tpFold">접기</button></div><div class="tpb">
+      <div class="tpr"><span>💰</span><button data-g="1000">+1천</button><button data-g="10000">+1만</button><button data-g="100000">+10만</button><button data-g="1000000">+100만</button></div>
+      <div class="tpr"><span>🌊</span><input id="tpWave" type="number" min="1" max="200" value="30"><button id="tpGo">이 웨이브로</button><button id="tpSkip">⏭ 넘기기</button></div>
+      <div class="tpr"><button id="tpGod">❤️ 무적 꺼짐</button><button id="tpAuto">⏯ 자동 다음 켜짐</button></div>
+      <div class="tpr"><button id="tpRes">🔨 능력 강화 최대</button><button id="tpResZero">초기화</button></div>
+      <div class="tpr"><button id="tpUp">⬆ 선택 타워 무료 강화</button><button id="tpSpeed">⏩ 10배속</button></div>
+      <div class="tpr"><button id="tpKill">💀 필드 몬스터 제거</button><button id="tpClear">🗑 타워 전부 제거</button></div>
+      <div class="tpn">테스트 모드 기록은 최고 기록에 저장되지 않아요</div>
+    </div></div>
     <div id="panel"></div>
     <div id="lab"></div>
   </div>
@@ -284,6 +304,7 @@
     <div class="fit" id="fitRow">📏 아이폰 아래 빈 공간 맞추기 <button id="fitMinus">−</button><b id="fitVal">0</b><button id="fitPlus">+</button></div>
     <div class="hint" id="fitHint" style="display:none">게임 화면 아래에 빈 공간이 남으면 + 를, 버튼이 잘리면 − 를 눌러 맞춘 뒤 다시 아이폰을 누르세요. 값은 저장됩니다.</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center"><button class="ttab" id="shadowBtn" style="font-size:14px">🌗 그림자 꺼짐</button><button class="ttab" id="ecoBtn" style="font-size:14px">🔋 절전 모드 꺼짐</button><button class="ttab" id="fxBtn" style="font-size:14px">✨ 이펙트 간단히</button></div>
+    <button class="ttab" id="testToggle" style="font-size:14px">🧪 테스트 모드 꺼짐</button>
     <div class="best" id="titleBest"></div>
   </div>
   <div class="tpage" id="tp-guide"></div>
@@ -1894,7 +1915,7 @@
       if (e.frozenT > 0) e.frozenT -= dt;
       else e.d += e.speed * (e.slowT > 0 ? 1 - e.slowAmt : 1) * dt;
       if (e.d >= PATHS[e.pid].len) {
-        e.alive = false; G.lives -= ET[e.type].lives || 1; sfx('leak'); shakeT = .3;
+        e.alive = false; if (!(G.test && G.god)) G.lives -= ET[e.type].lives || 1; sfx('leak'); shakeT = .3;
         if (G.lives <= 0) { G.lives = 0; gameOver(); }
         ui(); continue;
       }
@@ -1934,14 +1955,14 @@
       G.autoT = 3;
       if (G.wave % 5 === 0) for (const t of G.towers.concat(G.soldRec || [])) { t.dmgS = 0; t.asS = 0; }
       const bonus = 15 + G.wave * 2; G.gold += bonus; banner(`웨이브 ${G.wave} 클리어! +${bonus}💰`); sfx('clear');
-      if (G.wave > BEST) { BEST = G.wave; try { localStorage.setItem('forestTD.best', BEST); } catch (e) {} }
+      if (!G.test && G.wave > BEST) { BEST = G.wave; try { localStorage.setItem('forestTD.best', BEST); } catch (e) {} }
       ui(); renderFooter();
     }
   }
   function gameOver() {
     G.over = true;
     const reached = Math.max(0, G.wave - 1);
-    if (reached > BEST) { BEST = reached; try { localStorage.setItem('forestTD.best', BEST); } catch (e) {} }
+    if (!G.test && reached > BEST) { BEST = reached; try { localStorage.setItem('forestTD.best', BEST); } catch (e) {} }
     $('overMsg').innerHTML = `웨이브 ${G.wave}에서 막혔어요<br>최고 기록: 웨이브 ${BEST} 클리어`;
     setTimeout(() => $('over').classList.add('show'), 700);
   }
@@ -2275,7 +2296,7 @@
     const rawDt = Math.min(.5, (now - last) / 1000), dt = Math.min(.05, rawDt); last = now; REAL_DT = dt;
     if (G.started && !G.paused && !G.over) for (let i = 0; i < G.speed * BASE_SPEED; i++) update(dt);
     sync(G.paused ? 0 : dt * (G.over ? 1 : G.speed * BASE_SPEED));
-    if (!G.paused && !G.over && !G.waveActive && G.autoT > 0) {
+    if (!G.paused && !G.over && !G.waveActive && G.autoT > 0 && !(G.test && G.noAuto)) {
       G.autoT -= rawDt;
       const sb = $('startBtn'), txt = `▶ 다음 ${Math.max(1, Math.ceil(G.autoT))}`;
       if (sb.textContent !== txt) sb.textContent = txt;
@@ -2284,6 +2305,44 @@
     spellUI(); infoUI();
     renderer.render(scene, camera);
   }
+  // ================== TEST MODE ==================
+  let TEST_ON = false;
+  $('testToggle').onclick = () => { TEST_ON = !TEST_ON; $('testToggle').textContent = TEST_ON ? '🧪 테스트 모드 켜짐 (기기를 고르면 시작)' : '🧪 테스트 모드 꺼짐'; $('testToggle').classList.toggle('on', TEST_ON); };
+  function enterTest() {
+    if (!!G.test === TEST_ON) return;
+    if (G.wave > 0 || G.towers.length) reset();
+    G.test = TEST_ON; G.god = false; G.noAuto = false;
+    $('testPanel').classList.toggle('hide', !TEST_ON); tpLabels();
+  }
+  function tpLabels() {
+    $('tpGod').textContent = G.god ? '❤️ 무적 켜짐' : '❤️ 무적 꺼짐'; $('tpGod').classList.toggle('on', !!G.god);
+    $('tpAuto').textContent = G.noAuto ? '⏯ 자동 다음 꺼짐' : '⏯ 자동 다음 켜짐'; $('tpAuto').classList.toggle('on', !G.noAuto);
+    $('tpSpeed').classList.toggle('on', G.speed === 10);
+  }
+  function killAll() { for (const e of G.enemies) e.alive = false; G.queue = []; update(.001); }
+  document.querySelectorAll('#testPanel [data-g]').forEach(b => b.onclick = () => { G.gold += +b.dataset.g; ui(); renderFooter(); if (typeof renderLab === 'function') renderLab(); });
+  $('tpFold').onclick = () => { $('testPanel').classList.toggle('fold'); $('tpFold').textContent = $('testPanel').classList.contains('fold') ? '펼치기' : '접기'; };
+  $('tpGo').onclick = () => {
+    const w = Math.max(1, Math.min(200, Math.floor(+$('tpWave').value || 1)));
+    killAll(); G.waveActive = false; G.autoT = 0; G.wave = w - 1; G.nextQ = null;
+    OPEN_AT.forEach((ow, i) => setPortal(i, w >= ow));
+    G.stage = -1; startWave(); G.paused = false; ui(); banner(`🧪 웨이브 ${w}로 이동`);
+  };
+  $('tpSkip').onclick = () => { killAll(); };
+  $('tpGod').onclick = () => { G.god = !G.god; tpLabels(); };
+  $('tpAuto').onclick = () => { G.noAuto = !G.noAuto; tpLabels(); };
+  $('tpRes').onclick = () => { for (const r of RES) if (!r.repeat) G.res[r.k] = r.max; ui(); renderLab(); renderFooter(); };
+  $('tpResZero').onclick = () => { for (const r of RES) G.res[r.k] = 0; ui(); renderLab(); renderFooter(); };
+  $('tpUp').onclick = () => {
+    const t = G.selTower; if (!t) { banner('먼저 맵에서 타워를 선택하세요'); return; }
+    if (t.lv >= 7) { banner('이미 최고 단계예요'); return; }
+    if (t.lv === 3 && !t.br) t.br = 'A';
+    t.lv++; if (t.lv === 7) G.transOpen = true; attachTower(t); renderFooter();
+  };
+  $('tpSpeed').onclick = () => { G.speed = G.speed === 10 ? 1 : 10; ui(); tpLabels(); };
+  $('tpKill').onclick = () => { for (const e of G.enemies) e.alive = false; update(.001); };
+  $('tpClear').onclick = () => { for (const t of G.towers) scene.remove(t.obj); G.towers = []; G.selTower = null; renderFooter(); window.__dirty = true; };
+
   // ================== DAMAGE METER ==================
   const TCOL = { arrow: '#7bd23a', cannon: '#ff9a3a', frost: '#5fd0f0', hex: '#b07aff', bolt: '#f0d040' };
   const fmtN = n => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e4 ? (n / 1e3).toFixed(1) + 'k' : Math.round(n).toLocaleString();
@@ -2366,12 +2425,12 @@
   const MICON = { slime: '🟢', bat: '🦇', golem: '🗿', wolf: '🐺', knight: '🛡️', kingslime: '👑', ghost: '👻', shaman: '🧙', boss: '😈' };
   const MFIRST = { slime: '1', bat: '3', golem: '5', wolf: '7', knight: '12', kingslime: '15', ghost: '18', shaman: '24', boss: '10, 20, 30…' };
   function setTab(t) {
-    document.querySelectorAll('.ttab').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+    document.querySelectorAll('.ttabs .ttab').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
     document.querySelectorAll('.tpage').forEach(p => p.classList.toggle('on', p.id === 'tp-' + t));
     if (t === 'guide') renderGuide();
     if (t === 'maps') renderMapList();
   }
-  document.querySelectorAll('.ttab').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+  document.querySelectorAll('.ttabs .ttab').forEach(b => b.onclick = () => setTab(b.dataset.tab));
   $('curMap').textContent = `🗺️ 현재 맵: ${MAP_NAME}`;
 
   // ---------- guide ----------
@@ -2609,6 +2668,7 @@
     document.body.dataset.device = d; try { localStorage.setItem('forestTD.device', d); } catch (e) {}
     mark(d); window.fixH(); applyLayout();
     $('title').classList.add('hide');
+    enterTest();
     G.started = true; G.paused = false; ui();
     setTimeout(fitCamera, 30); setTimeout(fitCamera, 300);
   }
