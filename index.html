@@ -102,6 +102,22 @@
   .edmsg { min-height: 38px; font-size: 13px; text-align: center; line-height: 1.45; opacity: .9; }
   .edbtns { display: flex; gap: 6px; } .edbtns .hbtn { flex: 1; font-size: 14px; padding: 10px 4px; }
   #menuBtn { }
+  body[data-device=iphone] header { gap: 3px; } body[data-device=iphone] header .stat { font-size: 13px; padding: 5px 5px; } body[data-device=iphone] header .hbtn { font-size: 12px; padding: 7px 6px; } body[data-device=iphone] header .spacer { min-width: 0; } body[data-device=iphone] #startBtn { white-space: nowrap; }
+  #meter { position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; background: rgba(5,10,6,.6); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); padding: 14px; }
+  #meter.hide { display: none; }
+  .mcard { width: 100%; max-width: 520px; max-height: 92%; display: flex; flex-direction: column; padding: 16px 16px 14px; border-radius: 20px; background: linear-gradient(170deg, #2f4a31, #1a2a1c); border: 3px solid #ffd75e; box-shadow: 0 20px 50px #000a; text-align: center; }
+  .mcard h2 { margin: 0 0 8px; font-weight: 400; font-size: 24px; color: #ffe08a; }
+  .mtabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 8px; }
+  .mtab { font-family: inherit; font-size: 14px; color: #fff; padding: 6px 12px; border-radius: 10px; border: 1px solid #ffffff30; background: #ffffff12; }
+  .mtab.on { background: #ffd75e; color: #3a2400; }
+  #mBody { overflow-y: auto; text-align: left; flex: 1; min-height: 0; }
+  .mrw { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 13px; }
+  .mrw .mi { width: 22px; text-align: center; font-size: 17px; }
+  .mrw .mbar { flex: 1; position: relative; height: 24px; border-radius: 7px; background: #00000040; overflow: hidden; }
+  .mrw .mfill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 7px; }
+  .mrw .mlab { position: absolute; left: 8px; right: 8px; top: 0; bottom: 0; display: flex; align-items: center; justify-content: space-between; text-shadow: 0 1px 2px #000; white-space: nowrap; overflow: hidden; }
+  .msub { font-size: 15px; color: #ffe08a; margin: 10px 0 2px; }
+  .dcard .mrw { font-size: 12px; } .dcard .mrw .mbar { height: 20px; }
   #mid { flex: 1; min-height: 0; display: flex; gap: 10px; }
   #mid > #wrap { flex: 1; min-width: 0; }
   .dock { display: none; flex-direction: column; gap: 10px; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
@@ -122,7 +138,7 @@
   body.dock-side #mid { justify-content: center; }
   body.dock-side .dock #spells { flex-direction: row; }
   body.dock-side footer { height: auto; }
-  body.dock-side .palette { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  body.dock-side .palette { grid-template-columns: repeat(5, 1fr); gap: 6px; }
   body.dock-side .tbtn { padding: 5px 2px; font-size: 12px; } body.dock-side .tbtn .ic { font-size: 22px; line-height: 1.1; } body.dock-side .tbtn .cost { font-size: 13px; }
   body.dock-side #labBtn { display: none; }
   body.dock-side #panel, body.dock-bottom #lab, body.dock-side #lab { position: static; display: block; transform: none; width: auto; left: auto; right: auto; top: auto; bottom: auto; }
@@ -168,7 +184,7 @@
   .rrow .rt small { opacity: .7; font-size: 12px; }
   .rrow .pips { letter-spacing: 1px; color: #ffd75e; font-size: 11px; }
   .rrow .hbtn { font-size: 14px; padding: 7px 10px; min-width: 82px; }
-  .palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .palette { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
   .tbtn {
     font-family: inherit; color: #fff; cursor: pointer; border-radius: 14px; padding: 6px 2px 7px;
     background: linear-gradient(180deg, #2a3b2c, #1c281e); border: 2px solid #3f5a41;
@@ -231,6 +247,7 @@
     <div class="stat">🌊 <span id="wave">0</span></div>
     <div class="spacer"></div>
     <button class="hbtn" id="menuBtn">☰</button>
+    <button class="hbtn" id="meterBtn">📊</button>
     <button class="hbtn" id="labBtn">🔨</button>
     <button class="hbtn" id="speedBtn">1×</button>
     <button class="hbtn" id="pauseBtn">⏸</button>
@@ -250,7 +267,7 @@
   <div id="dockR" class="dock"><div id="dockR1" class="dcol"></div><div id="dockR2" class="dcol"></div></div>
   </div>
   <footer id="footer"></footer>
-  <div class="help">단축키: 1~4 타워 · Space 웨이브 · U 강화 · S 판매 · R 능력 강화 · Q 공격력 증폭 · E 속사 · F 배속 · Esc 취소</div>
+  <div class="help">단축키: 1~5 타워 · Space 웨이브 · U 강화 · S 판매 · R 능력 강화 · Q 공격력 증폭 · E 속사 · F 배속 · Esc 취소</div>
 </div>
 <div id="title">
   <div class="logo">🌲 수호의 숲 🌲</div>
@@ -278,6 +295,12 @@
   <div class="edmsg" id="edMsg"></div>
   <div class="edbtns"><button class="hbtn" id="edUndo">↶ 한 칸</button><button class="hbtn sell" id="edClear">🗑 이 길 지우기</button><button class="hbtn" id="edSave">💾 저장</button><button class="hbtn go" id="edPlay">▶ 저장 후 플레이</button></div>
 </div>
+<div id="meter" class="hide"><div class="mcard">
+  <h2 id="mTitle">📊 스테이지 결과</h2>
+  <div class="mtabs"><button class="mtab on" data-m="stage">이번 스테이지</button><button class="mtab" data-m="total">전체 누적</button></div>
+  <div id="mBody"></div>
+  <button class="hbtn go" id="mClose" style="font-size:18px;padding:10px 30px;margin-top:10px">계속하기 ▶</button>
+</div></div>
 <div id="over"><div class="card">
   <h2>성문이 무너졌어요</h2>
   <p id="overMsg"></p>
@@ -320,9 +343,10 @@
     arrow:  { name: '궁수',       icon: '🏹', cost: 50,  range: 2.6, dmg: 11, rate: .55, speed: 13, h0: .95, desc: '빠른 활 공격 · 공중 가능' },
     cannon: { name: '대포',       icon: '💣', cost: 90,  range: 2.4, dmg: 30, rate: 1.5, speed: 7,  h0: .75, splash: .95, ground: true, desc: '범위 피해 · 지상만' },
     frost:  { name: '얼음 마법사', icon: '❄️', cost: 70,  range: 2.2, dmg: 5,  rate: .9,  speed: 9,  h0: 1.5, splash: .7, slow: .45, slowT: 1.6, magic: true, desc: '얼음 수정으로 범위 감속 · 방어 무시' },
+    hex:    { name: '저주술사',   icon: '🧪', cost: 100, range: 2.4, dmg: 4,  rate: 1.0, speed: 8, h0: 1.2, magic: true, desc: '적의 방어력을 깎고 받는 피해를 늘림 (디버프)' },
     bolt:   { name: '토르',       icon: '⚡', cost: 140, range: 2.8, dmg: 24, rate: 1.2, chain: 3, magic: true, desc: '망치를 들어 연쇄 번개 · 방어 무시' },
   };
-  const ORDER = ['arrow', 'cannon', 'frost', 'bolt'];
+  const ORDER = ['arrow', 'cannon', 'frost', 'hex', 'bolt'];
   const ET = {
     slime: { hp: 32,  speed: 1.0, gold: 4,  armor: 0, h: .26, color: 0x5fd86b, name: '슬라임', info: '가장 기본적인 몬스터' },
     bat:   { hp: 20,  speed: 1.9, gold: 4,  armor: 0, h: .95, color: 0xd05fb0, fly: true, name: '박쥐', info: '공중 유닛 · 대포(전차)는 못 맞춤' },
@@ -346,6 +370,15 @@
     s.dmg *= 1 + .08 * (R.dmg || 0); s.range *= 1 + .04 * (R.range || 0); s.rate /= 1 + .05 * (R.spd || 0);
     return s;
   };
+  const hexFx = t => {
+    const lv = t.lv;
+    if (t.br === 'A' && lv >= 4) return { shred: [12, 18, 24][lv - 4], vuln: [.2, .25, .3][lv - 4], rad: .6, strip: true };
+    if (t.br === 'B' && lv >= 4) return { shred: [5, 7, 9][lv - 4], vuln: [.3, .4, .5][lv - 4], rad: 0, aura: true };
+    return { shred: [3, 5, 7][lv - 1], vuln: [.1, .15, .2][lv - 1], rad: .7 };
+  };
+  function applyHex(e, fx) {
+    e.hexBy = curT; e.debT = 3; e.shred = Math.max(e.debT > 0 ? e.shred || 0 : 0, fx.shred); e.vuln = Math.max(e.vuln || 0, fx.vuln); if (fx.strip) e.strip = 3;
+  }
   const upCost = t => Math.round(TT[t.type].cost * [.75, 1.25, 2.2, 3.2, 8][t.lv - 1]);
   const sellValue = t => Math.round(t.spent * .7);
 
@@ -694,6 +727,7 @@
     cannon: ['대포', '쌍포 포대', '거포 요새', '샷건 사냥꾼'],
     frost: ['견습 얼음 마법사', '서리 마법사', '빙결의 대마법사'],
     bolt: ['천둥의 전사', '천둥신 토르', '폭풍왕 토르'],
+    hex: ['견습 저주술사', '저주술사', '대저주술사'],
   };
   function pedestal(g, lv, base, rune, runeEm) {
     const r = .36 + lv * .02;
@@ -747,6 +781,20 @@
       const fig = new THREE.Group(); fig.position.y = .18; fig.scale.setScalar([1.2, 1.3, 1.42][lv - 1]); g.add(fig); U.turn = fig;
       buildThor(fig, lv, U);
       g.userData.h0 = 1.5;
+    } else if (type === 'hex') {
+      pedestal(g, lv, [0x3a2f4a, 0x32284a, 0x281f40][lv - 1], 0xb07aff, 0x7a3aff);
+      const fig = new THREE.Group(); fig.position.y = .18; fig.scale.setScalar([1.15, 1.3, 1.42][lv - 1]); g.add(fig); U.turn = fig;
+      buildHexer(fig, lv, U);
+      // bubbling cauldron beside the caster
+      const cau = new THREE.Group(); cau.position.set(.27, .18, -.12); cau.scale.setScalar([.8, .95, 1.1][lv - 1]); g.add(cau);
+      cau.add(mesh(geo('cauldron', () => new THREE.SphereGeometry(.15, 14, 10, 0, Math.PI * 2, Math.PI * .3, Math.PI * .7)), mat(0x26262c, { metalness: .5, roughness: .45 }), 0, .14, 0));
+      const rim = mesh(geo('caurim', () => new THREE.TorusGeometry(.13, .02, 6, 18)), mat(0x3a3a42, { metalness: .6 }), 0, .23, 0, false); rim.rotation.x = Math.PI / 2; cau.add(rim);
+      const brew = mesh(geo('brew', () => new THREE.CircleGeometry(.12, 18)), new THREE.MeshBasicMaterial({ color: 0x8aff4a }), 0, .225, 0, false); brew.rotation.x = -Math.PI / 2; cau.add(brew); U.brew = brew.material;
+      for (const sx of [-1, 1]) cau.add(mesh(cyl(.02, .02, .06, 5), mat(0x26262c), sx * .09, .02, 0));
+      const bub = new THREE.Group(); bub.position.y = .25; cau.add(bub); U.bubbles = bub;
+      for (let k = 0; k < 3; k++) bub.add(mesh(sph(.025, 6, 4), new THREE.MeshBasicMaterial({ color: 0xb8ff8a, transparent: true, opacity: .8 }), (k - 1) * .05, k * .06, 0, false));
+      const cg = glow(0x8aff4a, .45, .45); cg.position.y = .3; cau.add(cg);
+      g.userData.h0 = 1.2;
     } else if (type === 'frost') {
       pedestal(g, lv, [0xdff3ff, 0xcfeeff, 0xbfe6ff][lv - 1], 0x9ff0ff, 0x4fd8f0);
       const fig = new THREE.Group(); fig.position.y = .18; fig.scale.setScalar([1.15, 1.3, 1.42][lv - 1]); g.add(fig); U.turn = fig;
@@ -850,6 +898,41 @@
     const muzzle = new THREE.Object3D(); muzzle.position.set(0, .02, .5); gun.add(muzzle); U.muzzle = muzzle;
     const fl = glow(0xffc46a, .9, 0); fl.position.copy(muzzle.position); gun.add(fl); U.flash = fl;
     for (const sx of [.13, -.13]) fig.add(mesh(sph(.042), SKIN, sx * .6, .37, .17 + (sx > 0 ? .06 : -.02)));
+  }
+
+  function buildHexer(fig, lv, U) {
+    const robeM = mat([0x4a3a6a, 0x3a2a5a, 0x2a1a48][lv - 1], { roughness: .7 }), trim = lv === 3 ? GOLD : mat(0x8a6aca);
+    const skin = mat(0xb8d8a8, { roughness: .7 });
+    U.robeM = robeM;
+    if (lv >= 2) { const cape = U.capeMesh = mesh(geo('hcape' + lv, () => new THREE.CylinderGeometry(.13, .3, .58, 14, 1, true, Math.PI / 2, Math.PI)), mat(lv === 3 ? 0x1a0f2e : 0x2a1f40, { side: THREE.DoubleSide }), 0, .29, -.03); fig.add(cape); }
+    fig.add(mesh(cyl(.1, .25, .56, 14), robeM, 0, .28, 0));
+    const hem = mesh(geo('hhem', () => new THREE.TorusGeometry(.245, .016, 6, 24)), trim, 0, .02, 0, false); hem.rotation.x = Math.PI / 2; fig.add(hem);
+    fig.add(mesh(cyl(.13, .15, .04, 12), mat(0x2a1a0a), 0, .34, 0));
+    // potion vials on belt
+    for (const [sx, c] of [[-.11, 0x8aff4a], [.0, 0xa060ff], [.11, 0xff6a8a]]) { fig.add(mesh(cyl(.02, .025, .06, 6), new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: .5, transparent: true, opacity: .85 }), sx, .3, .15, false)); }
+    fig.add(mesh(sph(.12), robeM, 0, .55, 0));
+    // head: hood, shadowed face, glowing eyes
+    fig.add(mesh(sph(.13), skin, 0, .7, .02));
+    const hood = mesh(geo('xhood', () => new THREE.SphereGeometry(.18, 16, 10, 0, Math.PI * 2, 0, Math.PI * .68)), robeM, 0, .72, -.02); hood.rotation.x = -.35; fig.add(hood);
+    for (const sx of [-.045, .045]) fig.add(mesh(sph(.022, 8, 6), basic(lv === 3 ? 0xffe14a : 0x9aff5a), sx, .71, .135, false));
+    const nose = mesh(geo('hnose', () => new THREE.ConeGeometry(.025, .08, 6)), skin, 0, .67, .15, false); nose.rotation.x = Math.PI / 2 + .3; fig.add(nose);
+    if (lv >= 2) { // pointed witch hat over hood
+      const brim = mesh(cyl(.21, .21, .018, 18), robeM, 0, .83, 0); fig.add(brim);
+      const hat = mesh(geo('whhat', () => new THREE.ConeGeometry(.13, .38, 14)), robeM, .03, 1.02, -.03); hat.rotation.z = -.22; hat.rotation.x = -.12; fig.add(hat);
+      const band = mesh(cyl(.135, .135, .03, 14), trim, 0, .855, 0, false); fig.add(band);
+      if (lv === 3) fig.add(mesh(geo('hstar', () => new THREE.OctahedronGeometry(.035)), basic(0xffe14a), .03, .87, .135, false));
+    }
+    // gnarled staff with glowing orb
+    const staff = new THREE.Group(); staff.position.set(-.2, 0, .07); fig.add(staff); U.staff = staff;
+    const sh = [.82, .95, 1.05][lv - 1];
+    const st1 = mesh(cyl(.018, .024, sh, 6), mat(0x4a2f1a, { flatShading: true }), 0, sh / 2, 0); staff.add(st1);
+    for (let k = 0; k < 3; k++) { const c = mesh(cyl(.008, .012, .14, 4), mat(0x4a2f1a), Math.cos(k * 2.1) * .04, sh - .02, Math.sin(k * 2.1) * .04, false); c.rotation.z = Math.cos(k * 2.1) * .6; c.rotation.x = Math.sin(k * 2.1) * .6; staff.add(c); }
+    const orbR = [.05, .065, .08][lv - 1];
+    const orb = mesh(geo('horb' + lv, () => new THREE.IcosahedronGeometry(orbR, 1)), new THREE.MeshStandardMaterial({ color: 0xc8a0ff, emissive: 0x7a3aff, emissiveIntensity: 1, roughness: .2 }), 0, sh + .04, 0, false); staff.add(orb); U.orbTip = orb; U.orb = orb;
+    const og = glow(0xa060ff, .4 + lv * .1, .6); og.position.y = sh + .04; staff.add(og); U.orbGlow = og;
+    fig.add(mesh(sph(.042), skin, -.19, .5, .08));
+    if (lv === 3) { const ring = new THREE.Group(); ring.position.y = .5; fig.add(ring); U.runeRing = ring;
+      for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2; ring.add(mesh(box(.05, .05, .005), basic(0xc8a0ff), Math.cos(a) * .36, 0, Math.sin(a) * .36, false)); } }
   }
 
   function buildThor(fig, lv, U) {
@@ -991,6 +1074,10 @@
       A: { name: ['빙하의 여왕', '절대영도의 여왕'], icon: '🧊', desc: '맞은 적을 확률로 완전히 얼림 (30% → 45%)', mod: { dmg: 1.3 } },
       B: { name: ['눈보라 술사', '혹한의 폭풍 군주'], icon: '🌨️', desc: '사거리 안 모든 적에게 지속 피해 + 감속', mod: { dmg: 1.5, rate: .6, range: -.2 } },
     },
+    hex: {
+      A: { name: ['부식의 마녀', '산성 대마녀'], icon: '🧪', desc: '한 대상의 방어력을 크게 깎고 마법 저항(방패 기사)을 없앰', mod: { dmg: 1.5 } },
+      B: { name: ['역병 술사', '역병 군주'], icon: '☠️', desc: '사거리 안 모든 적에게 저주 오라 · 받는 피해 크게 증가', mod: { rate: .7 } },
+    },
     bolt: {
       A: { name: ['뇌신 토르', '라그나로크 토르'], icon: '⚡', desc: '연쇄 번개 대폭 강화 (+3 → +6 연쇄, 더 멀리 튐)', mod: { dmg: 1.1 } },
       B: { name: ['폭풍 소환사', '하늘의 심판자'], icon: '🌩️', desc: '하늘에서 번개를 여러 곳에 내리꽂음 (2 → 4곳, 범위 피해)', mod: { dmg: 1.35 } },
@@ -1076,6 +1163,25 @@
       }
       const cone = mesh(geo('whirl', () => new THREE.CylinderGeometry(.55, .25, 1.1, 20, 1, true)), new THREE.MeshBasicMaterial({ color: 0xdff6ff, transparent: true, opacity: five ? .08 : .05, side: THREE.DoubleSide, depthWrite: false }), 0, .65, 0, false);
       g.add(cone); U.spin.push([cone, 2]);
+    } else if (type === 'hex' && br === 'A') {
+      // Acid witch: green robes, huge acid cauldron, green orb
+      recape(five ? 0x1f4a1a : 0x2a5a24);
+      const green = mat(five ? 0x2a5a2a : 0x3a6a32, { roughness: .7 });
+      fig.traverse(o => { if (o.isMesh && o.material === U.robeM) o.material = green; });
+      if (U.orb) { U.orb.material = new THREE.MeshStandardMaterial({ color: 0xc8ff8a, emissive: 0x4aff1a, emissiveIntensity: 1 }); U.orbGlow.material.color.setHex(0x6aff3a); }
+      for (let k = 0; k < (five ? 6 : 4); k++) { const a = k / (five ? 6 : 4) * Math.PI * 2; const d = mesh(geo('drip', () => new THREE.ConeGeometry(.03, .1, 6)), new THREE.MeshBasicMaterial({ color: 0x8aff4a }), Math.cos(a) * .45, .3, Math.sin(a) * .45, false); d.rotation.x = Math.PI; g.add(d); U.orbs.push([d, a]); }
+      aura(0x6aff3a, five ? 1.4 : 1.15, five ? .18 : .12);
+    } else if (type === 'hex') {
+      // Plague lord: black cloak, orbiting skulls, purple miasma
+      recape(five ? 0x0e0a16 : 0x1a1226);
+      const blk = mat(five ? 0x1a1420 : 0x241a30, { roughness: .9 });
+      fig.traverse(o => { if (o.isMesh && o.material === U.robeM) o.material = blk; });
+      const sk = new THREE.Group(); sk.position.y = .7; g.add(sk); U.spin.push([sk, 1.4]);
+      for (let k = 0; k < (five ? 4 : 3); k++) { const a = k / (five ? 4 : 3) * Math.PI * 2, x = Math.cos(a) * .45, z = Math.sin(a) * .45;
+        sk.add(mesh(sph(.06, 10, 8), mat(0xe8e0d0, { roughness: .6 }), x, 0, z, false));
+        for (const ex of [-.02, .02]) sk.add(mesh(sph(.015, 6, 4), basic(0xb07aff), x + ex * Math.cos(a + 1.57), .005, z + ex * Math.sin(a + 1.57), false)); }
+      const mist = mesh(geo('miasma', () => new THREE.CylinderGeometry(.5, .55, .3, 20, 1, true)), new THREE.MeshBasicMaterial({ color: 0x7a3aff, transparent: true, opacity: five ? .13 : .09, side: THREE.DoubleSide, depthWrite: false }), 0, .3, 0, false); g.add(mist); U.spin.push([mist, -1]);
+      aura(0x9a4aff, five ? 1.5 : 1.2, five ? .2 : .14);
     } else if (type === 'bolt' && br === 'A') {
       // dark purple war-god with TWO hammers, no cloud
       recape(five ? 0x24103f : 0x3a2370);
@@ -1372,6 +1478,7 @@
     const ice = mesh(box(iceS[0], iceS[1], iceS[2]), ICE, 0, iceS[3], 0, false); ice.visible = false; g.add(ice); U.ice = ice;
     // slow ring
     const sr = mesh(geo('slowr', () => new THREE.TorusGeometry(.32, .03, 6, 24)), basic(0x9ff0ff, { transparent: true, opacity: .85 }), 0, .03, 0, false); sr.rotation.x = Math.PI / 2; sr.visible = false; g.add(sr); U.slow = sr;
+    const hr = mesh(geo('hexr', () => new THREE.TorusGeometry(.26, .035, 6, 20)), basic(0xa060ff, { transparent: true, opacity: .9 }), 0, .09, 0, false); hr.rotation.x = Math.PI / 2; hr.visible = false; g.add(hr); U.hexR = hr; if (type === 'boss') hr.scale.setScalar(1.6);
     if (type === 'boss') sr.scale.setScalar(1.6);
     // hp bar (billboard)
     const bar = new THREE.Group();
@@ -1398,7 +1505,7 @@
     if (G.fx) G.fx.forEach(f => killFx(f));
     if (G.parts) G.parts.forEach(q => scene.remove(q.obj));
     portals.forEach((P, i) => setPortal(i, i === 0)); applyTheme(0);
-    Object.assign(G, { kills: 0, earned: 0, nextQ: null, nextQW: 0, autoT: 0, cd: { rage: 0, haste: 0 }, buff: { rage: 0, haste: 0 }, casting: null, stage: 0, res: { dmg: 0, range: 0, spd: 0, gold: 0, heal: 0 }, spawnIdx: 0, gold: 150, lives: 20, wave: 0, towers: [], enemies: [], projs: [], fx: [], parts: [], queue: [], spawnT: 0, waveActive: false, speed: 1, paused: false, over: false, placing: null, selTower: null, hover: null, time: 0 });
+    Object.assign(G, { soldRec: [], meterReset: false, kills: 0, earned: 0, nextQ: null, nextQW: 0, autoT: 0, cd: { rage: 0, haste: 0 }, buff: { rage: 0, haste: 0 }, casting: null, stage: 0, res: { dmg: 0, range: 0, spd: 0, gold: 0, heal: 0 }, spawnIdx: 0, gold: 150, lives: 20, wave: 0, towers: [], enemies: [], projs: [], fx: [], parts: [], queue: [], spawnT: 0, waveActive: false, speed: 1, paused: false, over: false, placing: null, selTower: null, hover: null, time: 0 });
     $('floaters').innerHTML = ''; floaters.length = 0;
     $('over').classList.remove('show');
     ui(); renderFooter();
@@ -1451,9 +1558,18 @@
   // ================== COMBAT ==================
   function damage(e, dmg, magic) {
     if (!e.alive || e.vanish) return;
-    if (magic && ET[e.type].mres) dmg *= 1 - ET[e.type].mres;
-    const armor = ET[e.type].armor + Math.floor(G.wave / 10) * 2 + (e.elite ? 4 : 0);
-    e.hp -= magic ? dmg : Math.max(dmg * .15, dmg - armor); e.hitT = .1;
+    const deb = e.debT > 0;
+    if (magic && ET[e.type].mres && !(e.strip > 0)) dmg *= 1 - ET[e.type].mres;
+    if (deb) dmg *= 1 + e.vuln;
+    const armor = Math.max(0, ET[e.type].armor + Math.floor(G.wave / 10) * 2 + (e.elite ? 4 : 0) - (deb ? e.shred : 0));
+    const real = magic ? dmg : Math.max(dmg * .15, dmg - armor), dealt = Math.min(real, Math.max(0, e.hp));
+    if (deb && e.hexBy && e.hexBy !== curT) {
+      const d0 = dmg / (1 + e.vuln), a0 = armor + e.shred, r0 = magic ? d0 : Math.max(d0 * .15, d0 - a0);
+      const bonus = Math.max(0, dealt - Math.min(r0, Math.max(0, e.hp)));
+      e.hexBy.asS = (e.hexBy.asS || 0) + bonus; e.hexBy.asT = (e.hexBy.asT || 0) + bonus;
+    }
+    e.hp -= real; e.hitT = .1;
+    if (curT) { curT.dmgS = (curT.dmgS || 0) + dealt; curT.dmgT = (curT.dmgT || 0) + dealt; }
     if (e.hp <= 0) {
       e.alive = false;
       const g = Math.round((ET[e.type].gold + Math.floor(G.wave / 10)) * (e.elite ? 2 : 1) * (1 + .1 * (G.res.gold || 0)));
@@ -1477,12 +1593,13 @@
     const U = t.obj.userData.U; U.turn.rotation.y = Math.PI / 2 - t.angle;
     let prev; if (kind === 'bolt') { prev = U.arm.rotation.x; U.arm.rotation.x = -2.9; }
     t.obj.updateMatrixWorld(true);
-    ({ bolt: U.hammerTip, frost: U.crystal, gun: U.muzzle, arrow: U.nock }[kind]).getWorldPosition(_hp);
+    ({ bolt: U.hammerTip, frost: U.crystal, gun: U.muzzle, arrow: U.nock, hex: U.orbTip }[kind]).getWorldPosition(_hp);
     if (kind === 'bolt') U.arm.rotation.x = prev;
     return _hp.clone();
   }
+  let curT = null;
   function fire(t, e, st) {
-    const b = TT[t.type];
+    const b = TT[t.type]; curT = t;
     t.angle = Math.atan2(e.y - t.y, e.x - t.x); t.recoil = 1; t.hold = t.type === 'bolt' ? .28 : 0;
     if (t.type === 'bolt') {
       if (t.br === 'B' && t.lv >= 4) { skyStrikes(t, e, st); return; }
@@ -1501,6 +1618,7 @@
     }
     if (t.type === 'cannon' && t.br === 'B') { shotgun(t, e, st); return; }
     if (t.type === 'frost' && t.br === 'B') { blizzard(t, st); return; }
+    if (t.type === 'hex' && t.br === 'B') { plagueAura(t, st); return; }
     if (t.type === 'arrow' && t.br === 'B') {
       const n = t.lv === 5 ? 5 : 3, list = G.enemies.filter(o => o.alive && Math.hypot(o.x - t.x, o.y - t.y) <= st.range).sort((a, c) => c.d - a.d).slice(0, n);
       for (let k = 0; k < n; k++) shootProj(t, list[k % list.length], st);
@@ -1513,19 +1631,27 @@
     let ox = t.x, oy = t.y, oh = t.obj.userData.h0 * 1.1;
     if (t.type === 'cannon' && t.br === 'A') { const wp = heroPoint(t, 'gun'); ox = wp.x + COLS / 2; oy = wp.z + ROWS / 2; oh = wp.y; }
     if (t.type === 'arrow') { const wp = heroPoint(t, 'arrow'); ox = wp.x + COLS / 2; oy = wp.z + ROWS / 2; oh = wp.y; }
+    if (t.type === 'hex') { const wp = heroPoint(t, 'hex'); ox = wp.x + COLS / 2; oy = wp.z + ROWS / 2; oh = wp.y; }
     if (t.type === 'frost') { const wp = heroPoint(t, 'frost'); ox = wp.x + COLS / 2; oy = wp.z + ROWS / 2; oh = wp.y; }
     const p = { kind: t.type, x: ox, y: oy, h0: oh, target: e, tx: e.x, ty: e.y, th: ET[e.type].h, speed: b.speed, dmg: st.dmg, splash: b.splash || 0, slow: st.slow, slowT: b.slowT || 0, magic: !!b.magic, alive: true, arc: 1.1 };
     if (t.type === 'arrow' && t.br === 'A') { p.speed = 26; p.magic = true; p.big = true; if (t.lv >= 5) { p.kind = 'bullet'; p.speed = 45; sfx('snipe'); } }
+    p.src = t; if (t.type === 'hex') { p.hex = hexFx(t); p.splash = p.hex.rad; }
     if (t.type === 'frost' && t.br === 'A') p.freeze = t.lv === 5 ? .45 : .3;
     if (t.type === 'cannon') {
       if (t.br === 'A') { p.speed = 10; p.splash = b.splash * (t.lv === 5 ? 1.7 : 1.45); p.arc = .45; }
       const lead = Math.hypot(e.x - t.x, e.y - t.y) / p.speed;
       const fp = posAt(e.d + ET[e.type].speed * lead * .9, e.pid); p.tx = fp.x; p.ty = fp.y; p.th = .1; p.target = null;
       sfx('boom'); if (t.br === 'A') shakeT = Math.max(shakeT, .1);
-    } else if (t.br !== 'B' && p.kind !== 'bullet') sfx(t.type === 'frost' ? 'frost' : 'shoot');
+    } else if (t.type === 'hex') sfx('hex');
+    else if (t.br !== 'B' && p.kind !== 'bullet') sfx(t.type === 'frost' ? 'frost' : 'shoot');
     p.total = Math.max(.01, Math.hypot(p.tx - p.x, p.ty - p.y));
     p.obj = projMesh(p.kind, p.big); p.obj.position.copy(W(p.x, p.y, p.h0)); scene.add(p.obj);
     G.projs.push(p);
+  }
+  function plagueAura(t, st) {
+    const fx = hexFx(t);
+    for (const e of G.enemies) { if (!e.alive || Math.hypot(e.x - t.x, e.y - t.y) > st.range) continue; applyHex(e, fx); damage(e, st.dmg, true); }
+    addBlast(t.x, t.y, st.range * .9, 0x9a4aff, false); sfx('hex');
   }
   function blizzard(t, st) {
     for (const e of G.enemies) {
@@ -1562,6 +1688,7 @@
     sfx('shotgun'); shakeT = Math.max(shakeT, .08);
   }
   function projMesh(kind, big) {
+    if (kind === 'hex') { const g = new THREE.Group(); g.add(mesh(geo('hexorb', () => new THREE.IcosahedronGeometry(.08, 1)), basic(0xc8ff8a), 0, 0, 0, false)); g.add(glow(0xa060ff, .55, .9)); return g; }
     if (kind === 'bullet') { const g = new THREE.Group(); const s = mesh(cyl(.012, .012, .7, 4), basic(0xffe9a0), 0, 0, -.2, false); s.rotation.x = Math.PI / 2; g.add(s); g.add(glow(0xffd27a, .35, .9)); return g; }
     if (kind === 'meteor') { const g = new THREE.Group(); g.add(mesh(geo('met', () => new THREE.IcosahedronGeometry(.3, 1)), mat(0xff6a1a, { emissive: 0xff4a00, emissiveIntensity: 1, flatShading: true }), 0, 0, 0, false)); g.add(glow(0xffa04a, 1.6, .9)); return g; }
     if (kind === 'pellet') return new THREE.Mesh(sph(.035, 6, 4), basic(0xffd27a));
@@ -1571,7 +1698,12 @@
     const g = new THREE.Group(); g.add(mesh(geo('forb', () => new THREE.IcosahedronGeometry(.09)), new THREE.MeshBasicMaterial({ color: 0xd8fbff }), 0, 0, 0, false)); g.add(glow(0x7ee7f7, .6, .9)); return g;
   }
   function impact(p) {
+    curT = p.src || null;
     if (p.kind === 'pellet') return;
+    if (p.kind === 'hex') {
+      for (const e of G.enemies) { if (!e.alive) continue; if (e === p.target || Math.hypot(e.x - p.x, e.y - p.y) <= p.splash) { applyHex(e, p.hex); damage(e, p.dmg, true); } }
+      addBlast(p.x, p.y, Math.max(.4, p.splash), p.hex.strip ? 0x6aff3a : 0xa060ff, false); return;
+    }
     if (p.kind === 'meteor') {
       for (const e of G.enemies) if (e.alive && Math.hypot(e.x - p.x, e.y - p.y) <= p.splash) damage(e, p.dmg, true);
       addBlast(p.x, p.y, p.splash, 0xff8a3a, true); burst(p.x, p.y, .3, 0xff6a1a, 24); sfx('boom'); return;
@@ -1652,6 +1784,7 @@
     else if (k === 'zap') { tone(1800, 200, .14, 'square', .035); tone(90, 40, .25, 'sawtooth', .05); }
     else if (k === 'shotgun') { tone(140, 40, .22, 'sawtooth', .09); tone(900, 120, .1, 'square', .05); }
     else if (k === 'snipe') { tone(1600, 120, .16, 'sawtooth', .06); tone(80, 40, .2, 'square', .05); }
+    else if (k === 'hex') { tone(300, 160, .18, 'sine', .05); tone(450, 240, .14, 'triangle', .03, .05); }
     else if (k === 'pop') tone(500, 900, .07, 'sine', .05);
     else if (k === 'leak') tone(220, 110, .3, 'square', .06);
     else if (k === 'build') { tone(400, 600, .08, 'triangle', .08); tone(600, 900, .1, 'triangle', .08, .07); }
@@ -1669,6 +1802,7 @@
     for (const e of G.enemies) {
       if (!e.alive) continue;
       e.slowT -= dt; e.hitT -= dt; if (e.slowT <= 0) e.slowAmt = 0;
+      if (e.debT > 0) { e.debT -= dt; if (e.debT <= 0) { e.shred = 0; e.vuln = 0; } } if (e.strip > 0) e.strip -= dt;
       if (e.type === 'ghost') { e.gT += dt; e.vanish = (e.gT % 4) > 2.7; }
       if (e.type === 'shaman') { e.healT -= dt; if (e.healT <= 0) { e.healT = 2.2; for (const o of G.enemies) if (o.alive && o !== e && Math.hypot(o.x - e.x, o.y - e.y) < 1.6) o.hp = Math.min(o.maxHp, o.hp + o.maxHp * .08); addBlast(e.x, e.y, 1.5, 0x7cff7c, false); } }
       if (e.frozenT > 0) e.frozenT -= dt;
@@ -1710,6 +1844,7 @@
     if (G.waveActive && !G.queue.length && !G.enemies.length && !G.over) {
       G.waveActive = false;
       G.autoT = 3;
+      if (G.wave % 5 === 0 && G.towers.length) { G.meterReset = true; setTimeout(() => { if (!G.over) showMeter(true); }, 900); }
       const bonus = 15 + G.wave * 2; G.gold += bonus; banner(`웨이브 ${G.wave} 클리어! +${bonus}💰`); sfx('clear');
       if (G.wave > BEST) { BEST = G.wave; try { localStorage.setItem('forestTD.best', BEST); } catch (e) {} }
       ui(); renderFooter();
@@ -1747,6 +1882,13 @@
         U.hglow.material.opacity = t.recoil * .9 + (Math.sin(time * 9 + t.cx) > (t.lv === 3 ? .5 : .85) ? .4 : 0);
         if (U.cloud) { U.cloud.rotation.y += dt * .6; U.cflash.material.opacity = t.recoil > .5 ? .9 : (Math.sin(time * 5.3 + t.cy) > .93 ? .7 : 0); }
       }
+      if (t.type === 'hex') {
+        if (U.bubbles) { U.bubbles.children.forEach((b, k) => { b.position.y = ((time * .4 + k * .33) % 1) * .18; }); }
+        if (U.brew) U.brew.color.setHSL(.27, 1, .55 + .08 * Math.sin(time * 3 + t.cx));
+        if (U.orb) { const s = 1 + .1 * Math.sin(time * 4) + t.recoil * .5; U.orb.scale.setScalar(s); }
+        if (U.staff) U.staff.rotation.x = t.recoil * .3;
+        if (U.runeRing) U.runeRing.rotation.y += dt * 1.2;
+      }
       if (t.type === 'frost') {
         U.orbit.rotation.y += dt * 1.6;
         const s = 1 + .08 * Math.sin(time * 4) + t.recoil * .5; U.crystal.scale.set(.8 * U.cs * s, 1.3 * U.cs * s, .8 * U.cs * s); U.crystal.rotation.y += dt * 2;
@@ -1765,7 +1907,7 @@
       else if (e.type === 'wolf') { U.arms[0].rotation.x = Math.sin(e.phase * 1.4) * .7; U.arms[1].rotation.x = -Math.sin(e.phase * 1.4) * .7; U.body.position.y = Math.abs(Math.sin(e.phase * 1.4)) * .05; }
       else { U.body.rotation.z = Math.sin(e.phase * .5) * .06; U.body.position.y = Math.abs(Math.sin(e.phase * .5)) * .04; U.arms[0].rotation.x = Math.sin(e.phase * .5) * .5; U.arms[1].rotation.x = -Math.sin(e.phase * .5) * .5; }
       U.bodyM.emissive.setHex(e.hitT > 0 ? 0x888888 : (e.slowT > 0 ? 0x1a4a66 : (e.elite ? 0x5a0a0a : 0x000000)));
-      U.slow.visible = e.slowT > 0; U.ice.visible = e.frozenT > 0;
+      U.slow.visible = e.slowT > 0; U.ice.visible = e.frozenT > 0; U.hexR.visible = e.debT > 0; if (e.debT > 0) U.hexR.rotation.z += dt * 3;
       if (e.hp < e.maxHp) {
         U.bar.visible = true; const f = Math.max(0, e.hp / e.maxHp); U.fg.scale.x = Math.max(.001, f);
         U.fgM.color.setHex(f > .5 ? 0x6fe06f : f > .25 ? 0xffd24a : 0xff5a4a);
@@ -1936,6 +2078,7 @@
   function sellTower() {
     const t = G.selTower; if (!t) return;
     G.gold += sellValue(t); scene.remove(t.obj); G.towers = G.towers.filter(o => o !== t); G.selTower = null;
+    if (t.dmgT > 0) { t.sold = true; (G.soldRec = G.soldRec || []).push(t); }
     floatText(t.x, t.y, .8, '+' + sellValue(t)); renderFooter();
   }
 
@@ -2000,7 +2143,7 @@
   $('againBtn').onclick = reset;
   document.addEventListener('keydown', e => {
     const k = e.key.toLowerCase();
-    if (k >= '1' && k <= '4') selectBuild(ORDER[+k - 1]);
+    if (k >= '1' && k <= '5') selectBuild(ORDER[+k - 1]);
     else if (k === ' ') { e.preventDefault(); startWave(); }
     else if (k === 'u') upgrade(); else if (k === 's') sellTower();
     else if (k === 'r') $('labBtn').click();
@@ -2030,6 +2173,39 @@
     renderer.render(scene, camera);
     requestAnimationFrame(loop);
   }
+  // ================== DAMAGE METER ==================
+  const TCOL = { arrow: '#7bd23a', cannon: '#ff9a3a', frost: '#5fd0f0', hex: '#b07aff', bolt: '#f0d040' };
+  const fmtN = n => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e4 ? (n / 1e3).toFixed(1) + 'k' : Math.round(n).toLocaleString();
+  function meterRows(key, limit) {
+    const list = G.towers.concat(G.soldRec || []).filter(t => (t[key] || 0) > 0).sort((a, b) => b[key] - a[key]);
+    if (!list.length) return '<div style="opacity:.6;text-align:center;padding:12px">아직 기록이 없어요</div>';
+    const tot = list.reduce((a, t) => a + t[key], 0), mx = list[0][key];
+    const byType = {}; for (const t of list) byType[t.type] = (byType[t.type] || 0) + t[key];
+    let h = limit ? '' : '<div class="msub">타워 종류별</div>';
+    if (!limit) h += Object.keys(byType).sort((a, b) => byType[b] - byType[a]).map(k => `<div class="mrw"><div class="mi">${TT[k].icon}</div><div class="mbar"><div class="mfill" style="width:${byType[k] / tot * 100}%;background:${TCOL[k]}aa"></div><div class="mlab"><span>${TT[k].name}</span><span>${fmtN(byType[k])} · ${Math.round(byType[k] / tot * 100)}%</span></div></div></div>`).join('');
+    if (!limit) h += '<div class="msub">타워별 순위</div>';
+    h += list.slice(0, limit || 40).map((t, i) => `<div class="mrw"><div class="mi">${i < 3 ? ['🥇', '🥈', '🥉'][i] : (t.br ? BR[t.type][t.br].icon : TT[t.type].icon)}</div><div class="mbar"><div class="mfill" style="width:${t[key] / mx * 100}%;background:${TCOL[t.type]}${t.sold ? '55' : 'aa'}"></div><div class="mlab"><span>${tname(t)} Lv.${t.lv}${t.sold ? ' (판매)' : ''}${t.type === 'hex' && t[key === 'dmgS' ? 'asS' : 'asT'] > 0 ? ` <b style="color:#d8b8ff">+디버프 ${fmtN(t[key === 'dmgS' ? 'asS' : 'asT'])}</b>` : ''}</span><span>${fmtN(t[key])} · ${Math.round(t[key] / tot * 100)}%</span></div></div></div>`).join('');
+    return (limit ? '' : `<div style="text-align:center;opacity:.8;font-size:13px">총 피해 ${fmtN(tot)}<br><small>🧪 저주술사의 "+디버프"는 저주 덕분에 다른 타워가 더 넣은 피해예요</small></div>`) + h;
+  }
+  let meterTab = 'stage';
+  function showMeter(auto) {
+    const st = Math.floor((G.wave - 1) / 5) + 1;
+    $('mTitle').textContent = auto ? `📊 스테이지 ${st} 결과 (웨이브 ${G.wave})` : '📊 딜 미터기';
+    meterTab = auto ? 'stage' : meterTab; renderMeter();
+    $('meter').classList.remove('hide'); G.paused = true; ui();
+  }
+  function renderMeter() {
+    document.querySelectorAll('.mtab').forEach(b => b.classList.toggle('on', b.dataset.m === meterTab));
+    $('mBody').innerHTML = meterRows(meterTab === 'stage' ? 'dmgS' : 'dmgT');
+  }
+  document.querySelectorAll('.mtab').forEach(b => b.onclick = () => { meterTab = b.dataset.m; renderMeter(); });
+  $('mClose').onclick = () => {
+    $('meter').classList.add('hide');
+    if (G.meterReset) { for (const t of G.towers.concat(G.soldRec || [])) { t.dmgS = 0; t.asS = 0; } G.meterReset = false; }
+    G.paused = false; ui();
+  };
+  $('meterBtn').onclick = () => showMeter(false);
+
   // ================== WIDE-SCREEN DOCK LAYOUT ==================
   let dockMode = 'none';
   function applyLayout() {
@@ -2070,6 +2246,7 @@
       <div class="row"><span>맵</span><span>${MAP_NAME}</span></div>
       <div class="row"><span>최고 기록</span><span>🏆 웨이브 ${BEST}</span></div>
       <h5 style="margin-top:10px">👀 다음 웨이브 ${G.wave + 1}${(G.wave + 1) % 10 === 0 ? ' — 마왕!' : ''}</h5><div class="nq">${nq}</div>
+      <h5 style="margin-top:10px">📊 이번 스테이지 딜 TOP 5</h5>${meterRows('dmgS', 5)}
       ${G.buff.rage > 0 || G.buff.haste > 0 ? `<h5 style="margin-top:10px">✨ 효과 중</h5>${G.buff.rage > 0 ? '<div>⚔️ 공격력 증폭</div>' : ''}${G.buff.haste > 0 ? '<div>⚡ 속사</div>' : ''}` : ''}`;
     if (h !== _info) { _info = h; $('infoCard').innerHTML = h; }
   }
@@ -2100,6 +2277,7 @@
       if (type === 'frost' && br === 'A') extra += ` · 빙결 ${lv >= 5 ? 45 : 30}%`;
       if (type === 'cannon' && br === 'B') extra = `산탄 ${lv >= 5 ? 12 : 8}발`;
       if (type === 'cannon' && br === 'A') extra = '폭발 범위 ↑';
+      if (type === 'hex') { const fx = hexFx({ type, lv, br }); extra = `방어 -${fx.shred} · 받는 피해 +${Math.round(fx.vuln * 100)}%${fx.strip ? ' · 마법저항 제거' : ''}${fx.aura ? ' · 범위 오라' : ''}`; }
       return `<tr class="${cls}"><td>${lv}</td><td>${tname({ type, lv, br }, lv)}</td><td class="n">${f(s.dmg)}</td><td class="n">${f(s.range, 1)}</td><td class="n">${f(1 / s.rate, 2)}</td><td class="n">${cost}</td><td>${extra}</td></tr>`;
     };
     let h = `<div class="gscroll"><table class="gtbl"><tr><th>Lv</th><th>이름</th><th>공격력</th><th>사거리</th><th>공속/초</th><th>비용</th><th>특수</th></tr>`;
@@ -2122,6 +2300,7 @@
       arrow: '빠른 단일 공격. 공중(박쥐)도 맞힘. 갈래 A는 사거리·한 방 위주(5단계부터 저격총 용병, 방어 무시), 갈래 B는 여러 적에게 동시에 화살.',
       cannon: '범위 폭발 피해. 기본은 지상만 공격. 갈래 A 전차는 사거리·폭발 범위 강화(지상만), 갈래 B 샷건 사냥꾼은 부채꼴 산탄으로 공중도 공격.',
       frost: '맞은 적을 느리게 함, 방어 무시. 갈래 A 여왕은 확률로 완전히 얼림, 갈래 B 눈보라 술사는 사거리 안 모든 적에게 지속 피해 + 감속.',
+      hex: '공격력은 약하지만 맞은 적에게 3초 동안 저주를 걸어 방어력을 깎고 모든 타워에게서 받는 피해를 늘려요. 물리 타워(궁수·대포)와 함께 쓰면 효과가 커요. 갈래 A 부식의 마녀는 한 곳에 강한 방어 파괴 + 방패 기사의 마법 저항 제거, 갈래 B 역병 술사는 사거리 안 모든 적에게 저주 오라. 저주 걸린 적 발밑에 보라색 고리가 보여요.',
       bolt: '여러 적에게 이어지는 연쇄 번개, 방어 무시. 갈래 A 라그나로크는 연쇄 수·거리 대폭 증가, 갈래 B 심판자는 하늘에서 여러 곳에 낙뢰 범위 피해.',
     };
     for (const k of ORDER) h += `<div class="gcard"><h4>${TT[k].icon} ${TT[k].name} <small style="font-size:13px;opacity:.7">건설 ${TT[k].cost}💰</small></h4><p>${notes[k]}</p>${towerTable(k)}</div>`;
