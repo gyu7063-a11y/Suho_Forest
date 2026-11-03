@@ -483,8 +483,10 @@
 
   // ================== THREE SETUP ==================
   const wrap = $('wrap');
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  const IS_MOBILE = /iPhone|iPad|Android/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+  const PR_MAX = () => IS_MOBILE ? 1.5 : 2;
+  const renderer = new THREE.WebGLRenderer({ antialias: !IS_MOBILE, powerPreference: 'low-power' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PR_MAX()));
   
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   wrap.insertBefore(renderer.domElement, wrap.firstChild);
@@ -1201,12 +1203,14 @@
       aura(0x9ff0ff, five ? 1.6 : 1.3, five ? .2 : .14);
     } else if (type === 'frost') {
       // Blizzard Caller: dark hooded cloak, scarf mask, glowing eyes, no wings, snow orb
-      recape(five ? 0x18223a : 0x2a3a5a);
-      const navy = mat(0x2a3858, { roughness: .8 }), npanel = mat(0x6fb8d8, { roughness: .6 });
+      recape(five ? 0x7fd0ff : 0xa8ddf8);
+      const navy = mat(0xf2faff, { roughness: .6 }), npanel = mat(0x3fb0e8, { roughness: .4, emissive: 0x0a4a6a });
       fig.traverse(o => { if (o.isMesh && o.material === U.robeM) o.material = navy; else if (o.isMesh && o.material === U.panelM) o.material = npanel; });
       U.crownParts.forEach(o => o.visible = false);
       if (U.wings) U.wings.forEach(w => w.visible = false);
-      const hood = mesh(geo('bhood', () => new THREE.SphereGeometry(.2, 16, 10, 0, Math.PI * 2, 0, Math.PI * .66)), mat(five ? 0x1a2440 : 0x22304e, { side: THREE.DoubleSide, roughness: .9 }), 0, .76, -.03); hood.rotation.x = -.4; fig.add(hood);
+      const hood = mesh(geo('bhood', () => new THREE.SphereGeometry(.2, 16, 10, 0, Math.PI * 2, 0, Math.PI * .66)), mat(five ? 0xdff4ff : 0xeaf8ff, { side: THREE.DoubleSide, roughness: .7 }), 0, .76, -.03); hood.rotation.x = -.4; fig.add(hood);
+      const fur = mesh(geo('bfur', () => new THREE.TorusGeometry(.17, .04, 8, 18)), mat(0xffffff, { roughness: 1 }), 0, .79, .02); fur.rotation.x = Math.PI / 2 - .5; fig.add(fur);
+      for (let k = 0; k < (five ? 5 : 3); k++) { const a = (k - (five ? 2 : 1)) * .45; const ic = mesh(geo('bicic', () => new THREE.ConeGeometry(.03, .16, 6)), ICE, Math.sin(a) * .17, .93 - Math.abs(a) * .1, Math.cos(a) * .1 - .05, false); fig.add(ic); }
       const mask = mesh(geo('bmask', () => new THREE.TorusGeometry(.12, .05, 8, 16)), mat(0x9fc8e0, { roughness: 1 }), 0, .65, .02); mask.rotation.x = Math.PI / 2 - .2; fig.add(mask);
       for (const sx of [-.05, .05]) { fig.add(mesh(sph(.026, 8, 6), basic(0x9ff8ff), sx, .715, .155, false)); }
       const eg = glow(0x9ff8ff, .3, .7); eg.position.set(0, .715, .16); fig.add(eg);
@@ -1433,16 +1437,55 @@
 
   function attachTower(t) {
     window.__dirty = true;
-    if (t.obj) { scene.remove(t.obj); }
+    if (t.obj) dropTowerObj(t.obj);
     t.obj = buildTower(t.type, t.lv, t.br); t.obj.scale.setScalar(1.1); t.obj.position.copy(W(t.x, t.y)); t.obj.userData.tower = t;
     t.obj.traverse(o => { o.userData.tower = t; });
     const U = t.obj.userData.U || {}, anim = new Set();
     const addA = v => { if (!v) return; if (v.isObject3D) anim.add(v); else if (Array.isArray(v)) v.forEach(addA); };
     Object.values(U).forEach(addA); if (U.bubbles) U.bubbles.children.forEach(c => anim.add(c));
     t.obj.updateMatrixWorld(true);
-    t.obj.traverse(o => { if (!anim.has(o)) { o.updateMatrix(); o.matrixAutoUpdate = false; } });
+    mergeStatic(t.obj, anim);
+    t.obj.traverse(o => { o.userData.tower = t; if (!anim.has(o)) { o.updateMatrix(); o.matrixAutoUpdate = false; } });
     scene.add(t.obj);
   }
+  // merge non-animated meshes (per animated parent + material) to cut draw calls
+  const _inv = new THREE.Matrix4(), _rel = new THREE.Matrix4(), _nm = new THREE.Matrix3();
+  function mergeStatic(root, anim) {
+    const groups = new Map();
+    root.traverse(m => {
+      if (!m.isMesh || anim.has(m) || !m.visible || Array.isArray(m.material) || m.children.length) return;
+      let o = m.parent; while (o && o !== root && !anim.has(o)) o = o.parent;
+      const owner = o || root;
+      const k = owner.uuid + '|' + m.material.uuid + '|' + (m.castShadow ? 1 : 0);
+      if (!groups.has(k)) groups.set(k, { owner, mat: m.material, cast: m.castShadow, list: [] });
+      groups.get(k).list.push(m);
+    });
+    root.userData.mergedGeo = [];
+    for (const g of groups.values()) {
+      if (g.list.length < 2) continue;
+      _inv.copy(g.owner.matrixWorld).invert();
+      let n = 0; const parts = [];
+      for (const m of g.list) { let geo = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry; parts.push([m, geo]); n += geo.attributes.position.count; }
+      const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), uv = new Float32Array(n * 2); let off = 0;
+      for (const [m, geo] of parts) {
+        _rel.multiplyMatrices(_inv, m.matrixWorld); _nm.getNormalMatrix(_rel);
+        const P = geo.attributes.position, N = geo.attributes.normal, T = geo.attributes.uv, v = new THREE.Vector3();
+        for (let i = 0; i < P.count; i++) {
+          v.fromBufferAttribute(P, i).applyMatrix4(_rel); pos.set([v.x, v.y, v.z], (off + i) * 3);
+          if (N) { v.fromBufferAttribute(N, i).applyMatrix3(_nm).normalize(); nor.set([v.x, v.y, v.z], (off + i) * 3); }
+          if (T) { uv[(off + i) * 2] = T.getX(i); uv[(off + i) * 2 + 1] = T.getY(i); }
+        }
+        off += P.count; if (geo !== m.geometry) geo.dispose();
+        m.parent.remove(m);
+      }
+      const mg = new THREE.BufferGeometry();
+      mg.setAttribute('position', new THREE.BufferAttribute(pos, 3)); mg.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); mg.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      mg.computeBoundingSphere();
+      const mm = new THREE.Mesh(mg, g.mat); mm.castShadow = g.cast; mm.receiveShadow = true;
+      g.owner.add(mm); root.userData.mergedGeo.push(mg);
+    }
+  }
+  function dropTowerObj(obj) { if (!obj) return; scene.remove(obj); (obj.userData.mergedGeo || []).forEach(gm => gm.dispose()); }
   // ghost previews
   const ghostMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .45, depthWrite: false });
   const ghosts = {};
@@ -1560,7 +1603,7 @@
   let BEST = 0;
   try { BEST = +localStorage.getItem('forestTD.best') || 0; } catch (e) {}
   function reset() {
-    if (G.towers) G.towers.forEach(t => scene.remove(t.obj));
+    if (G.towers) G.towers.forEach(t => dropTowerObj(t.obj));
     if (G.enemies) G.enemies.forEach(disposeEnemy);
     if (G.projs) G.projs.forEach(p => scene.remove(p.obj));
     if (G.fx) G.fx.forEach(f => killFx(f));
@@ -2202,7 +2245,7 @@
   }
   function sellTower() {
     const t = G.selTower; if (!t) return;
-    G.gold += sellValue(t); scene.remove(t.obj); G.towers = G.towers.filter(o => o !== t); G.selTower = null;
+    G.gold += sellValue(t); dropTowerObj(t.obj); G.towers = G.towers.filter(o => o !== t); G.selTower = null;
     if (t.dmgT > 0) { t.sold = true; (G.soldRec = G.soldRec || []).push(t); }
     floatText(t.x, t.y, .8, '+' + sellValue(t)); renderFooter();
   }
@@ -2287,7 +2330,7 @@
   const BASE_SPEED = 3; // 1× now equals the old 3×
   let last = performance.now();
   let lastDraw = 0, ECO = false, SHADOW = false;
-  try { ECO = localStorage.getItem('forestTD.eco') === '1'; SHADOW = localStorage.getItem('forestTD.shadow') === '1'; } catch (e) {}
+  try { const ev = localStorage.getItem('forestTD.eco'); ECO = ev === null ? IS_MOBILE : ev === '1'; SHADOW = localStorage.getItem('forestTD.shadow') === '1'; } catch (e) {}
   const refreshMats = () => scene.traverse(o => { if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m.needsUpdate = true); });
   function setShadow(on) {
     SHADOW = on; try { localStorage.setItem('forestTD.shadow', on ? '1' : '0'); } catch (e) {}
@@ -2296,7 +2339,7 @@
   }
   function setEco(on) {
     ECO = on; try { localStorage.setItem('forestTD.eco', on ? '1' : '0'); } catch (e) {}
-    renderer.setPixelRatio(on ? 1 : Math.min(window.devicePixelRatio || 1, 2)); fitCamera();
+    renderer.setPixelRatio(on ? 1 : Math.min(window.devicePixelRatio || 1, PR_MAX())); fitCamera();
     $('ecoBtn').classList.toggle('on', on); $('ecoBtn').textContent = on ? '🔋 절전 모드 켜짐 (30fps · 저해상도)' : '🔋 절전 모드 꺼짐';
   }
   function loop(now) {
@@ -2355,7 +2398,7 @@
   };
   $('tpSpeed').onclick = () => { G.speed = G.speed === 10 ? 1 : 10; ui(); tpLabels(); };
   $('tpKill').onclick = () => { for (const e of G.enemies) e.alive = false; update(.001); };
-  $('tpClear').onclick = () => { for (const t of G.towers) scene.remove(t.obj); G.towers = []; G.selTower = null; renderFooter(); window.__dirty = true; };
+  $('tpClear').onclick = () => { for (const t of G.towers) dropTowerObj(t.obj); G.towers = []; G.selTower = null; renderFooter(); window.__dirty = true; };
 
   function showVictory() {
     if (!G.test && 100 > BEST) { BEST = 100; try { localStorage.setItem('forestTD.best', BEST); } catch (e) {} }
