@@ -227,7 +227,7 @@
 
   /* ===== PC: hero & relics ===== */
   #heroBar { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); display: none; gap: 8px; z-index: 5; align-items: flex-end; pointer-events: none; }
-  body[data-device=pc] #heroBar { display: flex; }
+  body[data-device] #heroBar { display: flex; }
   #heroBar .hlv { background: rgba(0,0,0,.55); border: 1px solid #ffffff30; border-radius: 12px; padding: 5px 10px; font-size: 13px; color: #ffe08a; min-width: 128px; line-height: 1.3; }
   #heroBar .hlv small { display: block; color: #ddd; opacity: .75; font-size: 11px; }
   .hxp { height: 6px; background: #00000080; border-radius: 3px; overflow: hidden; margin-top: 3px; } .hxp i { display: block; height: 100%; background: linear-gradient(90deg, #ffb84a, #fff2b0); }
@@ -235,7 +235,7 @@
   .hsk .kb { position: absolute; left: 4px; top: 1px; font-size: 12px; color: #ffe08a; }
   .hsk .cdv { position: absolute; inset: 0; border-radius: 11px; background: rgba(0,0,0,.66); display: none; align-items: center; justify-content: center; font-size: 18px; }
   .hsk.cd .cdv { display: flex; } .hsk.lock { filter: grayscale(1); opacity: .5; } .hsk.ready { box-shadow: 0 0 12px #ffd75e99; }
-  #heroCard { display: none; } body[data-device=pc].dock-side #heroCard { display: block; }
+  #heroCard { display: none; } body.dock-side #heroCard { display: block; }
   #heroCard .sk { display: flex; gap: 8px; align-items: center; font-size: 13px; margin: 2px 0; } #heroCard .sk b { color: #ffe08a; font-weight: 400; min-width: 16px; } #heroCard .sk span:last-child { margin-left: auto; color: #9fe39f; }
   #heroCard .hg { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; margin-top: 4px; }
   #heroCard .rl { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
@@ -256,8 +256,26 @@
   .rcard .rd { font-size: 14px; line-height: 1.55; opacity: .93; text-align: center; flex: 1; } .rcard .rd b { color: #ffd75e; font-weight: 400; }
   .rcard .rs { font-size: 12px; color: #9fe39f; } .rcard .rk { font-size: 12px; opacity: .55; }
   .rbtns { display: flex; gap: 10px; }
+  body[data-device=iphone] .hsk .kb, body[data-device=ipad] .hsk .kb { display: none; }
+  .hsk.mv { display: none; } body[data-device=iphone] .hsk.mv, body[data-device=ipad] .hsk.mv { display: block; }
+  .hsk.mv.on { border-color: #7cff7c; box-shadow: 0 0 14px #7cff7caa; background: linear-gradient(180deg, #24402a, #13261a); }
+  #moveHint { position: absolute; left: 50%; top: 54px; transform: translateX(-50%); z-index: 7; background: rgba(20,60,30,.9); border: 1px solid #7cff7c; border-radius: 12px; padding: 6px 14px; font-size: 14px; display: none; pointer-events: none; white-space: nowrap; }
+  #moveHint.show { display: block; }
+  body[data-device=iphone] #heroBar { left: 6px; bottom: 6px; transform: none; gap: 5px; }
+  body[data-device=iphone] .hsk { width: 46px; height: 46px; font-size: 20px; border-radius: 11px; }
+  body[data-device=iphone] #heroBar .hlv { min-width: 0; width: 86px; font-size: 11px; padding: 4px 6px; }
+  body[data-device=iphone] #heroBar .hlv small { display: none; }
+  @media (max-width: 720px) {
+    #relicOv { justify-content: flex-start; padding: calc(24px + env(safe-area-inset-top)) 12px 20px; gap: 12px; overflow-y: auto; }
+    #relicOv h3 { font-size: 22px; text-align: center; } #relicOv .rsub { font-size: 13px; margin-top: -4px; }
+    .rcards { flex-direction: column; gap: 10px; width: 100%; max-width: 420px; }
+    .rcard { width: 100%; min-height: 0; flex-direction: row; text-align: left; padding: 12px 12px; gap: 12px; display: grid; grid-template-columns: 58px 1fr; grid-template-areas: "i r" "i n" "i d" "i s"; align-items: center; }
+    .rcard .ri { grid-area: i; font-size: 46px; text-align: center; } .rcard .rr { grid-area: r; } .rcard .rn { grid-area: n; font-size: 19px; } .rcard .rd { grid-area: d; text-align: left; font-size: 13px; } .rcard .rs { grid-area: s; } .rcard .rk { display: none; }
+    .rcard:hover { transform: none; }
+    .rbtns { flex-wrap: wrap; justify-content: center; }
+  }
   .pconly { display: none; } body[data-device=pc] .pconly { display: inline; }
-  #testPanel .pcrow { display: none; } body[data-device=pc] #testPanel .pcrow { display: flex; }
+  #testPanel .pcrow { display: none; } body[data-device] #testPanel .pcrow { display: flex; }
   #banner {
     position: absolute; left: 50%; top: 30%; transform: translate(-50%, -50%) scale(.8); pointer-events: none;
     font-size: 28px; padding: 10px 24px; border-radius: 16px; background: rgba(10,20,12,.8); border: 2px solid #ffd75e;
@@ -319,7 +337,7 @@
       <div class="tpr pcrow"><button id="tpRelic">🔮 유물 뽑기</button><button id="tpHero">⭐ 영웅 Lv +5</button></div>
       <div class="tpn">테스트 모드 기록은 최고 기록에 저장되지 않아요</div>
     </div></div>
-    <div id="heroBar"><div class="hlv" id="hbLv"></div><button class="hsk" data-i="0"><span class="kb">Z</span>💨<span class="cdv"></span></button><button class="hsk" data-i="1"><span class="kb">X</span>🌀<span class="cdv"></span></button><button class="hsk" data-i="2"><span class="kb">C</span>⚔️<span class="cdv"></span></button></div>
+    <div id="heroBar"><div class="hlv" id="hbLv"></div><button class="hsk" data-i="0"><span class="kb">Z</span>💨<span class="cdv"></span></button><button class="hsk" data-i="1"><span class="kb">X</span>🌀<span class="cdv"></span></button><button class="hsk" data-i="2"><span class="kb">C</span>⚔️<span class="cdv"></span></button><button class="hsk mv" id="hMove">🚶</button></div><div id="moveHint">🚶 영웅이 갈 곳을 터치하세요</div>
     <div id="panel"></div>
     <div id="lab"></div>
   </div>
@@ -328,7 +346,7 @@
   <footer id="footer"></footer>
   <div class="help">단축키: 1~5 타워 · Space 웨이브 · U 강화 · S 판매 · R 능력 강화 · Q 공격력 증폭 · E 속사 · F 배속 · Esc 취소 <span class="pconly">· 우클릭 영웅 이동 · Z/X/C 영웅 스킬</span></div>
 </div>
-<div id="relicOv" class="hide"><h3 id="rTitle"></h3><div class="rsub">유물 하나를 고르세요 · 1 / 2 / 3 키로도 선택</div><div class="rcards" id="rCards"></div><div class="rbtns"><button class="hbtn" id="rReroll"></button><button class="hbtn" id="rSkip"></button></div></div>
+<div id="relicOv" class="hide"><h3 id="rTitle"></h3><div class="rsub">유물 하나를 고르세요<span class="pconly"> · 1 / 2 / 3 키로도 선택</span></div><div class="rcards" id="rCards"></div><div class="rbtns"><button class="hbtn" id="rReroll"></button><button class="hbtn" id="rSkip"></button></div></div>
 <div id="title">
   <div class="logo">🌲 수호의 숲 🌲</div>
   <div class="sub">3D 타워 디펜스</div>
@@ -419,6 +437,7 @@
     bat:   { hp: 20,  speed: 1.9, gold: 4,  armor: 0, h: .95, color: 0xd05fb0, fly: true, name: '박쥐', info: '공중 유닛 · 대포(전차)는 못 맞춤' },
     golem: { hp: 120, speed: .6,  gold: 10, armor: 4, h: .45, color: 0x9a948c, name: '돌 골렘', info: '느리지만 단단함 · 방어력' },
     boss:  { hp: 700, speed: .5,  gold: 70, armor: 6, h: .7,  color: 0xc8352e, lives: 5, name: '마왕', info: '10웨이브마다 등장 · 성문 도달 시 생명 -5 · 얼음에 덜 얼음' },
+    goldslime: { hp: 45, speed: 1.55, gold: 0, armor: 0, h: .26, color: 0xffcc33, name: '황금 슬라임', info: '빠르게 도망가는 보물 · 잡으면 큰 골드, 25% 확률로 유물', treasure: true },
     abyss: { hp: 700, speed: .32, gold: 3000, armor: 12, h: 1.1, color: 0x3a1460, lives: 20, mres: .3, name: '심연의 군주', info: '웨이브 100 최종 보스 · 거대 체력 · 마법 피해 30% 감소 · 성문 도달 시 생명 -20' },
     wolf:  { hp: 28,  speed: 2.5, gold: 5,  armor: 0, h: .3,  color: 0x8a8a92, name: '질주 늑대', info: '매우 빠름' },
     knight:{ hp: 170, speed: .7,  gold: 12, armor: 9, h: .45, color: 0x7a8aa8, mres: .5, name: '방패 기사', info: '방어력 높음 · 마법 피해 절반' },
@@ -1535,12 +1554,13 @@
 
   function buildEnemy(type) {
     const g = new THREE.Group(), U = {}, b = ET[type];
-    const bodyM = new THREE.MeshStandardMaterial({ color: b.color, roughness: type === 'slime' || type === 'kingslime' ? .25 : type === 'knight' ? .4 : .8, metalness: type === 'knight' ? .5 : 0, flatShading: type === 'golem' || type === 'boss' || type === 'abyss' || type === 'wolf', emissive: 0x000000 });
+    const bodyM = new THREE.MeshStandardMaterial({ color: b.color, roughness: type === 'slime' || type === 'kingslime' || type === 'goldslime' ? .25 : type === 'knight' ? .4 : .8, metalness: type === 'knight' ? .5 : 0, flatShading: type === 'golem' || type === 'boss' || type === 'abyss' || type === 'wolf', emissive: 0x000000 });
     U.bodyM = bodyM;
     if (type === 'ghost') { bodyM.transparent = true; bodyM.opacity = .78; bodyM.depthWrite = false; }
     const eyeW = basic(0xffffff), eyeB = basic(0x111111);
     const body = new THREE.Group(); g.add(body); U.body = body;
-    if (type === 'slime') {
+    if (type === 'goldslime') { bodyM.metalness = .55; bodyM.emissive = new THREE.Color(0x7a5200); bodyM.emissiveIntensity = .45; const gg = glow(0xffe08a, .9, .6); gg.position.y = .25; g.add(gg); }
+    if (type === 'slime' || type === 'goldslime') {
       const s = mesh(sph(.28, 20, 14), bodyM, 0, .24, 0); s.scale.set(1, .85, 1); body.add(s);
       body.add(mesh(sph(.08, 10, 8), basic(0xffffff, { transparent: true, opacity: .5 }), -.1, .38, .12, false));
       for (const sx of [-.09, .09]) { body.add(mesh(sph(.06, 10, 8), eyeW, sx, .3, .22, false)); body.add(mesh(sph(.032, 8, 6), eyeB, sx, .3, .27, false)); }
@@ -1617,7 +1637,7 @@
         body.add(mesh(cyl(.17 * s, .17 * s, .05, 12), gold, 0, .86 * s, .02));
       }
     }
-    const iceS = { slime: [.7, .62, .7, .3], bat: [.5, .45, .5, .95], golem: [.8, 1.0, .65, .5], boss: [1.25, 1.6, 1.0, .8], abyss: [1.9, 2.4, 1.5, 1.2], wolf: [.45, .5, .75, .28], knight: [.65, .95, .55, .45], kingslime: [1.0, .9, 1.0, .42], ghost: [.55, .65, .55, .75], shaman: [.5, .7, .5, .35] }[type];
+    const iceS = { slime: [.7, .62, .7, .3], goldslime: [.7, .62, .7, .3], bat: [.5, .45, .5, .95], golem: [.8, 1.0, .65, .5], boss: [1.25, 1.6, 1.0, .8], abyss: [1.9, 2.4, 1.5, 1.2], wolf: [.45, .5, .75, .28], knight: [.65, .95, .55, .45], kingslime: [1.0, .9, 1.0, .42], ghost: [.55, .65, .55, .75], shaman: [.5, .7, .5, .35] }[type];
     const ice = mesh(box(iceS[0], iceS[1], iceS[2]), ICE, 0, iceS[3], 0, false); ice.visible = false; g.add(ice); U.ice = ice;
     // slow ring
     const sr = mesh(geo('slowr', () => new THREE.TorusGeometry(.32, .03, 6, 24)), basic(0x9ff0ff, { transparent: true, opacity: .85 }), 0, .03, 0, false); sr.rotation.x = Math.PI / 2; sr.visible = false; g.add(sr); U.slow = sr;
@@ -1630,7 +1650,7 @@
     const fg = new THREE.Mesh(geo('hpfg', () => { const p = new THREE.PlaneGeometry(.58, .055); p.translate(.29, 0, 0); return p; }), fgM); fg.position.x = -.29; fg.position.z = .001;
     bg.renderOrder = 10; fg.renderOrder = 11;
     bar.add(bg, fg); bar.visible = false; g.add(bar); U.bar = bar; U.fg = fg; U.fgM = fgM;
-    bar.position.y = { slime: .65, bat: .45, golem: 1.05, boss: 1.65, abyss: 2.6, wolf: .65, knight: 1.05, kingslime: .98, ghost: 1.15, shaman: .9 }[type];
+    bar.position.y = { slime: .65, goldslime: .65, bat: .45, golem: 1.05, boss: 1.65, abyss: 2.6, wolf: .65, knight: 1.05, kingslime: .98, ghost: 1.15, shaman: .9 }[type];
     if (type === 'boss') bar.scale.setScalar(1.6); if (type === 'abyss') bar.scale.setScalar(2.6);
     g.userData.U = U;
     return g;
@@ -1678,7 +1698,8 @@
   function startWave() {
     if (G.waveActive || G.over || G.choosing) return;
     G.autoT = 0;
-    G.queue = peekNext().slice(); G.wave++; G.nextQ = null; G.spawnT = 0; G.waveActive = true;
+    G.queue = peekNext().slice(); G.wave++;
+    if (G.wave >= 3 && G.wave !== 100 && Math.random() < .3) G.queue.splice(2 + Math.floor(Math.random() * Math.max(1, G.queue.length - 2)), 0, 'goldslime'); G.nextQ = null; G.spawnT = 0; G.waveActive = true;
     const st = Math.floor((G.wave - 1) / 5), stageUp = st !== G.stage;
     if (stageUp) { G.stage = st; applyTheme(st); }
     const ni = OPEN_AT.indexOf(G.wave);
@@ -1695,10 +1716,11 @@
     const b = ET[type], hp = b.hp * hpScale(G.wave) * (at ? 1.4 : 1);
     const open = OPEN_AT.filter(w => G.wave >= w).length;
     const pid = at ? at.pid : (type === 'boss' || type === 'abyss') ? 0 : (G.spawnIdx++) % open;
-    const elite = !at && G.wave >= 30 && type !== 'boss' && type !== 'abyss' && Math.random() < Math.min(.55, (G.wave - 25) * .02);
+    const elite = !at && G.wave >= 30 && !ET[type].treasure && type !== 'boss' && type !== 'abyss' && Math.random() < Math.min(.55, (G.wave - 25) * .02);
     const ehp = (elite ? hp * 2.3 : hp) * (type === 'abyss' ? 12 : 1);
     const e = { type, pid, elite, frozenT: 0, hp: ehp, maxHp: ehp, speed: b.speed * (1 + Math.min(.35, G.wave * .01)), d: 0, x: PATHS[pid].pts[0].x, y: PATHS[pid].pts[0].y, slowT: 0, slowAmt: 0, hitT: 0, phase: Math.random() * 6, alive: true, gT: Math.random() * 4, healT: 2 };
     if (at) { e.d = Math.max(0, at.d + (Math.random() - .5) * .6); const q = posAt(e.d, pid); e.x = q.x; e.y = q.y; }
+    if (type === 'goldslime') { e.hp = e.maxHp = ET.goldslime.hp * hpScale(G.wave) * 1.5; banner('✨ 황금 슬라임 등장! 도망가기 전에 잡아요'); sfx('clear'); }
     e.obj = buildEnemy(type); e.obj.position.copy(W(e.x, e.y)); if (elite) e.obj.scale.setScalar(1.25); scene.add(e.obj);
     G.enemies.push(e);
   }
@@ -2017,7 +2039,7 @@
       if (e.frozenT > 0) e.frozenT -= dt;
       else e.d += e.speed * (e.slowT > 0 ? 1 - e.slowAmt : 1) * dt;
       if (e.d >= PATHS[e.pid].len) {
-        e.alive = false; if (!(G.test && G.god)) G.lives -= ET[e.type].lives || 1; sfx('leak'); shakeT = .3;
+        e.alive = false; if (ET[e.type].treasure) { banner('💨 황금 슬라임이 도망쳤어요…'); continue; } if (!(G.test && G.god)) G.lives -= ET[e.type].lives || 1; sfx('leak'); shakeT = .3;
         if (G.lives <= 0) { G.lives = 0; gameOver(); }
         ui(); continue;
       }
@@ -2115,7 +2137,7 @@
       const nx = posAt(e.d + .05, e.pid); const dx = nx.x - e.x, dy = nx.y - e.y;
       if (dx || dy) o.rotation.y = Math.atan2(dx, dy);
       if (e.type === 'ghost') { U.bodyM.opacity = e.vanish ? .12 : .78; U.body.position.y = Math.sin(e.phase * .4) * .06; }
-      if (e.type === 'slime' || e.type === 'kingslime') { const sq = Math.sin(e.phase); U.body.scale.set(1 + sq * .1, 1 - sq * .12, 1 + sq * .1); U.body.position.y = Math.max(0, sq) * .08; }
+      if (e.type === 'slime' || e.type === 'kingslime' || e.type === 'goldslime') { const sq = Math.sin(e.phase); U.body.scale.set(1 + sq * .1, 1 - sq * .12, 1 + sq * .1); U.body.position.y = Math.max(0, sq) * .08; }
       else if (e.type === 'bat') { U.body.position.y = b.h + Math.sin(e.phase * .3) * .08; const f = Math.sin(e.phase) * .7; U.wings[0].rotation.z = f; U.wings[1].rotation.z = -f; }
       else if (e.type === 'wolf') { U.arms[0].rotation.x = Math.sin(e.phase * 1.4) * .7; U.arms[1].rotation.x = -Math.sin(e.phase * 1.4) * .7; U.body.position.y = Math.abs(Math.sin(e.phase * 1.4)) * .05; }
       else { U.body.rotation.z = Math.sin(e.phase * .5) * .06; U.body.position.y = Math.abs(Math.sin(e.phase * .5)) * .04; U.arms[0].rotation.x = Math.sin(e.phase * .5) * .5; U.arms[1].rotation.x = -Math.sin(e.phase * .5) * .5; }
@@ -2223,13 +2245,14 @@
     return { tower, cell, gp };
   }
   const cvs = renderer.domElement;
-  cvs.addEventListener('pointermove', ev => { if (ev.pointerType === 'mouse') { window.__dirty = true; const { cell, gp } = pick(ev); G.hover = cell; if (gp) G.mouse = { x: gp.x + COLS / 2, y: gp.z + ROWS / 2 }; } });
+  cvs.addEventListener('pointermove', ev => { if (ev.pointerType === 'mouse') { window.__dirty = true; const { cell, gp } = pick(ev); G.hover = cell; if (gp) G.mouse = { x: gp.x + COLS / 2, y: gp.z + ROWS / 2 }; G.useMouse = PCX(); } });
   cvs.addEventListener('contextmenu', ev => ev.preventDefault());
   cvs.addEventListener('pointerleave', () => { G.hover = null; });
   cvs.addEventListener('pointerdown', ev => {
     window.__dirty = true;
     if (G.over) return;
     const { tower, cell, gp } = pick(ev);
+    if (G.moveMode && ev.button !== 2) { if (gp && G.hero) heroMove(gp.x + COLS / 2, gp.z + ROWS / 2); setMoveMode(false); return; }
     if (ev.button === 2) { if (gp && G.hero) heroMove(gp.x + COLS / 2, gp.z + ROWS / 2); if (G.placing) { G.placing = null; renderFooter(); } return; }
     if (G.placing) {
       if (cell && canBuild(cell.x, cell.y)) {
@@ -2295,16 +2318,16 @@
     return g;
   }
   function heroPresence() {
-    if (PCX() && !G.hero) {
+    if (!G.hero) {
       const h = G.hero = { x: COLS / 2, y: ROWS / 2 + .5, tx: null, ty: null, face: 0, lv: 1, xp: 0, dmg: 0, kills: 0, atk: 0, swing: 0, spin: 0, dash: null, cd: [0, 0, 0], moving: false };
       h.obj = buildHero(); h.obj.position.copy(W(h.x, h.y)); scene.add(h.obj);
       heroUI(true);
-    } else if (!PCX() && G.hero) { scene.remove(G.hero.obj); G.hero = null; }
+    }
   }
   function resetHero() {
     if (G.hero) scene.remove(G.hero.obj);
     if (G.hproj) G.hproj.forEach(p => { scene.remove(p.obj); p.obj.material.dispose(); });
-    G.hero = null; G.hproj = []; G.rel = {}; G.booms = []; G.choosing = false; G.relicOffer = null;
+    G.hero = null; G.hproj = []; G.rel = {}; G.moveMode = false; if ($('hMove')) { $('hMove').classList.remove('on'); $('moveHint').classList.remove('show'); } G.booms = []; G.choosing = false; G.relicOffer = null;
     if ($('relicOv')) $('relicOv').classList.add('hide');
   }
   const clampX = x => Math.max(.3, Math.min(COLS - .3, x)), clampY = y => Math.max(.3, Math.min(ROWS - .3, y));
@@ -2359,7 +2382,7 @@
     if (!h || !S || G.over || !G.started || G.paused || G.choosing) return;
     if (S.lv && h.lv < S.lv) { banner(`${S.icon} ${S.name}: 영웅 Lv.${S.lv}에 해금돼요`); return; }
     if (h.cd[i] > 0) return;
-    const m = G.mouse || { x: h.x + Math.sin(h.face), y: h.y + Math.cos(h.face) };
+    const m = (G.useMouse && G.mouse) ? G.mouse : autoAim(i) || { x: h.x + Math.sin(h.face), y: h.y + Math.cos(h.face) };
     if (i === 0) {
       let dx = m.x - h.x, dy = m.y - h.y, L = Math.hypot(dx, dy);
       if (L < .05) { dx = Math.sin(h.face); dy = Math.cos(h.face); L = 1; }
@@ -2385,6 +2408,13 @@
     }
     h.cd[i] = S.cd * heroCdMul(); heroUI(true);
   }
+  function autoAim(i) { // touch: dash toward the nearest enemy, sword lands on the densest crowd
+    const h = G.hero, live = G.enemies.filter(e => e.alive && !e.vanish); if (!live.length) return null;
+    if (i === 0) { let b = null, bd = 1e9; for (const e of live) { const d = Math.hypot(e.x - h.x, e.y - h.y); if (d < bd) { bd = d; b = e; } } return { x: b.x, y: b.y }; }
+    let best = live[0], bs = -1;
+    for (const e of live) { let sc = 0; for (const o of live) if (Math.hypot(o.x - e.x, o.y - e.y) < 3) sc += o.maxHp; if (e.type === 'boss' || e.type === 'abyss') sc *= 1.5; if (sc > bs) { bs = sc; best = e; } }
+    return { x: best.x, y: best.y };
+  }
   function heroGain(n) {
     const h = G.hero; if (!h || h.lv >= HMAX) return;
     h.xp += n * (G.rel.xp ? 2 : 1);
@@ -2398,6 +2428,10 @@
   function onKill(e) {
     const big = e.type === 'boss' || e.type === 'abyss';
     if (G.hero) { if (heroing) G.hero.kills++; heroGain((heroing ? 3 : 1) * (big ? 10 : e.elite ? 2 : 1)); }
+    if (e.type === 'goldslime') {
+      const g = 40 + G.wave * 12; G.gold += g; G.earned += g; floatText(e.x, e.y, .8, '💰+' + g); burst(e.x, e.y, .3, 0xffd23a, 24);
+      if (Math.random() < .25) { banner('🎁 황금 슬라임이 유물을 떨어뜨렸어요!'); setTimeout(openRelics, 500); } else banner(`✨ 황금 슬라임 처치! +${g}💰`);
+    }
     const RL = G.rel || {};
     if (RL.boom && G.booms.length < 40) G.booms.push({ x: e.x, y: e.y, dmg: e.maxHp * (.05 + .1 * RL.boom) * (big ? .3 : 1) });
     if (RL.plague && e.debT > 0) {
@@ -2435,9 +2469,9 @@
     const h = G.hero; if (!h) return;
     const now = performance.now(); if (!force && now - _huT < 200) return; _huT = now;
     const need = heroNeed(h.lv), pct = h.lv >= HMAX ? 100 : Math.round(h.xp / need * 100);
-    const lvH = `🛡️ 수호 기사 Lv.${h.lv}${h.lv >= HMAX ? ' (MAX)' : ''}<div class="hxp"><i style="width:${pct}%"></i></div><small>우클릭 이동 · 공격 ${fmtN(heroDmg())}</small>`;
+    const lvH = `🛡️ 수호 기사 Lv.${h.lv}${h.lv >= HMAX ? ' (MAX)' : ''}<div class="hxp"><i style="width:${pct}%"></i></div><small>${PCX() ? '우클릭 이동 · ' : ''}공격 ${fmtN(heroDmg())}</small>`;
     if (_hu.lv !== lvH) { _hu.lv = lvH; $('hbLv').innerHTML = lvH; }
-    document.querySelectorAll('#heroBar .hsk').forEach(b => {
+    document.querySelectorAll('#heroBar .hsk[data-i]').forEach(b => {
       const i = +b.dataset.i, S = HSK[i], lock = S.lv && h.lv < S.lv, cd = h.cd[i];
       const cls = 'hsk' + (lock ? ' lock' : cd > 0 ? ' cd' : ' ready'), txt = lock ? 'Lv' + S.lv : cd > 0 ? Math.ceil(cd / BASE_SPEED) + '' : '';
       if (b.className !== cls) b.className = cls;
@@ -2450,13 +2484,15 @@
     const card = `<h5>🛡️ 수호 기사 · Lv.${h.lv}</h5><div class="hxp"><i style="width:${pct}%"></i></div>
       <div class="hg"><div class="row"><span>경험치</span><span>${h.lv >= HMAX ? 'MAX' : `${Math.floor(h.xp)} / ${need}`}</span></div><div class="row"><span>공격력</span><span>${fmtN(heroDmg())}</span></div>
       <div class="row"><span>준 피해</span><span>${fmtN(h.dmg)}</span></div><div class="row"><span>처치</span><span>${h.kills}</span></div></div>
-      <div class="hg">${HSK.map((S, i) => `<div class="sk"><b>${'ZXC'[i]}</b>${S.icon} ${S.name}<span>${S.lv && h.lv < S.lv ? `Lv.${S.lv} 해금` : h.cd[i] > 0 ? Math.ceil(h.cd[i] / BASE_SPEED) + '초' : '준비'}</span></div>`).join('')}</div>
-      <div class="tip">우클릭: 이동 · 스킬은 마우스 커서 방향/위치로 사용</div>
+      <div class="hg">${HSK.map((S, i) => `<div class="sk"><b>${PCX() ? 'ZXC'[i] : ''}</b>${S.icon} ${S.name}<span>${S.lv && h.lv < S.lv ? `Lv.${S.lv} 해금` : h.cd[i] > 0 ? Math.ceil(h.cd[i] / BASE_SPEED) + '초' : '준비'}</span></div>`).join('')}</div>
+      <div class="tip">${PCX() ? '우클릭: 이동 · 스킬은 마우스 커서 방향/위치로 사용' : '🚶 버튼 → 맵 터치: 이동 · 스킬은 가까운 적/몬스터가 몰린 곳을 자동 조준'}</div>
       <h5 style="margin-top:10px">🔮 유물 ${owned.length ? owned.reduce((a, r) => a + RL[r.id], 0) + '개' : ''} <small style="font-size:12px;opacity:.7">· 다음: 웨이브 ${nextW} 클리어</small></h5>
       ${owned.length ? `<div class="rl">${owned.map(r => `<span style="--rc:${RRC[r.r][0]}" title="${r.name} — ${r.desc(RL[r.id]).replace(/<[^>]+>/g, '')}">${r.icon}${RL[r.id] > 1 ? '×' + RL[r.id] : ''}</span>`).join('')}</div>` : '<div class="ph" style="padding:6px">5웨이브마다 유물을 하나 고를 수 있어요</div>'}`;
     if (_hu.card !== card) { _hu.card = card; $('heroCard').innerHTML = card; }
   }
-  document.querySelectorAll('#heroBar .hsk').forEach(b => b.onclick = () => heroSkill(+b.dataset.i));
+  document.querySelectorAll('#heroBar .hsk[data-i]').forEach(b => b.onclick = () => heroSkill(+b.dataset.i));
+  const setMoveMode = on => { G.moveMode = on; $('hMove').classList.toggle('on', on); $('moveHint').classList.toggle('show', on); };
+  $('hMove').onclick = () => { if (!G.hero) return; setMoveMode(!G.moveMode); if (G.moveMode) { G.placing = null; G.selTower = null; renderFooter(); } };
 
   // ================== PC ONLY: RELICS ==================
   const RRC = { 1: ['#9fd3a0', '#9fd3a055', '일반'], 2: ['#6ac8ff', '#6ac8ff66', '희귀'], 3: ['#ffb84a', '#ffb84a77', '전설'] };
@@ -2505,7 +2541,7 @@
     $('rSkip').textContent = `건너뛰고 ${skipGold()}💰 받기`;
   }
   function openRelics() {
-    if (G.over || !PCX() || G.choosing) return;
+    if (G.over || G.choosing) return;
     G.relicOffer = rollRelics(); if (!G.relicOffer.length) return;
     G.choosing = true; G.paused = true; G.rerollN = 0;
     renderRelics(); $('relicOv').classList.remove('hide'); sfx('clear'); ui();
@@ -2523,7 +2559,7 @@
     const RL = G.rel || {};
     if (RL.interest) { const g = Math.min(Math.round(G.gold * .06 * RL.interest), 60 + G.wave * 12); if (g > 0) { G.gold += g; setTimeout(() => banner(`🏦 이자 +${g}💰`), 900); } }
     if (RL.tree) G.lives++;
-    if (PCX() && G.wave % 5 === 0 && G.wave !== 100 && !G.over) setTimeout(openRelics, 700);
+    if (G.wave % 5 === 0 && G.wave !== 100 && !G.over) setTimeout(openRelics, 700);
   }
 
   // ================== UI ==================
@@ -2653,7 +2689,7 @@
     else if (k === 'f') $('speedBtn').click(); else if (k === 'p') $('pauseBtn').click();
     else if (k === 'q') castBuff('rage');
     else if (k === 'e') castBuff('haste');
-    else if (k === 'escape') { G.placing = null; G.selTower = null; G.casting = null; renderFooter(); }
+    else if (k === 'escape') { if (G.moveMode) setMoveMode(false); G.placing = null; G.selTower = null; G.casting = null; renderFooter(); }
   });
   document.addEventListener('visibilitychange', () => { if (document.hidden && G.waveActive) { G.paused = true; ui(); } });
   let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(fitCamera, 100); });
@@ -2823,8 +2859,8 @@
   }
 
   // ================== TITLE TABS ==================
-  const MICON = { slime: '🟢', bat: '🦇', golem: '🗿', wolf: '🐺', knight: '🛡️', kingslime: '👑', ghost: '👻', shaman: '🧙', boss: '😈', abyss: '👿' };
-  const MFIRST = { slime: '1', bat: '3', golem: '5', wolf: '7', knight: '12', kingslime: '15', ghost: '18', shaman: '24', boss: '10, 20, 30…', abyss: '100' };
+  const MICON = { goldslime: '🌟', slime: '🟢', bat: '🦇', golem: '🗿', wolf: '🐺', knight: '🛡️', kingslime: '👑', ghost: '👻', shaman: '🧙', boss: '😈', abyss: '👿' };
+  const MFIRST = { goldslime: '3~ (가끔)', slime: '1', bat: '3', golem: '5', wolf: '7', knight: '12', kingslime: '15', ghost: '18', shaman: '24', boss: '10, 20, 30…', abyss: '100' };
   function setTab(t) {
     document.querySelectorAll('.ttabs .ttab').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
     document.querySelectorAll('.tpage').forEach(p => p.classList.toggle('on', p.id === 'tp-' + t));
@@ -2878,7 +2914,7 @@
     for (const k of ORDER) h += `<div class="gcard"><h4>${TT[k].icon} ${TT[k].name} <small style="font-size:13px;opacity:.7">건설 ${TT[k].cost}💰</small></h4><p>${notes[k]}</p>${towerTable(k)}</div>`;
     h += `<div class="gcard"><p>· 표의 수치는 능력 강화·스킬 효과를 빼고 계산한 기본값이에요. 비용은 그 단계로 올리는 데 드는 골드. 4~7단계 회색 줄 위 4줄이 갈래 A, 아래 4줄이 갈래 B.<br>· 6단계 각성: 공격력 ×1.6, 공격 속도 +18%, 사거리 +0.2, 전용 스킬<br>· 7단계 초월(웨이브 55부터 가능): 공격력 추가 ×1.9, 공격 속도 +18%, 사거리 +0.3, 스킬 쿨타임 40% 감소</p></div>`;
     h += `<div class="gsec">👾 몬스터</div><div class="gcard"><div class="gscroll"><table class="gtbl"><tr><th></th><th>이름</th><th>체력</th><th>속도</th><th>방어</th><th>골드</th><th>등장</th><th>특징</th></tr>`;
-    for (const k of ['slime', 'bat', 'wolf', 'golem', 'knight', 'kingslime', 'ghost', 'shaman', 'boss', 'abyss']) {
+    for (const k of ['slime', 'bat', 'wolf', 'golem', 'knight', 'kingslime', 'ghost', 'shaman', 'boss', 'abyss', 'goldslime']) {
       const e = ET[k];
       h += `<tr><td>${MICON[k]}</td><td>${e.name}</td><td class="n">${e.hp}</td><td class="n">${e.speed}</td><td class="n">${e.armor}</td><td class="n">${e.gold}</td><td class="n">${MFIRST[k]}</td><td>${e.info}</td></tr>`;
     }
@@ -2892,7 +2928,7 @@
     h += `<div class="gsec">✨ 스킬 (화면 오른쪽 아래)</div><div class="gcard"><ul>`;
     for (const k in SPELLS) { const S = SPELLS[k]; h += `<li>${S.icon} <b>${S.name}</b> — ${S.desc}. 비용 80💰 + 웨이브×10, 재사용 30초 (1배속 기준)</li>`; }
     h += `</ul></div>`;
-    h += `<div class="gsec">🖥️ PC 전용 — 영웅 & 유물</div><div class="gcard"><p><b>🛡️ 수호 기사</b>: PC 모드에서만 나오는 직접 조종하는 영웅. <b>마우스 우클릭</b>으로 이동하고, 사거리 안의 적을 자동으로 공격해요. 몬스터가 죽으면 경험치(영웅이 직접 잡으면 3배)를 얻어 최대 Lv.${HMAX}까지 성장. 공격력은 웨이브에 맞춰 같이 강해져요.</p><ul>${HSK.map((S, i) => `<li><b>${'ZXC'[i]}</b> ${S.icon} <b>${S.name}</b> — ${S.desc}. 재사용 ${Math.round(S.cd / BASE_SPEED)}초</li>`).join('')}</ul>
+    h += `<div class="gsec">🛡️ 영웅 & 🔮 유물</div><div class="gcard"><p><b>🛡️ 수호 기사</b>: 직접 조종하는 영웅. PC는 <b>마우스 우클릭</b>, 아이폰·아이패드는 <b>🚶 버튼을 누르고 맵을 터치</b>해서 이동하고, 사거리 안의 적을 자동으로 공격해요. 몬스터가 죽으면 경험치(영웅이 직접 잡으면 3배)를 얻어 최대 Lv.${HMAX}까지 성장. 공격력은 웨이브에 맞춰 같이 강해져요. 터치 기기에서는 스킬이 가까운 적(돌진)·몬스터가 가장 많이 몰린 곳(성검 낙하)을 자동 조준해요.</p><ul>${HSK.map((S, i) => `<li><b>${'ZXC'[i]}</b> ${S.icon} <b>${S.name}</b> — ${S.desc}. 재사용 ${Math.round(S.cd / BASE_SPEED)}초</li>`).join('')}</ul>
       <p style="margin-top:8px"><b>🔮 유물</b>: 5웨이브를 클리어할 때마다 무작위 유물 3개 중 하나를 골라요. 골드를 내고 다시 뽑거나, 건너뛰고 골드를 받을 수도 있어요. 테두리 색: <span style="color:${RRC[1][0]}">일반</span> · <span style="color:${RRC[2][0]}">희귀</span> · <span style="color:${RRC[3][0]}">전설</span></p>
       <div class="gscroll"><table class="gtbl"><tr><th></th><th>유물</th><th>등급</th><th>효과 (1개)</th><th>최대</th></tr>${RELICS.map(r => `<tr><td>${r.icon}</td><td>${r.name}</td><td style="color:${RRC[r.r][0]}">${RRC[r.r][2]}</td><td>${r.desc(1)}</td><td class="n">${r.max}</td></tr>`).join('')}</table></div></div>`;
     $('tp-guide').innerHTML = h;
