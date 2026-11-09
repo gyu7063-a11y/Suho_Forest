@@ -227,7 +227,7 @@
 
   /* ===== PC: hero & relics ===== */
   #heroBar { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); display: none; gap: 8px; z-index: 5; align-items: flex-end; pointer-events: none; }
-  body[data-device] #heroBar { display: flex; }
+  body[data-device=pc] #heroBar { display: flex; }
   #heroBar .hlv { background: rgba(0,0,0,.55); border: 1px solid #ffffff30; border-radius: 12px; padding: 5px 10px; font-size: 13px; color: #ffe08a; min-width: 128px; line-height: 1.3; }
   #heroBar .hlv small { display: block; color: #ddd; opacity: .75; font-size: 11px; }
   .hxp { height: 6px; background: #00000080; border-radius: 3px; overflow: hidden; margin-top: 3px; } .hxp i { display: block; height: 100%; background: linear-gradient(90deg, #ffb84a, #fff2b0); }
@@ -235,7 +235,7 @@
   .hsk .kb { position: absolute; left: 4px; top: 1px; font-size: 12px; color: #ffe08a; }
   .hsk .cdv { position: absolute; inset: 0; border-radius: 11px; background: rgba(0,0,0,.66); display: none; align-items: center; justify-content: center; font-size: 18px; }
   .hsk.cd .cdv { display: flex; } .hsk.lock { filter: grayscale(1); opacity: .5; } .hsk.ready { box-shadow: 0 0 12px #ffd75e99; }
-  #heroCard { display: none; } body.dock-side #heroCard { display: block; }
+  #heroCard { display: none; } body[data-device=pc].dock-side #heroCard { display: block; }
   #heroCard .sk { display: flex; gap: 8px; align-items: center; font-size: 13px; margin: 2px 0; } #heroCard .sk b { color: #ffe08a; font-weight: 400; min-width: 16px; } #heroCard .sk span:last-child { margin-left: auto; color: #9fe39f; }
   #heroCard .hg { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; margin-top: 4px; }
   #heroCard .rl { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
@@ -384,7 +384,7 @@
 <div id="victory" class="hide"><div class="card">
   <h2>🏆 수호 완료! 🏆</h2>
   <p id="vicMsg"></p>
-  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="hbtn go" id="vicCont" style="font-size:17px;padding:10px 22px">♾️ 무한 모드 계속</button><button class="hbtn" id="vicNew" style="font-size:17px;padding:10px 22px">처음부터</button></div>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="hbtn go" id="vicCont" style="font-size:17px;padding:10px 22px">🔥 익스트림 모드 도전</button><button class="hbtn" id="vicNew" style="font-size:17px;padding:10px 22px">처음부터</button></div>
 </div></div>
 <div id="over"><div class="card">
   <h2>성문이 무너졌어요</h2>
@@ -445,7 +445,7 @@
     ghost: { hp: 70,  speed: 1.25, gold: 9, armor: 0, h: .72, color: 0xd8ecff, name: '유령', info: '주기적으로 사라져 공격을 받지 않음' },
     shaman:{ hp: 80,  speed: .9,  gold: 11, armor: 1, h: .42, color: 0x6aa84a, name: '고블린 주술사', info: '주변 몬스터를 치유함' },
   };
-  const TRANS_WAVE = 55;
+  const TRANS_WAVE = 50, LIMIT_WAVE = 70, FINAL_WAVE = 80;
   const maxLv = t => (typeof G !== 'undefined' && (G.wave >= TRANS_WAVE || G.transOpen)) ? 7 : 6;
   const stat = t => {
     const b = TT[t.type], k = t.lv - 1;
@@ -453,6 +453,7 @@
     if (t.br && t.lv >= 4) { const m = BR[t.type][t.br].mod; s.range += m.range || 0; s.dmg *= m.dmg || 1; s.rate *= m.rate || 1; }
     if (t.lv >= 6) { s.dmg *= 1.6; s.rate *= .85; s.range += .2; }
     if (t.lv >= 7) { s.dmg *= 1.9; s.rate *= .85; s.range += .3; }
+    if (t.final) { s.dmg *= t.abs * (1 + .15 * ((t.flv || 1) - 1)); s.rate *= .8; s.range += .7; }
     if (t.raw) return s;
     const R = (typeof G !== 'undefined' && G.res) || {};
     if (typeof G !== 'undefined' && G.buff) { if (G.buff.rage > 0) s.dmg *= 1.7; if (G.buff.haste > 0) s.rate *= .6; }
@@ -463,7 +464,7 @@
   };
   const hexFx = t => {
     const lv = Math.min(t.lv, 6), tr = t.lv >= 7;
-    const f = hexFx0(t, lv); if (tr) { f.shred = Math.round(f.shred * 1.5); f.vuln = +(f.vuln * 1.4).toFixed(2); } return f;
+    const f = hexFx0(t, lv); if (tr) { f.shred = Math.round(f.shred * 1.5); f.vuln = +(f.vuln * 1.4).toFixed(2); } if (t.final) { f.shred = Math.round(f.shred * 1.5); f.vuln = +(f.vuln * 1.3).toFixed(2); } return f;
   };
   const hexFx0 = (t, lv) => {
     if (t.br === 'A' && lv >= 4) return { shred: [12, 18, 24][lv - 4], vuln: [.2, .25, .3][lv - 4], rad: .6, strip: true };
@@ -608,7 +609,12 @@
       gA: '#3a6a52', gB: '#3f7258', tL: '#4f8a6a', tD: '#2a5040', path: '#5c5c7e', edge: 'rgba(20,20,50,.4)', pebA: '#5a5a7a', pebB: '#8a8aa8', flowers: ['#b9a2ff', '#9fe0ff', '#ffffff'],
       floor: 0x1f3a2c, patch: [0x24442f, 0x1a3224, 0x2a4a36], lip: 0x22402f, dirt: 0x3a2a24, sand: 0x5a5a6a, water: 0x2a4a9a, waterE: 0x0a1a4a,
       leaves: [0x1f4a3a, 0x2a5a46, 0x183a2e], warm: [0x4a3a7a, 0x3a4a8a, 0x5a4a8a], pink: [0x8a6ac8, 0x9a7ad8], bush: [0x24503a, 0x2e5a44], trunk: 0x3a2a24, cloud: 0x3a3f5a, fx: 'firefly' },
+    { name: '🔥 익스트림 · 심연의 전장', sky: 0x2a0f2e, fogN: 3, hemiS: 0xffa0c8, hemiG: 0x2a0a1a, hemiI: .75, sunC: 0xff9ab8, sunI: .85,
+      gA: '#3b2440', gB: '#432846', tL: '#5e3060', tD: '#2a162c', path: '#6a2030', edge: 'rgba(255,60,130,.38)', pebA: '#b02a50', pebB: '#4a1a2e', flowers: ['#ff3a7a', '#b06aff', '#ff9a3a'],
+      floor: 0x2a1530, patch: [0x34183a, 0x241028, 0x3e1c40], lip: 0x2a162c, dirt: 0x3a1a26, sand: 0x5a1e30, water: 0xc02aff, waterE: 0x7000b0,
+      leaves: [0x4a1a40, 0x3a1434, 0x5a204e], warm: [0x7a1a40, 0x5a1a50, 0x8a2a3a], pink: [0xb03a8a, 0x9a2a7a], bush: [0x3a1a38, 0x46203e], trunk: 0x1a0e16, cloud: 0x4a2a4a, fx: 'ember' },
   ];
+  const XT = THEMES.length - 1;
   let theme = THEMES[0];
   const groundCanvas = document.createElement('canvas'); groundCanvas.width = 1024; groundCanvas.height = 1024;
   const groundTex = new THREE.CanvasTexture(groundCanvas); groundTex.minFilter = THREE.LinearFilter; groundTex.generateMipmaps = false;
@@ -1188,7 +1194,7 @@
       B: { name: ['폭풍 소환사', '하늘의 심판자'], icon: '🌩️', desc: '하늘에서 번개를 여러 곳에 내리꽂음 (2 → 4곳, 범위 피해)', mod: { dmg: 1.35 } },
     },
   };
-  const tname = (t, lv = t.lv) => lv <= 3 ? LVN[t.type][lv - 1] : lv >= 7 ? '초월한 ' + BR[t.type][t.br].name[1] : lv >= 6 ? '각성한 ' + BR[t.type][t.br].name[1] : BR[t.type][t.br].name[lv - 4];
+  const tname = (t, lv = t.lv) => t.final ? FNAME[t.type] : lv <= 3 ? LVN[t.type][lv - 1] : lv >= 7 ? '초월한 ' + BR[t.type][t.br].name[1] : lv >= 6 ? '각성한 ' + BR[t.type][t.br].name[1] : BR[t.type][t.br].name[lv - 4];
 
   function buildTower(type, lv, br) {
     if (lv <= 3 || !br) return buildBase(type, Math.min(lv, 3));
@@ -1504,6 +1510,7 @@
     t.obj.updateMatrixWorld(true);
     mergeStatic(t.obj, anim);
     t.obj.traverse(o => { o.userData.tower = t; if (!anim.has(o)) { o.updateMatrix(); o.matrixAutoUpdate = false; } });
+    if (t.final) addFinalDeco(t);
     scene.add(t.obj);
   }
   // merge non-animated meshes (per animated parent + material) to cut draw calls
@@ -1689,23 +1696,25 @@
     }
     if (INTRO[w]) for (let k = 0; k < 3; k++) list.splice(2 + k * 3, 0, INTRO[w]);
     if (w % 10 === 0) for (let k = 0; k < 1 + Math.floor(w / 30); k++) list.push('boss');
-    if (w === 100) list.push('abyss');
+    if (w === FINAL_WAVE || (w > FINAL_WAVE && w % 10 === 0)) list.push('abyss');
     if (w > 30) for (let k = 0; k < Math.floor((w - 30) / 3); k++) list.push(k % 3 === 2 ? 'golem' : k % 3 ? 'bat' : 'slime');
     return list;
   }
-  const hpScale = w => (1 + .25 * (w - 1) + .03 * (w - 1) * (w - 1)) * Math.pow(1.085, Math.max(0, Math.min(w, 58) - 22)) * Math.pow(1.035, Math.max(0, Math.min(w, 80) - 58)) * Math.pow(1.02, Math.max(0, w - 80));
+  const hpScale = w => (1 + .25 * (w - 1) + .03 * (w - 1) * (w - 1)) * Math.pow(1.085, Math.max(0, Math.min(w, 50) - 22)) * Math.pow(1.05, Math.max(0, Math.min(w, 70) - 50)) * Math.pow(1.03, Math.max(0, w - 70));
   function peekNext() { if (!G.nextQ || G.nextQW !== G.wave + 1) { G.nextQ = makeWave(G.wave + 1); G.nextQW = G.wave + 1; } return G.nextQ; }
   function startWave() {
     if (G.waveActive || G.over || G.choosing) return;
     G.autoT = 0;
+    if (G.wave >= FINAL_WAVE && !G.extreme) { enterExtreme(); G.nextQ = null; }
     G.queue = peekNext().slice(); G.wave++;
-    if (G.wave >= 3 && G.wave !== 100 && Math.random() < .3) G.queue.splice(2 + Math.floor(Math.random() * Math.max(1, G.queue.length - 2)), 0, 'goldslime'); G.nextQ = null; G.spawnT = 0; G.waveActive = true;
+    if (G.wave >= 3 && G.wave !== FINAL_WAVE && Math.random() < .3) G.queue.splice(2 + Math.floor(Math.random() * Math.max(1, G.queue.length - 2)), 0, 'goldslime'); G.nextQ = null; G.spawnT = 0; G.waveActive = true;
     const st = Math.floor((G.wave - 1) / 5), stageUp = st !== G.stage;
-    if (stageUp) { G.stage = st; applyTheme(st); }
+    if (stageUp) { G.stage = st; applyTheme(G.extreme ? XT : st % (THEMES.length - 1)); }
     const ni = OPEN_AT.indexOf(G.wave);
     if (ni > 0) { setPortal(ni, true); const pp = PATHS[ni].pts[1]; burst(pp.x, pp.y, .8, 0xb080ff, 24); G.gold += 120; banner(`⚠️ 새 차원문이 열렸다! +120💰`); sfx('leak'); }
-    else if (G.wave === 80) { banner('💥 한계 돌파! 능력 강화 최대 단계 증가 (공격력 50 · 공속 25 · 사거리 15)'); sfx('clear'); renderLab(); }
-    else if (G.wave === 100) { banner('👿 최종 보스 · 심연의 군주 출현!'); sfx('leak'); }
+    else if (G.wave === LIMIT_WAVE) { banner('💥 한계 돌파! 능력 강화 최대 단계 증가 (공격력 50 · 공속 25 · 사거리 15)'); sfx('clear'); renderLab(); }
+    else if (G.wave === FINAL_WAVE) { banner('👿 최종 보스 · 심연의 군주 출현!'); sfx('leak'); }
+    else if (G.extreme && G.wave % 10 === 0) { banner(`🔥 익스트림 웨이브 ${G.wave} — 심연의 군주 재림!`); sfx('leak'); }
     else if (G.wave === TRANS_WAVE) { banner('🌈 초월(7단계) 해금! 각성 타워를 한 번 더 강화할 수 있어요'); sfx('clear'); renderFooter(); }
     else if (stageUp) banner(`🌄 스테이지 ${st + 1} · ${theme.name}`);
     else if (INTRO[G.wave]) { const m = ET[INTRO[G.wave]]; banner(`👾 새 몬스터: ${m.name} — ${m.info}`); }
@@ -1716,10 +1725,11 @@
     const b = ET[type], hp = b.hp * hpScale(G.wave) * (at ? 1.4 : 1);
     const open = OPEN_AT.filter(w => G.wave >= w).length;
     const pid = at ? at.pid : (type === 'boss' || type === 'abyss') ? 0 : (G.spawnIdx++) % open;
-    const elite = !at && G.wave >= 30 && !ET[type].treasure && type !== 'boss' && type !== 'abyss' && Math.random() < Math.min(.55, (G.wave - 25) * .02);
+    const elite = !at && G.wave >= 30 && !ET[type].treasure && type !== 'boss' && type !== 'abyss' && Math.random() < (G.extreme ? .7 : Math.min(.55, (G.wave - 25) * .02));
     const ehp = (elite ? hp * 2.3 : hp) * (type === 'abyss' ? 12 : 1);
     const e = { type, pid, elite, frozenT: 0, hp: ehp, maxHp: ehp, speed: b.speed * (1 + Math.min(.35, G.wave * .01)), d: 0, x: PATHS[pid].pts[0].x, y: PATHS[pid].pts[0].y, slowT: 0, slowAmt: 0, hitT: 0, phase: Math.random() * 6, alive: true, gT: Math.random() * 4, healT: 2 };
     if (at) { e.d = Math.max(0, at.d + (Math.random() - .5) * .6); const q = posAt(e.d, pid); e.x = q.x; e.y = q.y; }
+    if (G.extreme) { e.hp *= xMul(); e.maxHp = e.hp; e.speed *= 1.12; }
     if (type === 'goldslime') { e.hp = e.maxHp = ET.goldslime.hp * hpScale(G.wave) * 1.5; banner('✨ 황금 슬라임 등장! 도망가기 전에 잡아요'); sfx('clear'); }
     e.obj = buildEnemy(type); e.obj.position.copy(W(e.x, e.y)); if (elite) e.obj.scale.setScalar(1.25); scene.add(e.obj);
     G.enemies.push(e);
@@ -1734,7 +1744,7 @@
     const deb = e.debT > 0;
     if (magic && ET[e.type].mres && !(e.strip > 0)) dmg *= 1 - ET[e.type].mres;
     if (deb) dmg *= 1 + e.vuln;
-    const armor = Math.max(0, ET[e.type].armor + Math.floor(G.wave / 10) * 2 + (e.elite ? 4 : 0) - (deb ? e.shred : 0));
+    const armor = Math.max(0, ET[e.type].armor + Math.floor(G.wave / 10) * 2 + (e.elite ? 4 : 0) + (G.extreme ? 6 : 0) - (deb ? e.shred : 0));
     const real = magic ? dmg : Math.max(dmg * .15, dmg - armor), dealt = Math.min(real, Math.max(0, e.hp));
     if (deb && e.hexBy && e.hexBy !== curT) {
       const d0 = dmg / (1 + e.vuln), a0 = armor + e.shred, r0 = magic ? d0 : Math.max(d0 * .15, d0 - a0);
@@ -2056,6 +2066,7 @@
         if (t.cd <= 0) { fire(t, tg, st); t.cd = st.rate * (t.frenzy > 0 ? .4 : 1); }
         if (t.lv >= 6 && t.br && (t.sk || 0) <= 0) castTowerSkill(t, st, tg);
       }
+      if (t.final) { t.fsk -= dt; if (t.fsk <= 0 && tg) { castFinalSkill(t, st, tg); t.fsk = FSK[t.type].cd * cdMul(); } }
       if (t.lv >= 6) { t.sk = (t.sk || 0) - dt; if (t.frenzy > 0) t.frenzy -= dt; }
     }
     for (const p of G.projs) {
@@ -2077,7 +2088,7 @@
     if (G.waveActive && !G.queue.length && !G.enemies.length && !G.over) {
       G.waveActive = false;
       G.autoT = 3;
-      if (G.wave === 100 && !G.won) { G.won = true; G.autoT = 0; setTimeout(showVictory, 600); }
+      if (G.wave === FINAL_WAVE && !G.won) { G.won = true; G.autoT = 0; setTimeout(showVictory, 600); }
       if (G.wave % 5 === 0) for (const t of G.towers.concat(G.soldRec || [])) { t.dmgS = 0; t.asS = 0; }
       const bonus = 15 + G.wave * 2; G.gold += bonus; banner(`웨이브 ${G.wave} 클리어! +${bonus}💰`); sfx('clear');
       if (!G.test && G.wave > BEST) { BEST = G.wave; try { localStorage.setItem('forestTD.best', BEST); } catch (e) {} }
@@ -2101,6 +2112,7 @@
     for (const P of portals) if (P.open) { P.disc.rotation.z += dt * 2; P.disc.material.opacity = .6 + .2 * Math.sin(time * 3); }
     for (const t of G.towers) {
       const U = t.obj.userData.U;
+      if (t.deco) { const D = t.deco; D.spin.rotation.y += dt * 1.1; D.spin.position.y = D.y0 + Math.sin(time * 2 + t.cx) * .08; D.halo.rotation.z += dt * .7; D.beamM.opacity = .16 + .08 * Math.sin(time * 3 + t.cy) + (t.fsk > FSK[t.type].cd * .9 ? .4 : 0); }
       U.turn.rotation.y = Math.PI / 2 - t.angle;
       if (t.type === 'cannon' && U.barrel) U.barrel.position.z = -t.recoil * .12;
       if (U.spin) for (const [o, v] of U.spin) o.rotation.y += dt * v;
@@ -2254,6 +2266,7 @@
     const { tower, cell, gp } = pick(ev);
     if (G.moveMode && ev.button !== 2) { if (gp && G.hero) heroMove(gp.x + COLS / 2, gp.z + ROWS / 2); setMoveMode(false); return; }
     if (ev.button === 2) { if (gp && G.hero) heroMove(gp.x + COLS / 2, gp.z + ROWS / 2); if (G.placing) { G.placing = null; renderFooter(); } return; }
+    if (G.placing && G.extreme) G.placing = null;
     if (G.placing) {
       if (cell && canBuild(cell.x, cell.y)) {
         const b = TT[G.placing];
@@ -2270,6 +2283,106 @@
     G.selTower = tower || null; renderFooter();
   });
 
+
+  // ================== EXTREME MODE (after the final boss) ==================
+  const FNAME = { arrow: '천궁의 신궁', cannon: '종말의 요새포', frost: '빙하의 여제', hex: '파멸의 마녀왕', bolt: '천둥신 토르' };
+  const FCOL = { arrow: 0x9aff5a, cannon: 0xff8a2a, frost: 0x8fe8ff, hex: 0xc07aff, bolt: 0xffe04a };
+  const FSK = {
+    arrow: { icon: '🌧️', name: '천공의 화살비', cd: 27, desc: '넓은 범위의 모든 적에게 화살비 (공격력 4배)' },
+    cannon: { icon: '🌋', name: '대지 붕괴', cd: 30, desc: '적이 가장 몰린 곳을 거대 폭격 (공격력 10배 · 2초 기절)' },
+    frost: { icon: '🧊', name: '절대영도', cd: 33, desc: '넓은 범위의 모든 적을 얼림 (마왕 1초 · 공격력 6배)' },
+    hex: { icon: '☠️', name: '파멸의 낙인', cd: 30, desc: '맵 전체 적에게 6초 저주 (받는 피해 +90% · 방어 -40)' },
+    bolt: { icon: '🌩️', name: '신들의 황혼', cd: 30, desc: '맵 전체에 낙뢰 14발 (각 공격력 6배)' },
+  };
+  const xMul = () => (G.xBoost || 1) * Math.pow(1.06, Math.max(0, G.wave - FINAL_WAVE));
+  const finalCost = t => Math.round(900 * Math.pow(1.32, (t.flv || 1) - 1) * (1 + Math.max(0, G.wave - FINAL_WAVE) * .05));
+  function bestFreeCell() {
+    let best = null, bs = -1;
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
+      if (!canBuild(x, y)) continue;
+      let sc = 0; for (const key of isPath) { const [px, py] = key.split(',').map(Number); if (Math.hypot(px - x, py - y) <= 2.6) sc++; }
+      if (sc > bs) { bs = sc; best = { cx: x, cy: y }; }
+    }
+    return best;
+  }
+  function enterExtreme() {
+    if (G.extreme) return;
+    G.extreme = true; G.placing = null; G.selTower = null;
+    const dps = t => { const s = stat({ ...t, raw: true, final: false }); return s.dmg / s.rate; };
+    const old = G.towers.slice(), plan = []; let pre = 0, post = 0;
+    for (const k of ORDER) {
+      const list = old.filter(t => t.type === k);
+      const aw = list.reduce((a, t) => a + (t.lv >= 7 ? 2 : t.lv >= 6 ? 1 : 0), 0);
+      const bc = { A: 0, B: 0 }; list.forEach(t => { if (t.br) bc[t.br] += t.lv; }); const br = bc.B > bc.A ? 'B' : 'A';
+      const ref = dps({ type: k, lv: 7, br }), sum = list.reduce((a, t) => a + dps(t), 0);
+      const abs = Math.max(1, sum / ref) * (1 + .15 * aw);
+      const best = list.slice().sort((a, b) => b.lv - a.lv || (b.dmgT || 0) - (a.dmgT || 0))[0];
+      plan.push({ k, br, abs, n: list.length, aw, at: best ? { cx: best.cx, cy: best.cy } : null });
+      pre += sum; post += ref * abs;
+    }
+    for (const t of old) { burst(t.x, t.y, .6, FCOL[t.type], 6); dropTowerObj(t.obj); if (t.dmgT > 0) { t.sold = true; G.soldRec.push(t); } }
+    G.towers = [];
+    for (const f of plan) {
+      const c = f.at || bestFreeCell(); if (!c) continue;
+      const t = { type: f.k, cx: c.cx, cy: c.cy, x: c.cx + .5, y: c.cy + .5, lv: 7, br: f.br, final: true, abs: f.abs, absN: f.n, absAw: f.aw, flv: 1, cd: 0, hold: 0, angle: Math.PI / 2, recoil: 0, spent: 0, sk: 0, fsk: 6 + G.towers.length * 5 };
+      G.towers.push(t); attachTower(t); addBlast(t.x, t.y, 1.6, FCOL[t.type], false, true); burst(t.x, t.y, 1, FCOL[t.type], 24);
+    }
+    G.xBoost = Math.min(6, Math.max(2.5, 1.8 * post / Math.max(1, pre)));
+    applyTheme(XT); sfx('clear'); sfx('zap');
+    banner(`🔥 익스트림 모드! 모든 타워가 최종 타워 5개로 흡수됐어요 · 몬스터 체력 ×${G.xBoost.toFixed(1)}`);
+    renderFooter(); ui(); window.__dirty = true;
+  }
+  function addFinalDeco(t) {
+    const c = FCOL[t.type], g = new THREE.Group(); t.obj.add(g); t.obj.scale.setScalar(1.3);
+    const ped = new THREE.Mesh(cyl(.56, .62, .1, 20), mat(0x2a1a2e, { roughness: .6 })); ped.position.y = .02; g.add(ped);
+    const runeM = new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: .85, depthWrite: false, blending: THREE.AdditiveBlending });
+    const rune = new THREE.Mesh(geo('frune', () => new THREE.TorusGeometry(.58, .03, 6, 36)), runeM); rune.rotation.x = Math.PI / 2; rune.position.y = .08; g.add(rune);
+    const halo = new THREE.Mesh(geo('fhalo', () => new THREE.TorusGeometry(.45, .025, 6, 32)), new THREE.MeshBasicMaterial({ color: 0xffe08a, transparent: true, opacity: .9, depthWrite: false, blending: THREE.AdditiveBlending }));
+    halo.position.y = 2.15; halo.rotation.x = Math.PI / 2 - .3; g.add(halo);
+    const spin = new THREE.Group(), y0 = 1.55; spin.position.y = y0; g.add(spin);
+    const cm = mat(c, { emissive: c, emissiveIntensity: .8, roughness: .2, metalness: .3 });
+    for (let k = 0; k < 4; k++) { const a = k / 4 * Math.PI * 2, o = new THREE.Mesh(geo('fcry', () => new THREE.OctahedronGeometry(.09)), cm); o.position.set(Math.cos(a) * .62, 0, Math.sin(a) * .62); o.scale.y = 1.8; spin.add(o); }
+    const crown = new THREE.Group(); crown.position.y = 2.35; g.add(crown);
+    const gold = mat(0xffd75e, { metalness: .4, roughness: .3, emissive: 0x6a4800, emissiveIntensity: .5 });
+    for (let k = 0; k < 5; k++) { const a = k / 5 * Math.PI * 2; const o = new THREE.Mesh(geo('fcrown', () => new THREE.ConeGeometry(.045, .16, 6)), gold); o.position.set(Math.cos(a) * .14, 0, Math.sin(a) * .14); crown.add(o); }
+    const band = new THREE.Mesh(cyl(.15, .15, .05, 14), gold); band.position.y = -.06; crown.add(band);
+    const beamM = new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: .2, depthWrite: false, blending: THREE.AdditiveBlending });
+    const beam = new THREE.Mesh(cyl(.32, .5, 6, 16, true), beamM); beam.position.y = 3; g.add(beam);
+    const gl = glow(c, 2.6, .55); gl.position.y = 1; g.add(gl);
+    t.deco = { spin, halo, beamM, y0 };
+  }
+  function castFinalSkill(t, st, tg) {
+    const S = FSK[t.type], c = FCOL[t.type]; curT = t;
+    const inR = r => G.enemies.filter(e => e.alive && !e.vanish && Math.hypot(e.x - t.x, e.y - t.y) <= r);
+    const big = e => e.type === 'boss' || e.type === 'abyss';
+    if (t.type === 'arrow') {
+      const r = st.range * 1.6; for (const e of inR(r)) { damage(e, st.dmg * 4, false); if (!LOWFX) addBlast(e.x, e.y, .35, c, false); }
+      addBlast(t.x, t.y, Math.min(r, 4.5), c, false, true); burst(t.x, t.y, 2, c, 20); sfx('shoot'); sfx('snipe');
+    } else if (t.type === 'cannon') {
+      const list = inR(st.range * 1.6); let best = tg, bs = -1;
+      for (const e of list) { let n = 0; for (const o of list) if (Math.hypot(o.x - e.x, o.y - e.y) < 2.6) n++; if (n > bs) { bs = n; best = e; } }
+      const x = best.x, y = best.y;
+      for (const e of G.enemies) if (e.alive && Math.hypot(e.x - x, e.y - y) < 2.6) { damage(e, st.dmg * 10, false); e.frozenT = Math.max(e.frozenT, big(e) ? .6 : 2); }
+      addBlast(x, y, 2.6, 0xff6a1a, true, true); addBlast(x, y, 3, 0xffb02a, false, true); burst(x, y, .4, 0xff6a1a, 30); sfx('boom'); sfx('shotgun');
+    } else if (t.type === 'frost') {
+      const r = st.range * 1.6; for (const e of inR(r)) { e.frozenT = Math.max(e.frozenT, big(e) ? 1 : 3.5); damage(e, st.dmg * 6, true); }
+      addBlast(t.x, t.y, Math.min(r, 4.5), c, true, true); addBlast(t.x, t.y, Math.min(r, 4.5) * 1.05, 0xffffff, false, true); sfx('frost');
+    } else if (t.type === 'hex') {
+      for (const e of G.enemies) { if (!e.alive) continue; e.hexBy = t; e.debT = 6; e.vuln = Math.max(e.vuln || 0, .9); e.shred = Math.max(e.shred || 0, 40); e.strip = 6; damage(e, st.dmg * 3, true); if (!LOWFX) addBlast(e.x, e.y, .5, c, false); }
+      addBlast(t.x, t.y, 3, c, false, true); burst(t.x, t.y, 1.5, c, 20); sfx('hex');
+    } else {
+      const live = G.enemies.filter(e => e.alive && !e.vanish);
+      for (let k = 0; k < 14 && live.length; k++) {
+        const e = live[Math.floor(Math.random() * live.length)], x = e.x + (Math.random() - .5) * .4, y = e.y + (Math.random() - .5) * .4;
+        if (k < (LOWFX ? 5 : 14)) addBolt([W(x, y, 7.5), W(x + (Math.random() - .5) * .4, y, 3.5), W(x, y, .05)]);
+        for (const o of G.enemies) if (o.alive && Math.hypot(o.x - x, o.y - y) <= .9) damage(o, st.dmg * 6, true);
+      }
+      sfx('zap');
+    }
+    floatText(t.x, t.y, 2.6, `${S.icon} ${S.name}`);
+    t.recoil = 1; t.hold = .3;
+  }
+
   // ================== PC ONLY: HERO ==================
   const PCX = () => document.body.dataset.device === 'pc';
   const HSK = [
@@ -2279,7 +2392,7 @@
   ];
   const HMAX = 30;
   const heroNeed = lv => 8 + lv * 6;
-  const heroDmg = () => 15 * hpScale(Math.max(1, G.wave)) * (1 + .12 * (G.hero.lv - 1)) * (1 + .5 * (G.rel.hero || 0)) * (G.buff.rage > 0 ? 1.3 : 1);
+  const heroDmg = () => 15 * hpScale(Math.max(1, G.wave)) * (G.extreme ? .6 * xMul() : 1) * (1 + .12 * (G.hero.lv - 1)) * (1 + .5 * (G.rel.hero || 0)) * (G.buff.rage > 0 ? 1.3 : 1);
   const heroRange = () => 2.3 * (G.rel.wing ? 1.35 : 1);
   const heroSpeed = () => 1.7 * (G.rel.wing ? 1.3 : 1);
   const heroCdMul = () => 1 - .2 * (G.rel.hero || 0);
@@ -2318,15 +2431,16 @@
     return g;
   }
   function heroPresence() {
-    if (!G.hero) {
+    if (PCX() && !G.hero) {
       const h = G.hero = { x: COLS / 2, y: ROWS / 2 + .5, tx: null, ty: null, face: 0, lv: 1, xp: 0, dmg: 0, kills: 0, atk: 0, swing: 0, spin: 0, dash: null, cd: [0, 0, 0], moving: false };
       h.obj = buildHero(); h.obj.position.copy(W(h.x, h.y)); scene.add(h.obj);
       heroUI(true);
-    }
+    } else if (!PCX() && G.hero) { scene.remove(G.hero.obj); G.hero = null; if (G.moveMode) setMoveMode(false); }
   }
   function resetHero() {
     if (G.hero) scene.remove(G.hero.obj);
     if (G.hproj) G.hproj.forEach(p => { scene.remove(p.obj); p.obj.material.dispose(); });
+    G.extreme = false; G.xBoost = 1;
     G.hero = null; G.hproj = []; G.rel = {}; G.moveMode = false; if ($('hMove')) { $('hMove').classList.remove('on'); $('moveHint').classList.remove('show'); } G.booms = []; G.choosing = false; G.relicOffer = null;
     if ($('relicOv')) $('relicOv').classList.add('hide');
   }
@@ -2506,21 +2620,21 @@
     { id: 't_hex', icon: '🧪', name: '마녀의 비약', r: 1, max: 3, desc: n => `${TT.hex.icon} ${TT.hex.name} 공격력 <b>+${35 * n}%</b>` },
     { id: 't_bolt', icon: '💍', name: '천둥 반지', r: 1, max: 3, desc: n => `${TT.bolt.icon} ${TT.bolt.name} 공격력 <b>+${35 * n}%</b>` },
     { id: 'discount', icon: '🔧', name: '숙련된 장인', r: 1, max: 1, desc: () => `타워 강화 비용 <b>-15%</b>` },
-    { id: 'xp', icon: '📘', name: '영웅의 일지', r: 1, max: 1, desc: () => `영웅 경험치 <b>2배</b>` },
-    { id: 'wing', icon: '🕊️', name: '빛의 날개', r: 1, max: 1, desc: () => `영웅 사거리 <b>+35%</b> · 이동 속도 <b>+30%</b>` },
+    { id: 'xp', hero: 1, icon: '📘', name: '영웅의 일지', r: 1, max: 1, desc: () => `영웅 경험치 <b>2배</b>` },
+    { id: 'wing', hero: 1, icon: '🕊️', name: '빛의 날개', r: 1, max: 1, desc: () => `영웅 사거리 <b>+35%</b> · 이동 속도 <b>+30%</b>` },
     { id: 'interest', icon: '🏦', name: '숲의 은행', r: 2, max: 2, desc: n => `웨이브 클리어마다 보유 골드의 <b>${6 * n}%</b>를 이자로 받음` },
     { id: 'giant', icon: '👑', name: '거인 사냥꾼', r: 2, max: 2, desc: n => `마왕·정예 몬스터에게 주는 피해 <b>+${35 * n}%</b>` },
     { id: 'tree', icon: '🌳', name: '생명의 나무', r: 2, max: 1, desc: () => `즉시 생명 <b>+5</b>, 웨이브 클리어마다 생명 <b>+1</b>`, on: () => { G.lives += 5; } },
     { id: 'time', icon: '⏳', name: '시간의 모래', r: 2, max: 1, desc: () => `각성 타워 스킬·주문 쿨타임 <b>-20%</b>` },
     { id: 'rune', icon: '🥁', name: '전쟁의 북', r: 2, max: 1, desc: () => `공격력 증폭·속사 지속 시간 <b>+50%</b>` },
-    { id: 'hero', icon: '🗡️', name: '성검의 축복', r: 2, max: 2, desc: n => `영웅 공격력 <b>+${50 * n}%</b> · 영웅 스킬 쿨타임 <b>-${20 * n}%</b>` },
+    { id: 'hero', hero: 1, icon: '🗡️', name: '성검의 축복', r: 2, max: 2, desc: n => `영웅 공격력 <b>+${50 * n}%</b> · 영웅 스킬 쿨타임 <b>-${20 * n}%</b>` },
     { id: 'boom', icon: '💥', name: '폭발 핵', r: 3, max: 2, desc: n => `몬스터가 죽으면 폭발해 주변 적에게 그 몬스터 최대 체력의 <b>${5 + 10 * n}%</b> 마법 피해` },
     { id: 'plague', icon: '🦠', name: '역병 전염', r: 3, max: 1, desc: () => `저주 걸린 몬스터가 죽으면 주변 <b>3마리</b>에게 저주가 그대로 옮아감` },
     { id: 'exec', icon: '☠️', name: '처형인', r: 3, max: 1, desc: () => `체력이 <b>10%</b> 아래로 떨어진 일반 몬스터는 <b>즉사</b> (마왕 제외)` },
   ];
   const RW = { 1: 10, 2: 6, 3: 3 };
   function rollRelics() {
-    const pool = RELICS.filter(r => (G.rel[r.id] || 0) < r.max), out = [];
+    const pool = RELICS.filter(r => (G.rel[r.id] || 0) < r.max && (PCX() || !r.hero)), out = [];
     while (out.length < 3 && pool.length) {
       let tot = pool.reduce((a, r) => a + RW[r.r], 0), x = Math.random() * tot, k = 0;
       for (; k < pool.length - 1; k++) if ((x -= RW[pool[k].r]) < 0) break;
@@ -2559,7 +2673,7 @@
     const RL = G.rel || {};
     if (RL.interest) { const g = Math.min(Math.round(G.gold * .06 * RL.interest), 60 + G.wave * 12); if (g > 0) { G.gold += g; setTimeout(() => banner(`🏦 이자 +${g}💰`), 900); } }
     if (RL.tree) G.lives++;
-    if (G.wave % 5 === 0 && G.wave !== 100 && !G.over) setTimeout(openRelics, 700);
+    if (G.wave % 5 === 0 && G.wave !== FINAL_WAVE && !G.over) setTimeout(openRelics, 700);
   }
 
   // ================== UI ==================
@@ -2569,8 +2683,8 @@
     sb.textContent = G.waveActive ? '전투 중' : G.wave === 0 ? '▶ 시작' : '▶ 다음';
     $('speedBtn').textContent = G.speed + '×'; $('speedBtn').classList.toggle('on', G.speed > 1);
     $('pauseBtn').textContent = G.paused ? '▶' : '⏸'; $('pauseOv').classList.toggle('show', G.paused && !G.over && !G.choosing);
-    document.querySelectorAll('.tbtn').forEach(b => { b.disabled = G.gold < TT[b.dataset.k].cost; });
-    const up = $('upBtn'); if (up && G.selTower) up.disabled = G.selTower.lv >= maxLv(G.selTower) || G.gold < upCost(G.selTower);
+    document.querySelectorAll('.tbtn').forEach(b => { b.disabled = G.extreme ? false : G.gold < TT[b.dataset.k].cost; });
+    const up = $('upBtn'); if (up && G.selTower) up.disabled = G.selTower.final ? G.gold < finalCost(G.selTower) : G.selTower.lv >= maxLv(G.selTower) || G.gold < upCost(G.selTower);
     document.querySelectorAll('.choice').forEach(c => { if (G.selTower) c.disabled = G.gold < upCost(G.selTower); });
     if (G.res) document.querySelectorAll('#lab button[data-k]').forEach(b => { const r = RES.find(x => x.k === b.dataset.k); const l = G.res[r.k]; b.disabled = (!r.repeat && l >= RES_MAX(r)) || G.gold < r.cost(l); });
   }
@@ -2582,36 +2696,38 @@
     if (t) {
       const b = TT[t.type], st = stat(t), choosing = t.lv === 3, nxt = !choosing && t.lv < maxLv(t) ? stat({ ...t, lv: t.lv + 1 }) : null;
       const icon = t.br ? BR[t.type][t.br].icon : b.icon, desc = t.br ? BR[t.type][t.br].desc : b.desc;
-      const upHtml = choosing ? '' : `<button class="hbtn go" id="upBtn">${t.lv >= maxLv(t) ? (t.lv === 6 ? `🔒 초월: 웨이브 ${TRANS_WAVE}` : '최대 레벨') : t.lv === 6 ? `🌈 초월 ${upCost(t)}💰` : t.lv === 5 ? `✨ 각성 ${upCost(t)}💰` : `⬆ 강화 ${upCost(t)}💰`}</button>`;
+      const upHtml = t.final ? `<button class="hbtn go" id="upBtn">🌟 최종 강화 ${finalCost(t)}💰</button>` : choosing ? '' : `<button class="hbtn go" id="upBtn">${t.lv >= maxLv(t) ? (t.lv === 6 ? `🔒 초월: 웨이브 ${TRANS_WAVE}` : '최대 레벨') : t.lv === 6 ? `🌈 초월 ${upCost(t)}💰` : t.lv === 5 ? `✨ 각성 ${upCost(t)}💰` : `⬆ 강화 ${upCost(t)}💰`}</button>`;
       f.innerHTML = `<div class="info"><div class="bigic">${icon}</div>
-        <div class="txt"><b>${tname(t)} <span style="font-size:13px;opacity:.7">Lv.${t.lv}</span></b><br>공격력 ${Math.round(st.dmg)}${nxt ? ` → ${Math.round(nxt.dmg)}` : ''} · 사거리 ${st.range.toFixed(1)} · 공속 ${(1 / st.rate).toFixed(1)}/초<br><span style="opacity:.7">${desc}</span>${tskOf(t) ? `<br><span style="color:#ffe08a">${tskOf(t).icon} 스킬 · ${tskOf(t).name}: ${tskOf(t).desc} · 쿨타임 ${(tskOf(t).cd * cdMul() * (t.lv >= 7 ? .6 : 1) / BASE_SPEED).toFixed(1)}초</span>` : (t.lv === 5 ? '<br><span style="color:#ffe08a;opacity:.8">✨ 각성하면 전용 스킬이 생겨요</span>' : '')}</div>
-        <div class="btns">${upHtml}<button class="hbtn sell" id="sellBtn">판매 +${sellValue(t)}</button></div>
+        <div class="txt"><b>${tname(t)} <span style="font-size:13px;opacity:.7">Lv.${t.lv}</span></b><br>공격력 ${Math.round(st.dmg)}${nxt ? ` → ${Math.round(nxt.dmg)}` : ''} · 사거리 ${st.range.toFixed(1)} · 공속 ${(1 / st.rate).toFixed(1)}/초<br><span style="opacity:.7">${desc}</span>${t.final ? `<br><span style="color:#ff9ac8">🔥 흡수 ${t.absN}개 · 각성 ${t.absAw} → 힘 ×${t.abs.toFixed(1)} · 강화 ${t.flv}단계</span><br><span style="color:#ffb0d8">${FSK[t.type].icon} 최종 스킬 · ${FSK[t.type].name}: ${FSK[t.type].desc} · 쿨타임 ${(FSK[t.type].cd * cdMul() / BASE_SPEED).toFixed(0)}초</span>` : ''}${tskOf(t) ? `<br><span style="color:#ffe08a">${tskOf(t).icon} 스킬 · ${tskOf(t).name}: ${tskOf(t).desc} · 쿨타임 ${(tskOf(t).cd * cdMul() * (t.lv >= 7 ? .6 : 1) / BASE_SPEED).toFixed(1)}초</span>` : (t.lv === 5 ? '<br><span style="color:#ffe08a;opacity:.8">✨ 각성하면 전용 스킬이 생겨요</span>' : '')}</div>
+        <div class="btns">${upHtml}${t.final ? '' : `<button class="hbtn sell" id="sellBtn">판매 +${sellValue(t)}</button>`}</div>
         <button class="x" id="closeBtn">✕</button></div>` +
         (choosing ? `<div class="choices">${['A', 'B'].map(k => { const o = BR[t.type][k]; return `<button class="choice" data-br="${k}"><div class="ct">${o.icon} ${o.name[0]}</div><div class="cd">${o.desc}</div><div class="cc">진화 ${upCost(t)}💰</div></button>`; }).join('')}</div>` : '');
       if ($('upBtn')) $('upBtn').onclick = () => upgrade();
       if (document.body.classList.contains('dock-side')) setTimeout(() => f.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 30);
       f.querySelectorAll('.choice').forEach(c => { c.onclick = () => upgrade(c.dataset.br); c.disabled = G.gold < upCost(t); });
-      $('sellBtn').onclick = sellTower; $('closeBtn').onclick = () => { G.selTower = null; renderFooter(); };
+      if ($('sellBtn')) $('sellBtn').onclick = sellTower; $('closeBtn').onclick = () => { G.selTower = null; renderFooter(); };
     }
-    ff.innerHTML = '<div class="palette">' + ORDER.map(k => `<button class="tbtn${G.placing === k ? ' sel' : ''}" data-k="${k}"><div class="ic">${TT[k].icon}</div><div>${TT[k].name}</div><div class="cost">${TT[k].cost}💰</div></button>`).join('') + '</div>';
+    ff.innerHTML = '<div class="palette">' + ORDER.map(k => `<button class="tbtn${G.placing === k ? ' sel' : ''}" data-k="${k}"><div class="ic">${TT[k].icon}</div><div>${TT[k].name}</div><div class="cost">${G.extreme ? '🔥 최종' : TT[k].cost + '💰'}</div></button>`).join('') + '</div>';
     ff.querySelectorAll('.tbtn').forEach(b => b.onclick = () => selectBuild(b.dataset.k));
     ui();
   }
   function selectBuild(k) {
     if (G.over) return;
+    if (G.extreme) { const t = G.towers.find(o => o.type === k && o.final); G.placing = null; G.selTower = t || null; renderFooter(); return; }
     G.selTower = null; G.placing = G.placing === k ? null : k;
     if (G.placing && G.gold < TT[k].cost) { banner('골드가 부족해요'); G.placing = null; }
     renderFooter();
   }
   function upgrade(br) {
-    const t = G.selTower; if (!t || t.lv >= maxLv(t)) return;
+    const t = G.selTower; if (t && t.final) { const c = finalCost(t); if (G.gold < c) { banner('골드가 부족해요'); return; } G.gold -= c; t.flv++; burst(t.x, t.y, 1, 0xff8ab0, 20); addBlast(t.x, t.y, 1, 0xff8ab0, false); floatText(t.x, t.y, 2.4, `🌟 최종 강화 ${t.flv}단계`); sfx('clear'); renderFooter(); return; }
+    if (!t || t.lv >= maxLv(t)) return;
     if (t.lv === 3 && !br) { banner('진화할 갈래를 골라 주세요'); return; }
     const c = upCost(t); if (G.gold < c) { banner('골드가 부족해요'); return; }
     if (t.lv === 3) t.br = br;
     G.gold -= c; t.spent += c; t.lv++; attachTower(t); burst(t.x, t.y, .6, 0xffd75e, 18); addBlast(t.x, t.y, .6, 0xffd75e, false); floatText(t.x, t.y, 1.9, `✨ ${tname(t)}`); sfx('clear'); renderFooter();
   }
   function sellTower() {
-    const t = G.selTower; if (!t) return;
+    const t = G.selTower; if (!t || t.final) return;
     G.gold += sellValue(t); dropTowerObj(t.obj); G.towers = G.towers.filter(o => o !== t); G.selTower = null;
     if (t.dmgT > 0) { t.sold = true; (G.soldRec = G.soldRec || []).push(t); }
     floatText(t.x, t.y, .8, '+' + sellValue(t)); renderFooter();
@@ -2626,7 +2742,7 @@
     { k: 'gold', icon: '💰', name: '골드 획득', max: 6, eff: l => `+${l * 10}%`, cost: l => Math.round(100 * Math.pow(1.5, l)) },
     { k: 'heal', icon: '❤️', name: '성문 수리', max: 999, eff: () => '생명 +3', cost: l => Math.round(150 * Math.pow(1.25, l)), repeat: true },
   ];
-  function RES_MAX(r) { return (G.wave >= 80 || G.limitBreak) && (r.k === 'dmg' || r.k === 'spd' || r.k === 'range') ? { dmg: 50, spd: 25, range: 15 }[r.k] : r.max; }
+  function RES_MAX(r) { return (G.wave >= LIMIT_WAVE || G.limitBreak) && (r.k === 'dmg' || r.k === 'spd' || r.k === 'range') ? { dmg: 50, spd: 25, range: 15 }[r.k] : r.max; }
   function renderLab() {
     const L = $('lab'); if (!L.classList.contains('show')) return;
     L.innerHTML = `<h3><span>🔨 능력 강화 <small style="font-size:12px;opacity:.7">모든 타워에 적용</small></span><button class="x" id="labClose">✕</button></h3><div class="rlist">` + RES.map(r => {
@@ -2773,11 +2889,11 @@
   $('tpClear').onclick = () => { for (const t of G.towers) dropTowerObj(t.obj); G.towers = []; G.selTower = null; renderFooter(); window.__dirty = true; };
 
   function showVictory() {
-    if (!G.test && 100 > BEST) { BEST = 100; try { localStorage.setItem('forestTD.best', BEST); } catch (e) {} }
-    $('vicMsg').innerHTML = `웨이브 100까지 숲을 지켜냈어요!<br>처치 ${G.kills.toLocaleString()} · 획득 골드 ${G.earned.toLocaleString()} · 남은 생명 ${G.lives}${G.test ? '<br><small>(테스트 모드)</small>' : ''}`;
+    if (!G.test && FINAL_WAVE > BEST) { BEST = FINAL_WAVE; try { localStorage.setItem('forestTD.best', BEST); } catch (e) {} }
+    $('vicMsg').innerHTML = `웨이브 ${FINAL_WAVE}까지 숲을 지켜냈어요!<br>처치 ${G.kills.toLocaleString()} · 획득 골드 ${G.earned.toLocaleString()} · 남은 생명 ${G.lives}${G.test ? '<br><small>(테스트 모드)</small>' : ''}<br><br><b style="color:#ff8ab0">🔥 익스트림 모드</b>: 설치한 모든 타워가 종류별로 하나의 <b>최종 타워</b>에 흡수돼요. 많이 짓고 많이 각성한 종류일수록 강해지고, 몬스터도 그만큼 강해져요.`;
     $('victory').classList.remove('hide'); G.paused = true; ui();
   }
-  $('vicCont').onclick = () => { $('victory').classList.add('hide'); G.paused = false; G.autoT = 3; ui(); };
+  $('vicCont').onclick = () => { $('victory').classList.add('hide'); enterExtreme(); G.paused = false; G.autoT = 5; ui(); };
   $('vicNew').onclick = () => { $('victory').classList.add('hide'); reset(); };
 
   // ================== DAMAGE METER ==================
@@ -2860,7 +2976,7 @@
 
   // ================== TITLE TABS ==================
   const MICON = { goldslime: '🌟', slime: '🟢', bat: '🦇', golem: '🗿', wolf: '🐺', knight: '🛡️', kingslime: '👑', ghost: '👻', shaman: '🧙', boss: '😈', abyss: '👿' };
-  const MFIRST = { goldslime: '3~ (가끔)', slime: '1', bat: '3', golem: '5', wolf: '7', knight: '12', kingslime: '15', ghost: '18', shaman: '24', boss: '10, 20, 30…', abyss: '100' };
+  const MFIRST = { goldslime: '3~ (가끔)', slime: '1', bat: '3', golem: '5', wolf: '7', knight: '12', kingslime: '15', ghost: '18', shaman: '24', boss: '10, 20, 30…', abyss: '80 (이후 10웨이브마다)' };
   function setTab(t) {
     document.querySelectorAll('.ttabs .ttab').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
     document.querySelectorAll('.tpage').forEach(p => p.classList.toggle('on', p.id === 'tp-' + t));
@@ -2900,8 +3016,8 @@
       <li>몬스터를 잡거나 웨이브를 클리어하면 💰 골드를 얻어요. 웨이브가 끝나면 3초 뒤 다음 웨이브가 자동 시작.</li>
       <li>5웨이브마다 스테이지(배경)가 바뀌고, 웨이브 10·20에 새 입구(차원문)가 열려요.</li>
       <li>타워는 <b>3단계 → 4단계에서 두 갈래 중 하나 선택 → 5단계 → 6단계 각성</b>. 판매하면 들인 골드의 70%를 돌려받아요.</li>
-      <li>웨이브 22~58은 몬스터 체력이 웨이브마다 8.5%씩, 59~80은 3.5%씩, 그 뒤로는 2%씩 늘고, 웨이브 30부터는 붉은 <b>정예 몬스터</b>(체력 2.3배·방어력 추가·골드 2배)가 섞여 나와요.</li>
-      <li>웨이브 55에 <b>초월(7단계)</b>, 웨이브 80에 <b>한계 돌파</b>(능력 강화 최대치 증가)가 열려요. <b>웨이브 100의 최종 보스 👿 심연의 군주</b>를 잡으면 클리어! 이후 무한 모드로 계속할 수 있어요.</li>
+      <li>웨이브 22~50은 몬스터 체력이 웨이브마다 8.5%씩, 51~70은 5%씩, 그 뒤로는 3%씩 늘고, 웨이브 30부터는 붉은 <b>정예 몬스터</b>(체력 2.3배·방어력 추가·골드 2배)가 섞여 나와요.</li>
+      <li>웨이브 ${TRANS_WAVE}에 <b>초월(7단계)</b>, 웨이브 ${LIMIT_WAVE}에 <b>한계 돌파</b>(능력 강화 최대치 증가)가 열려요. <b>웨이브 ${FINAL_WAVE}의 최종 보스 👿 심연의 군주</b>를 잡으면 클리어! 이후 <b>🔥 익스트림 모드</b>로 계속할 수 있어요.</li>
       <li><b>물리 공격</b>(궁수·대포)은 방어력만큼 피해가 깎이고, <b>마법 공격</b>(얼음·번개, 저격수)은 방어력을 무시해요. 방어력은 10웨이브마다 +2.</li></ul></div>`;
     h += `<div class="gsec">🏰 타워</div>`;
     const notes = {
@@ -2928,9 +3044,13 @@
     h += `<div class="gsec">✨ 스킬 (화면 오른쪽 아래)</div><div class="gcard"><ul>`;
     for (const k in SPELLS) { const S = SPELLS[k]; h += `<li>${S.icon} <b>${S.name}</b> — ${S.desc}. 비용 80💰 + 웨이브×10, 재사용 30초 (1배속 기준)</li>`; }
     h += `</ul></div>`;
-    h += `<div class="gsec">🛡️ 영웅 & 🔮 유물</div><div class="gcard"><p><b>🛡️ 수호 기사</b>: 직접 조종하는 영웅. PC는 <b>마우스 우클릭</b>, 아이폰·아이패드는 <b>🚶 버튼을 누르고 맵을 터치</b>해서 이동하고, 사거리 안의 적을 자동으로 공격해요. 몬스터가 죽으면 경험치(영웅이 직접 잡으면 3배)를 얻어 최대 Lv.${HMAX}까지 성장. 공격력은 웨이브에 맞춰 같이 강해져요. 터치 기기에서는 스킬이 가까운 적(돌진)·몬스터가 가장 많이 몰린 곳(성검 낙하)을 자동 조준해요.</p><ul>${HSK.map((S, i) => `<li><b>${'ZXC'[i]}</b> ${S.icon} <b>${S.name}</b> — ${S.desc}. 재사용 ${Math.round(S.cd / BASE_SPEED)}초</li>`).join('')}</ul>
+    h += `<div class="gsec">🛡️ 영웅 (PC 전용) & 🔮 유물 (모든 기기)</div><div class="gcard"><p><b>🛡️ 수호 기사</b>: PC 모드에서만 나오는 직접 조종하는 영웅. <b>마우스 우클릭</b>으로 이동하고, 사거리 안의 적을 자동으로 공격해요. 몬스터가 죽으면 경험치(영웅이 직접 잡으면 3배)를 얻어 최대 Lv.${HMAX}까지 성장. 공격력은 웨이브에 맞춰 같이 강해져요.</p><ul>${HSK.map((S, i) => `<li><b>${'ZXC'[i]}</b> ${S.icon} <b>${S.name}</b> — ${S.desc}. 재사용 ${Math.round(S.cd / BASE_SPEED)}초</li>`).join('')}</ul>
       <p style="margin-top:8px"><b>🔮 유물</b>: 5웨이브를 클리어할 때마다 무작위 유물 3개 중 하나를 골라요. 골드를 내고 다시 뽑거나, 건너뛰고 골드를 받을 수도 있어요. 테두리 색: <span style="color:${RRC[1][0]}">일반</span> · <span style="color:${RRC[2][0]}">희귀</span> · <span style="color:${RRC[3][0]}">전설</span></p>
       <div class="gscroll"><table class="gtbl"><tr><th></th><th>유물</th><th>등급</th><th>효과 (1개)</th><th>최대</th></tr>${RELICS.map(r => `<tr><td>${r.icon}</td><td>${r.name}</td><td style="color:${RRC[r.r][0]}">${RRC[r.r][2]}</td><td>${r.desc(1)}</td><td class="n">${r.max}</td></tr>`).join('')}</table></div></div>`;
+    h += `<div class="gsec">🔥 익스트림 모드 (웨이브 ${FINAL_WAVE} 이후)</div><div class="gcard"><p>최종 보스를 잡고 계속하면, 그동안 설치한 모든 타워가 <b>종류별로 하나의 최종 타워</b>에 흡수돼요. 그 종류의 타워를 많이 짓고 강화했을수록(흡수한 타워 전체의 공격 성능 합), 각성한 타워가 많을수록(각성 1개당 +15%, 초월은 2개로 계산) 최종 타워가 강해져요. 한 번도 안 지은 종류는 초월(7단계) 기본 힘으로 생겨요.</p><ul>
+      <li>최종 타워는 판매할 수 없고, 골드로 <b>최종 강화</b>(단계당 공격력 +15%)를 계속 할 수 있어요. 새 타워는 지을 수 없어요.</li>
+      <li>몬스터는 흡수로 늘어난 힘에 맞춰 체력이 오르고(최소 2.5배), 웨이브마다 6%씩 더 강해져요. 정예 몬스터가 70% 섞이고 방어력 +6, 속도 +12%, 10웨이브마다 심연의 군주가 다시 나와요.</li>
+      ${ORDER.map(k => `<li>${TT[k].icon} <b>${FNAME[k]}</b> — ${FSK[k].icon} <b>${FSK[k].name}</b>: ${FSK[k].desc}. 쿨타임 ${Math.round(FSK[k].cd / BASE_SPEED)}초 (각성 스킬은 그대로 유지)</li>`).join('')}</ul></div>`;
     $('tp-guide').innerHTML = h;
   }
 
@@ -3115,7 +3235,7 @@
   }
   document.querySelectorAll('.dev').forEach(b => b.onclick = () => { if (b.dataset.dev === 'iphone' && !$('fitRow').classList.contains('show')) showFit('iphone'); chooseDevice(b.dataset.dev); });
   $('menuBtn').onclick = () => { G.paused = true; ui(); showFit(document.body.dataset.device); $('titleBest').textContent = BEST ? `🏆 최고 기록: 웨이브 ${BEST}` : ''; setTab('play'); $('title').classList.remove('hide'); };
-  window.__td = { heroSkill, heroMove, PATHS, spawn, THREEV: THREE.Vector3, canBuild, G, update, startWave, TT, attachTower, scene, camera, renderFooter, fit: fitCamera };
+  window.__td = { enterExtreme, stat, hpScale, heroSkill, heroMove, PATHS, spawn, THREEV: THREE.Vector3, canBuild, G, update, startWave, TT, attachTower, scene, camera, renderFooter, fit: fitCamera };
   reset(); fitCamera(); $('loading').remove();
   $('ecoBtn').onclick = () => setEco(!ECO); if (ECO) setEco(true);
   $('shadowBtn').onclick = () => setShadow(!SHADOW); setShadow(SHADOW);
