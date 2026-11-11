@@ -46,7 +46,7 @@
 const GAMES = [
   { id: 'suho', href: 'games/suho.html', cls: 'forest', ic: '🌲', name: '수호의 숲 3D', ds: '3D 타워 디펜스 · 타워를 세우고 강화해서 몬스터 웨이브를 막아요. 웨이브 80 최종 보스 · 익스트림 모드', tag: '디펜스',
     rec: () => { const b = +localStorage.getItem('forestTD.best') || 0; return b ? `🏆 최고 기록: 웨이브 ${b}` : '아직 기록 없음'; } },
-  { id: 'baseball', href: 'games/baseball.html', cls: 'baseball', ic: '⚾', name: '나만의 프로야구', ds: '나만의 투수·타자를 만들어 훈련하고 경기에 나가 2군에서 1군, 레전드까지 키워요', tag: '육성 · 스포츠',
+  { id: 'baseball', href: 'games/baseball.html', cls: 'baseball', ic: '⚾', name: '나만의 프로야구', ds: '나만의 투수(선발·중계·마무리)·타자를 3D 구장에서 키워요. 견제·도루까지!', tag: '육성 · 스포츠',
     rec: () => { try { const s = JSON.parse(localStorage.getItem('mgc.baseball')); const ps = (s && s.slots || []).filter(Boolean); if (!ps.length) return '아직 선수 없음'; return ps.map(p => `${p.role === 'bat' ? '🏏' : '⚾'} ${p.name} · ${p.season.year}년차 ${p.league ? '1군' : '2군'}`).join('<br>'); } catch (e) { return '아직 선수 없음'; } } },
 ];
 const g = document.getElementById('grid');
