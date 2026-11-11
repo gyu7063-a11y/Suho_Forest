@@ -10,29 +10,37 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 <style>
-  :root { --bg: #0c1626; --card: #15253c; --card2: #1c3150; --line: #2c4a70; --acc: #ffd24a; --good: #5fe08a; --bad: #ff6a6a; --sub: #9fb3cc; }
+  :root { --bg: #2a6fd6; --card: #1b4aa6; --card2: #2a63c8; --line: #a8d4ff; --acc: #ffe04a; --good: #7dff9a; --bad: #ff8080; --sub: #d4e6ff; }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; height: 100%; }
-  body { background: radial-gradient(ellipse at 50% 0%, #1d3558, #0c1626 60%) fixed; color: #fff; font-family: 'Jua', system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif; user-select: none; -webkit-user-select: none; touch-action: manipulation; overscroll-behavior: none; }
+  body { background: repeating-linear-gradient(45deg, #ffffff0a 0 14px, #ffffff00 14px 28px), linear-gradient(180deg, #6ab8ff, #2a6fd6 45%, #1d4fae) fixed; color: #fff; font-family: 'Jua', system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif; user-select: none; -webkit-user-select: none; touch-action: manipulation; overscroll-behavior: none; }
   #app { max-width: 520px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
   .scr { display: none; flex: 1; flex-direction: column; padding: 10px 12px 14px; gap: 10px; }
   .scr.on { display: flex; }
   button { font-family: inherit; color: #fff; cursor: pointer; border: none; }
   a.btn { color: #fff; }
-  .btn { background: linear-gradient(180deg, #2f5684, #213e63); border: 1px solid #4a74a8; border-radius: 14px; padding: 11px 12px; font-size: 17px; box-shadow: 0 3px 0 #0a1830; }
+  .btn { background: linear-gradient(180deg, #4a8ef0, #2a5fc8); border: 2px solid #cfe6ff; border-radius: 14px; padding: 11px 12px; font-size: 17px; box-shadow: 0 3px 0 #0d2a6a; }
   .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #0a1830; }
   .btn.go { background: linear-gradient(180deg, #ffd24a, #f0a820); color: #3a2400; border-color: #ffe48a; box-shadow: 0 3px 0 #8a5a00; }
   .btn.red { background: linear-gradient(180deg, #e8505a, #b8323c); border-color: #ff8a90; }
   .btn.ghost { background: rgba(255,255,255,.06); border-color: #ffffff30; box-shadow: none; }
   .btn:disabled { opacity: .4; }
-  .card { background: linear-gradient(180deg, var(--card2), var(--card)); border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
+  .card { background: linear-gradient(180deg, var(--card2), var(--card)); border: 2px solid var(--line); box-shadow: 0 4px 0 #0d2a6a, inset 0 0 0 2px #0d3a8a55; border-radius: 16px; padding: 12px; }
   .row { display: flex; gap: 8px; align-items: center; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
   .sub { color: var(--sub); font-size: 13px; }
   h1 { margin: 6px 0 0; font-weight: 400; font-size: 34px; text-align: center; color: var(--acc); text-shadow: 0 3px 0 #6a4a00, 0 0 20px #ffd24a55; }
   h2 { margin: 0; font-weight: 400; font-size: 21px; }
-  h3 { margin: 0 0 6px; font-weight: 400; font-size: 17px; color: var(--acc); }
+  h3 { margin: 0 0 6px; font-weight: 400; font-size: 17px; color: var(--acc); text-shadow: 0 2px 0 #0d2a6a; }
+  .coach { display: flex; gap: 10px; align-items: flex-end; text-align: left; margin: 6px 0; } .coach canvas { width: 76px; height: 86px; flex: none; }
+  .bubble { position: relative; background: #fff; color: #1d3a70; border-radius: 14px; padding: 9px 12px; font-size: 15px; line-height: 1.45; flex: 1; } .bubble:before { content: ''; position: absolute; left: -8px; bottom: 14px; border: 8px solid transparent; border-right-color: #fff; border-left: 0; }
+  .mis { display: inline-block; background: #ffe04a; color: #4a3000; border-radius: 10px; padding: 3px 10px; font-size: 14px; }
+  .stamp { font-size: 34px; letter-spacing: 1px; transform: rotate(-4deg); display: inline-block; padding: 2px 14px; border: 4px solid; border-radius: 12px; margin: 6px 0; }
+  .stamp.ok { color: #ffe04a; border-color: #ffe04a; } .stamp.no { color: #ff8080; border-color: #ff8080; }
+  .mrow { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; background: #0d2f7066; border: 2px solid #a8d4ff55; margin-bottom: 8px; text-align: left; width: 100%; font-size: 15px; }
+  .mrow .mn { background: #0d2f70; border-radius: 8px; padding: 4px 8px; font-size: 12px; white-space: nowrap; } .mrow .md { flex: 1; } .mrow .md small { display: block; color: var(--sub); font-size: 12px; } .mrow.lock { opacity: .45; }
+  .pad { display: grid; grid-template-columns: repeat(3, 34px); gap: 3px; } .pad button { height: 26px; border-radius: 7px; background: #ffffff22; border: 1px solid #ffffff55; font-size: 12px; padding: 0; }
   .top { display: flex; align-items: center; gap: 8px; }
   .top .sp { flex: 1; }
   .back { font-size: 15px; padding: 7px 11px; }
@@ -58,10 +66,10 @@
   .gr { display: inline-block; min-width: 26px; text-align: center; border-radius: 7px; padding: 1px 5px; font-size: 14px; }
   .gS { background: #ff4a8a; } .gA { background: #ff8a2a; } .gB { background: #e8c020; color: #332800; } .gC { background: #4ab86a; } .gD { background: #3a8ad8; } .gE { background: #6a7a8a; }
   .stat { display: grid; grid-template-columns: 64px 30px 1fr 30px; gap: 6px; align-items: center; font-size: 14px; margin: 3px 0; }
-  .bar { height: 10px; border-radius: 6px; background: #0a1424; overflow: hidden; position: relative; }
+  .bar { height: 10px; border-radius: 6px; background: #0d2f70; overflow: hidden; position: relative; }
   .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; }
   .bar b { position: absolute; left: 0; bottom: 0; height: 3px; background: #ffffffaa; }
-  .meter { height: 12px; border-radius: 7px; background: #0a1424; overflow: hidden; } .meter i { display: block; height: 100%; border-radius: 7px; }
+  .meter { height: 12px; border-radius: 7px; background: #0d2f70; overflow: hidden; } .meter i { display: block; height: 100%; border-radius: 7px; }
   .badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; } .badge { font-size: 12px; padding: 3px 8px; border-radius: 999px; background: #ffd24a22; border: 1px solid #ffd24a66; color: #ffe8a0; }
   .big { font-size: 20px; padding: 14px; }
   .lg { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 13px; }
@@ -105,7 +113,7 @@
   .gauge i { position: absolute; top: -4px; bottom: -4px; width: 5px; margin-left: -2px; background: #fff; border-radius: 3px; box-shadow: 0 0 6px #000; }
   .swing { font-size: 24px; padding: 16px; }
   /* overlay */
-  #ov { position: fixed; inset: 0; background: rgba(4,10,20,.78); display: none; align-items: center; justify-content: center; z-index: 30; padding: 16px; }
+  #ov { position: fixed; inset: 0; background: rgba(8,24,60,.72); display: none; align-items: center; justify-content: center; z-index: 30; padding: 16px; }
   #ov.on { display: flex; }
   #ov .card { width: 100%; max-width: 420px; text-align: center; max-height: 90vh; overflow-y: auto; }
   .res { font-size: 34px; color: var(--acc); }
@@ -164,6 +172,7 @@
       <button class="btn" id="hGrow">📈 성장 <span id="hSP"></span></button>
       <button class="btn" id="hRest">😴 휴식 (경기 쉬기)</button>
       <button class="btn" id="hRec">📊 기록 · 순위</button>
+      <button class="btn" id="hMis" style="grid-column:1 / -1">🎯 미션 챌린지 <span id="hMisN" class="sub"></span></button>
     </div>
   </section>
 
@@ -181,6 +190,13 @@
     <div class="card" id="gList"></div>
     <div class="card" id="gPitch"></div>
     <div class="card" id="gAbil"></div>
+  </section>
+
+  <!-- MISSION -->
+  <section class="scr" id="sMission">
+    <div class="top"><button class="btn ghost back" data-go="sHome">← 돌아가기</button><div class="sp"></div><h2>🎯 미션 챌린지</h2></div>
+    <div class="card"><div class="sub">특별한 상황에서 펼쳐지는 도전 과제예요. 처음 깨면 성장 포인트를 받고 다음 미션이 열려요. 날짜와 체력은 쓰지 않아요.</div></div>
+    <div id="mList"></div>
   </section>
 
   <!-- RECORD -->
@@ -344,6 +360,7 @@ function drawPlayer(c, x, y, s, o) {
   c.fillStyle = dark; circle(c, -9, -118, 3.4, true); circle(c, 9, -118, 3.4, true);
   c.strokeStyle = dark; c.lineWidth = 2; c.beginPath(); c.arc(0, -110, 7, .2, Math.PI - .2); c.stroke();
   c.fillStyle = 'rgba(255,120,120,.35)'; circle(c, -16, -110, 5, true); circle(c, 16, -110, 5, true);
+  if (o.coach) { c.fillStyle = '#3a2a1a'; c.beginPath(); c.ellipse(-7, -106, 9, 4, .3, 0, 7); c.ellipse(7, -106, 9, 4, -.3, 0, 7); c.fill(); c.fillStyle = '#111'; c.fillRect(-20, -124, 16, 8); c.fillRect(4, -124, 16, 8); c.fillRect(-4, -122, 8, 3); }
   // cap
   c.fillStyle = o.c1; c.strokeStyle = dark; c.lineWidth = 2.5;
   c.beginPath(); c.arc(0, -128, 28, Math.PI, 0); c.lineTo(28, -128); c.lineTo(-28, -128); c.closePath(); c.fill(); c.stroke();
@@ -449,10 +466,12 @@ function renderHome() {
   else {
     $('hToday').innerHTML = `<h3>📅 오늘의 경기 (${s.day}일째)</h3><div class="row"><span style="width:12px;height:12px;border-radius:50%;background:${t.c1};display:inline-block"></span>${t.name} <span class="sub">${my.w}승 ${my.l}패${my.d ? ' ' + my.d + '무' : ''}</span><span style="margin:0 6px">vs</span><span style="width:12px;height:12px;border-radius:50%;background:${opp.c1};display:inline-block"></span>${opp.name}</div>
       <div class="sub" style="margin-top:4px">${p.role === 'bat' ? `예상 타순: ${batSlot(p) + 1}번 타자` : p.prole === 'SP' ? (spDay(p) ? '🧢 오늘 선발 등판!' : `등판 없음 · 다음 선발까지 ${(4 - ((s.day - 1 + (p.rotOff || 0)) % 4)) % 4}일`) : p.prole === 'RP' ? '🔥 불펜 대기 (6~8회 등판)' : '🔒 마무리 대기 (9회 세이브 상황에 등판)'} <button class="chip" id="hRole" style="${p.role === 'pit' ? '' : 'display:none'};margin-left:4px;padding:3px 9px">보직: ${roleName(p.prole)} ▸</button> · 시즌 ${p.role === 'bat' ? `타율 ${avg(s.st)} · ${s.st.hr}홈런 · ${s.st.rbi}타점` : `${s.st.w}승 ${s.st.l}패${s.st.sv ? ' ' + s.st.sv + '세이브' : ''}${s.st.hld ? ' ' + s.st.hld + '홀드' : ''} · 평균자책 ${era(s.st)} · ${s.st.ka}탈삼진`}</div>`;
+    if (!(p.role === 'pit' && p.prole === 'SP' && !spDay(p))) { const m = todayMission(p); $('hToday').innerHTML += `<div style="margin-top:6px"><span class="mis">🎯 오늘의 미션</span> ${m[0]} <span class="sub">+${m[2]}P</span></div>`; }
     $('hPlay').textContent = p.role === 'pit' && p.prole === 'SP' && !spDay(p) ? '⏭ 오늘 경기 넘기기 (등판 없음)' : p.role === 'pit' ? `⚾ 경기 시작 (${roleName(p.prole)})` : '⚾ 경기 출전';
     if ($('hRole')) $('hRole').onclick = async () => { const i = await overlay('<h3>보직 변경</h3><div class="sub">다음 경기부터 적용돼요</div>', PROLES.map(([k, ic, n, d]) => [`${ic} ${n} <small style="opacity:.7">${d}</small>`, k === p.prole ? 'go' : ''])); p.prole = PROLES[i][0]; p.rotOff = (4 - ((p.season.day - 1) % 4)) % 4; save(); renderHome(); };
   }
   $('hRest').disabled = s.done;
+  { p.mis = p.mis || {}; const n = MCH[p.role].filter(m => p.mis[m.id]).length; $('hMisN').textContent = `${n} / ${MCH[p.role].length} 클리어`; }
 }
 const avg = s => s.ab ? (s.h / s.ab).toFixed(3).replace(/^0/, '') : '.000';
 const era = s => s.ip3 ? (s.ra * 27 / s.ip3).toFixed(2) : '0.00';
@@ -470,7 +489,7 @@ $('hRest').onclick = async () => {
   const a = simScore(my), b = simScore(os); recordGame(p, opp, a, b);
   p.energy = Math.min(100, p.energy + 55); p.cond = clamp(p.cond + (R() < .6 ? 1 : 0), 0, 4);
   endDay(p); toast(`팀 경기: ${a} : ${b} ${a > b ? '승리' : a < b ? '패배' : '무승부'}`);
-  save(); renderHome();
+  save(); renderHome(); await maybeEvent(p); renderHome();
 };
 $('hPlay').onclick = () => { const p = P(); if (p.season.done) { startNextSeason(p); return; } playGame(); };
 const simScore = str => { let r = 0; for (let i = 0; i < 9; i++) { const pr = .16 + (str - 55) / 400; while (R() < pr) r++; if (R() < .1 + (str - 55) / 500) r++; } return r; };
@@ -606,6 +625,122 @@ async function startNextSeason(p) {
   save(); renderHome();
 }
 
+
+// ================== COACH · MISSIONS · EVENTS ==================
+const COACH = { team: 'stars' };
+function coachHTML(text) { return `<div class="coach"><canvas width="152" height="172" data-coach></canvas><div class="bubble">${text}</div></div>`; }
+const drawCoaches = el => el.querySelectorAll('canvas[data-coach]').forEach(cv => { const c = cv.getContext('2d'); const t = teamOf(P() ? P().team : 'stars'); c.clearRect(0, 0, cv.width, cv.height); drawPlayer(c, cv.width / 2, cv.height - 6, cv.height / 190, { c1: t.c1, c2: t.c2, skin: SKINS[1], num: 77, role: 'bat', pose: 'stand', coach: true }); });
+const ovc = (html, btns, init) => overlay(html, btns, el => { drawCoaches(el); if (init) init(el); });
+const GM = { // per-game missions
+  bat: [['안타 2개 이상 치기', L => L.h >= 2, 3], ['홈런 1개 치기', L => L.hr >= 1, 5], ['2타점 이상 올리기', L => L.rbi >= 2, 3], ['삼진 없이 경기 마치기', L => L.k === 0 && L.pa >= 3, 2], ['3번 이상 출루하기', L => L.h + L.bb >= 3, 3], ['장타(2루타 이상) 치기', L => L.d2 + L.d3 + L.hr >= 1, 3], ['팀 승리 이끌기', (L, w) => w && L.h >= 1, 2]],
+  SP: [['6이닝 이상 던지기', L => L.ip3 >= 18, 3], ['탈삼진 6개 이상', L => L.ka >= 6, 4], ['5이닝 이상 3실점 이하', L => L.ip3 >= 15 && L.ra <= 3, 3], ['볼넷 1개 이하 (5이닝 이상)', L => L.ip3 >= 15 && L.bba <= 1, 3], ['승리 투수 되기', L => L.w, 4]],
+  RP: [['등판해서 무실점', L => L.ip3 >= 3 && L.ra === 0, 3], ['탈삼진 2개 이상', L => L.ka >= 2, 3], ['홀드 또는 승리', L => L.hld || L.w, 4], ['볼넷 없이 1이닝 이상', L => L.ip3 >= 3 && L.bba === 0, 2]],
+  CL: [['세이브 올리기', L => L.sv, 5], ['등판해서 무실점', L => L.ip3 >= 3 && L.ra === 0, 3], ['삼진 1개 이상', L => L.ka >= 1, 2]],
+};
+function todayMission(p) { const list = GM[p.role === 'bat' ? 'bat' : p.prole]; const s = p.season; if (s.misDay !== s.day || s.misIdx == null || s.misIdx >= list.length) { s.misDay = s.day; s.misIdx = Math.floor(R() * list.length); } return list[s.misIdx]; }
+const PRE_LINES = ['오늘 컨디션은 어때? 집중해서 해보자!', '상대가 만만치 않다. 하지만 넌 할 수 있어!', '관중들이 네 이름을 연호하고 있다고!', '긴장하지 말고 평소대로만 해!', '오늘 경기, 스카우트들이 보러 왔다더라.'];
+const GOOD_LINES = ['좋았어! 바로 그거야! 이 기세로 계속 가자!', '훌륭해! 오늘은 푹 쉬어도 좋다.', '역시 내가 믿은 대로군! 대단해!'];
+const BAD_LINES = ['아직 훈련이 부족하군! 오늘은 쉬지 말고 훈련해라.', '이런 날도 있는 법이지. 다음엔 더 잘할 거야.', '기본기부터 다시 다져야겠어. 훈련장으로!'];
+const EVENTS = [
+  { t: '📸 팬 사인회', d: '팬들의 응원에 힘이 났어요! 컨디션이 좋아졌어요.', f: p => { p.cond = clamp(p.cond + 1, 0, 4); } },
+  { t: '🎓 특별 코치 레슨', d: '레전드 선배에게 비법을 배웠어요! 능력 경험치 +45%', f: p => { const ks = p.role === 'bat' ? ['pow', 'con', 'eye', 'spd', 'def'] : ['vel', 'ctl', 'brk', 'sta']; const k = pick(ks); p.xp[k] = (p.xp[k] || 0) + 45; while (p.xp[k] >= 100 && p.st[k] < 99) { p.xp[k] -= 100; p.st[k]++; } return `(${statName(k)})`; } },
+  { t: '🎁 구단 보너스', d: '구단에서 활약을 인정했어요! 성장 포인트 +3', f: p => { p.sp += 3; } },
+  { t: '🌧️ 슬럼프 조짐', d: '요즘 몸이 무거워요… 컨디션이 떨어졌어요.', f: p => { p.cond = clamp(p.cond - 1, 0, 4); } },
+  { t: '🌙 야간 자율 훈련', d: '밤늦게까지 혼자 연습했어요. 체력 -15, 능력 경험치 +25%', f: p => { p.energy = clamp(p.energy - 15, 0, 100); const ks = p.role === 'bat' ? ['pow', 'con', 'eye'] : ['vel', 'ctl', 'brk']; const k = pick(ks); p.xp[k] = (p.xp[k] || 0) + 25; while (p.xp[k] >= 100 && p.st[k] < 99) { p.xp[k] -= 100; p.st[k]++; } } },
+  { t: '🍖 회식', d: '동료들과 고기 파티! 체력 +20', f: p => { p.energy = clamp(p.energy + 20, 0, 100); } },
+];
+async function maybeEvent(p) {
+  if (R() > .22) return;
+  const e = pick(EVENTS); const extra = e.f(p) || ''; save();
+  await overlay(`<div style="font-size:13px;color:var(--sub)">시즌 로드 · 이벤트</div><h3 style="font-size:22px;margin-top:4px">${e.t}</h3><div>${e.d} ${extra}</div>`, [['확인', 'go']]);
+}
+// ---------- mission challenge mode ----------
+const MCH = {
+  bat: [
+    { id: 'b1', n: '만루 찬스', d: '1사 만루! 한 타석에서 2타점 이상', sp: 5 },
+    { id: 'b2', n: '선구안 테스트', d: '풀카운트(3볼 2스트라이크)에서 출루하기', sp: 5 },
+    { id: 'b3', n: '홈런 더비', d: '공 10개 중 홈런 3개 이상', sp: 8 },
+    { id: 'b4', n: '끝내기의 주인공', d: '9회말 2사 2루, 1점 뒤진 상황. 동점 또는 역전 적시타!', sp: 8 },
+    { id: 'b5', n: '에이스 격파', d: '158km를 던지는 리그 최고 에이스에게 안타 치기', sp: 10 },
+  ],
+  pit: [
+    { id: 'p1', n: '삼자범퇴', d: '세 타자를 연속으로 잡아 이닝 끝내기', sp: 5 },
+    { id: 'p2', n: '견제의 달인', d: '발 빠른 1루 주자를 견제나 도루 저지로 잡아내기 (이닝 안에)', sp: 6 },
+    { id: 'p3', n: '위기 탈출', d: '무사 만루! 실점 없이 이닝 끝내기', sp: 8 },
+    { id: 'p4', n: '탈삼진 쇼', d: '세 타자 연속 삼진', sp: 8 },
+    { id: 'p5', n: '중심타선 정면승부', d: '상대 3~5번 강타자를 무실점으로 막기', sp: 10 },
+  ],
+};
+function renderMissions() {
+  const p = P(); p.mis = p.mis || {}; const list = MCH[p.role];
+  $('mList').innerHTML = list.map((m, i) => { const open = i === 0 || p.mis[list[i - 1].id]; const done = p.mis[m.id];
+    return `<button class="mrow${open ? '' : ' lock'}" data-m="${i}" ${open ? '' : 'disabled'}><span class="mn">MISSION ${i + 1}</span><span class="md">${open ? m.n : '🔒 잠김'}<small>${open ? m.d : '앞 미션을 깨면 열려요'}</small></span><span>${done ? '⭐ 클리어' : open ? `+${m.sp}P` : ''}</span></button>`; }).join('');
+  $('mList').querySelectorAll('[data-m]').forEach(b => b.onclick = () => runMission(list[+b.dataset.m]));
+}
+$('hMis').onclick = () => { renderMissions(); show('sMission'); };
+function missionG(p, opt) {
+  const ostr = oppStrength(p) + 4;
+  const g = { p, opp: todayOpp(p), ostr, mstr: strengthMine(p), weHome: true, inning: 9, half: 'bot', outs: 0, bases: [0, 0, 0], score: { me: 0, opp: 0 }, lines: { me: [], opp: [] }, idx: { me: 0, opp: 0 },
+    oppBat: mkOppBatters(ostr), oppPit: mkOppPitcher(ostr), line: blankStats(), pIn: p.role === 'pit', pDone: false, pc: 0, stam: 999, exitDiff: 0, entryDiff: 0, over: false, abort: false, auto: false, lead: 0, pickN: 0, pickOuts: 0, fatigue: 1, mission: true };
+  return Object.assign(g, opt);
+}
+async function runMission(m) {
+  const p = P();
+  let opt = {};
+  if (p.role === 'bat') {
+    if (m.id === 'b1') opt = { outs: 1, bases: [1, 1, 1], score: { me: 2, opp: 3 } };
+    if (m.id === 'b2') opt = { initCount: { b: 3, s: 2 }, score: { me: 1, opp: 1 } };
+    if (m.id === 'b3') opt = { derby: true, inning: 1 };
+    if (m.id === 'b4') opt = { outs: 2, bases: [0, 1, 0], score: { me: 2, opp: 3 } };
+    if (m.id === 'b5') opt = { ace: true };
+    opt.half = 'bot';
+  } else { opt = { half: 'top', score: { me: 3, opp: 2 } }; if (m.id === 'p2') opt.bases = [1, 0, 0]; if (m.id === 'p3') opt.bases = [1, 1, 1]; }
+  G = missionG(p, opt);
+  if (G.ace) { G.oppPit = { name: genName(), hand: 'R', vel: 99, ctl: 88, brk: 90, ar: ['FB', 'SL', 'FK', 'CB'], num: 1 }; }
+  if (m.id === 'p5') G.idx.opp = 2;
+  if (m.id === 'p2') { G.oppBat = G.oppBat.map(b => ({ ...b, spd: 90 })); G.lead = .09; }
+  await ovc(`<div class="mis">MISSION</div><h3 style="font-size:22px;margin-top:6px">${m.n}</h3>` + coachHTML(m.d + '<br>할 수 있겠지?'), [['도전!', 'go']]);
+  showGameScreen(); renderSB(); T3.newGame();
+  let ok = false;
+  const startBases = G.bases.slice();
+  if (p.role === 'bat') {
+    if (G.derby) {
+      let hr = 0;
+      for (let i = 0; i < 10 && !G.abort; i++) { log(`🏟️ 홈런 더비 ${i + 1}/10 · 홈런 ${hr}개`); G.bases = [0, 0, 0]; renderSB(); const o = await userBat(); if (o === ABORT) break; if (o === 'HR') hr++; }
+      ok = hr >= 3; G.derbyHR = hr;
+    } else {
+      const before = G.score.me; const o = await userBat();
+      if (o !== ABORT) { const r = applyPA(o, p.st.spd); addRuns(r.runs); renderSB();
+        ok = m.id === 'b1' ? r.runs >= 2 : m.id === 'b2' ? ['BB', '1B', '2B', '3B', 'HR'].includes(o) : m.id === 'b4' ? G.score.me >= G.score.opp : ['1B', '2B', '3B', 'HR'].includes(o); }
+    }
+  } else {
+    G.bases = startBases; renderSB(); let fail = false, ks = 0, faced = 0;
+    while (G.outs < 3 && !G.abort && !fail) {
+      const b = G.oppBat[G.idx.opp % 9]; G.idx.opp++; faced++;
+      const o = await userPitch(b); if (o === ABORT) break;
+      if (o === 'PICK') { renderSB(); break; }
+      const r = applyPA(o, b.spd); addRuns(r.runs); bookPit(o, r.runs, 0); G.count = { b: 0, s: 0 }; G.lead = m.id === 'p2' ? .09 : 0; renderSB();
+      log(`${b.name}: ${OUT_TXT[o]}${r.runs ? ` · ${r.runs}실점` : ''}`);
+      if (o === 'K') ks++;
+      if (m.id === 'p1' && !['K', 'GO', 'FO'].includes(o)) fail = true;
+      if (m.id === 'p4' && o !== 'K') fail = true;
+      if ((m.id === 'p3' || m.id === 'p5') && G.line.ra > 0) fail = true;
+      if (m.id === 'p2' && G.pickOuts > 0) break;
+      if (m.id === 'p5' && faced >= 3) break;
+      await sleep(600);
+    }
+    ok = !fail && !G.abort && (m.id === 'p1' ? G.outs >= 3 : m.id === 'p4' ? ks >= 3 : m.id === 'p2' ? G.pickOuts > 0 : m.id === 'p5' ? G.line.ra === 0 && faced >= 3 : G.outs >= 3 && G.line.ra === 0);
+  }
+  T3.stop();
+  const aborted = G.abort; G = null;
+  if (aborted) { show('sMission'); renderMissions(); return; }
+  const first = ok && !p.mis[m.id];
+  if (ok) { p.mis[m.id] = 1; if (first) p.sp += m.sp; sfx.hr(); } else sfx.bad();
+  save();
+  await ovc(`<div class="stamp ${ok ? 'ok' : 'no'}">${ok ? 'MISSION CLEAR!' : 'FAILED…'}</div><h3>${m.n}</h3>${m.id === 'b3' ? '' : ''}` + coachHTML(ok ? (first ? `대단해! 보너스 성장 포인트 +${m.sp}!` : '역시 실력은 변함없군!') : pick(BAD_LINES)), [['미션 목록', 'go']]);
+  show('sMission'); renderMissions();
+}
+
 // ================== GAME ENGINE ==================
 let G = null, FAST = false;
 $('gFast').onclick = () => { FAST = !FAST; $('gFast').classList.toggle('on', FAST); };
@@ -676,6 +811,8 @@ async function playGame() {
   G.fatigue = p.energy < 30 ? .9 : 1;
   G.stam = pitcherStam(p);
   if (G.pIn) G.line.g = 1;
+  const mis = todayMission(p); G.misDef = mis;
+  await ovc(`<div class="mis">🎯 오늘의 미션</div><h3 style="font-size:20px;margin-top:6px">${mis[0]}</h3><div class="sub">성공하면 성장 포인트 +${mis[2]}</div>` + coachHTML(pick(PRE_LINES)), [['플레이볼!', 'go']]);
   showGameScreen();
   log(`⚾ ${teamOf(p.team).name} vs ${opp.name} — 플레이볼!${p.role === 'pit' && p.prole !== 'SP' ? ` <span class="sub">(${roleName(p.prole)} 대기 중 · 등판 상황까지 빠르게 진행)</span>` : ''}`); sfx.cheer();
   await wait(1100);
@@ -794,6 +931,7 @@ async function finishGame() {
   p.sp += sp;
   const cost = p.role === 'bat' ? 15 : !L.g ? -8 : p.prole === 'SP' ? 30 : 12;
   p.energy = clamp(p.energy - cost + 22, 0, 100);
+  let misOk = null; const md = G.misDef; if (md && (p.role === 'bat' || L.g)) { misOk = !!md[1](L, win); if (misOk) p.sp += md[2]; }
   endDay(p); save();
   const mvp = p.role === 'bat' ? (L.hr >= 2 || L.h >= 3 || L.rbi >= 4) : (L.ip3 >= 21 && L.ra <= 1) || L.ka >= 10 || L.sv;
   if (win) sfx.hr(); else sfx.bad();
@@ -802,8 +940,9 @@ async function finishGame() {
     [[G.weHome ? G.opp.name : t.name, G.weHome ? 'opp' : 'me'], [G.weHome ? t.name : G.opp.name, G.weHome ? 'me' : 'opp']].map(([nm, k]) => `<tr class="${k === 'me' ? 'me' : ''}"><td style="text-align:left;white-space:nowrap">${nm.split(' ')[1]}</td>${Array.from({ length: n }, (_, i) => `<td>${G.lines[k][i] ?? (i < G.inning ? 0 : '')}</td>`).join('')}<td><b style="color:var(--acc);font-weight:400">${G.score[k]}</b></td></tr>`).join('') + '</table>';
   const mine = p.role === 'bat' ? `${L.ab}타수 ${L.h}안타${L.hr ? ` ${L.hr}홈런` : ''}${L.rbi ? ` ${L.rbi}타점` : ''}${L.bb ? ` ${L.bb}볼넷` : ''}${L.k ? ` ${L.k}삼진` : ''}`
     : note || `${ipStr(L.ip3)}이닝 ${L.ra}실점 ${L.ka}탈삼진 ${L.bba}볼넷 · 투구수 ${G.pc}${L.w ? ' · 🏆 승리투수' : L.l ? ' · 패전' : ''}${L.sv ? ' · 🔒 세이브' : ''}${L.hld ? ' · 🛡️ 홀드' : ''}${L.bs ? ' · 블론세이브' : ''}`;
-  await overlay(`<div class="res">${win ? '🎉 승리!' : me === op ? '무승부' : '패배…'}</div><div style="font-size:22px">${me} : ${op}</div>${box}<h3 style="margin-top:12px">${p.name} ${mvp ? '<span class="badge">⭐ 오늘의 MVP</span>' : ''}</h3><div>${mine}</div><div class="sub" style="margin-top:6px">성장 포인트 +${sp}${xpTxt ? ' ·' + xpTxt : ''} · 체력 ${p.energy}</div>`, [['홈으로', 'go']]);
+  await overlay(`<div class="res">${win ? '🎉 승리!' : me === op ? '무승부' : '패배…'}</div><div style="font-size:22px">${me} : ${op}</div>${box}<h3 style="margin-top:12px">${p.name} ${mvp ? '<span class="badge">⭐ 오늘의 MVP</span>' : ''}</h3><div>${mine}</div><div class="sub" style="margin-top:6px">성장 포인트 +${sp}${xpTxt ? ' ·' + xpTxt : ''} · 체력 ${p.energy}</div>${misOk == null ? '' : `<div class="stamp ${misOk ? 'ok' : 'no'}" style="font-size:22px">${misOk ? `MISSION CLEAR! +${md[2]}P` : 'MISSION FAILED'}</div>`}` + coachHTML(misOk === false || (!win && !mvp) ? pick(BAD_LINES) : pick(GOOD_LINES)), [['홈으로', 'go']], drawCoaches);
   G = null; show('sHome');
+  await maybeEvent(P()); renderHome();
   if (P().season.done) toast('🏁 시즌이 끝났어요! 결과를 확인하세요', 2200);
 }
 
@@ -840,7 +979,7 @@ function userBat() {
     const p = G.p;
     SC.mode = 'bat'; SC.cur = SC.cur || { x: 0, y: ZN.cy };
     SC.curR = (15 + p.st.con * .2 + (hasAb(p, 'con') ? 4 : 0)) * KPX * condMul(p) * G.fatigue;
-    G.count = { b: 0, s: 0 }; renderSB();
+    G.count = G.initCount ? { ...G.initCount } : { b: 0, s: 0 }; renderSB();
     T3.setupAtBat('bat');
     $('panel').innerHTML = `<button class="btn go swing" id="swBtn">🏏 스윙!</button><div class="hint">화면을 드래그해서 노란 커서를 공이 올 곳에 맞추고 → 공이 홈플레이트에 닿을 때 스윙! (PC: 마우스 이동 · 클릭 또는 Space)</div>`;
     $('swBtn').onpointerdown = e => { e.preventDefault(); doSwing(); };
@@ -852,8 +991,8 @@ function userBat() {
 function nextBatPitch() {
   if (!G || SC.mode !== 'bat') return;
   const op = G.oppPit, cnt = G.count;
-  const type = pickPitchType(op.ar, cnt);
-  const strikeP = clamp(.56 + (cnt.b - cnt.s) * .1 + (cnt.b === 3 ? .2 : 0), .3, .92);
+  const type = G.derby ? 'FB' : pickPitchType(op.ar, cnt);
+  const strikeP = G.derby ? 1 : clamp(.56 + (cnt.b - cnt.s) * .1 + (cnt.b === 3 ? .2 : 0), .3, .92);
   let tx, ty;
   if (R() < strikeP) { tx = ZN.x0 + .03 + R() * (ZN.x1 - ZN.x0 - .06); ty = ZN.y0 + .03 + R() * (ZN.y1 - ZN.y0 - .06); if (R() < .5) tx = R() < .5 ? ZN.x0 + .04 + R() * .07 : ZN.x1 - .04 - R() * .07; }
   else { const side = Math.floor(R() * 4); tx = side === 0 ? ZN.x0 - .05 - R() * .12 : side === 1 ? ZN.x1 + .05 + R() * .12 : ZN.x0 + R() * (ZN.x1 - ZN.x0); ty = side === 2 ? ZN.y0 - .05 - R() * .14 : side === 3 ? ZN.y1 + .04 + R() * .1 : ZN.y0 + R() * (ZN.y1 - ZN.y0); if (type === 'FK' || type === 'CB') ty = ZN.y0 - .04 - R() * .11; }
@@ -885,7 +1024,7 @@ function judgeBat(ts) {
   if (SC.judged || SC.mode !== 'bat') return; SC.judged = true;
   const p = G.p, pt = T3.curPitch(), cnt = G.count;
   const zoneIn = inZoneM(pt.fx, pt.fy);
-  const finish = (o, big, col) => { showBig(big, col); renderSB(); if (o) setTimeout(() => endBat(o), 950); else setTimeout(nextBatPitch, 1100); };
+  const finish = (o, big, col) => { if (G.derby && !o) o = 'X'; showBig(big, col); renderSB(); if (o) setTimeout(() => endBat(o), 950); else setTimeout(nextBatPitch, 1100); };
   if (ts == null) {
     T3.catchBall(); sfx.mitt();
     if (zoneIn) { cnt.s++; if (cnt.s >= 3) return finish('K', '루킹 삼진', '#ff6a6a'); return finish(null, '스트라이크', '#ffd24a'); }
@@ -962,11 +1101,12 @@ function aimPanel() {
   const picks = [0, 1, 2].filter(i => G.bases[i] && !(i < 2 && G.bases[i + 1] && i === 0 && false));
   $('panel').innerHTML = `<div class="pbtns">${Object.keys(p.pitches).map(k => `<button class="pt${k === myPitch ? ' on' : ''}" data-pt="${k}">${PITCHES[k].name}<small>${k === 'FB' ? velKmh(p.st.vel) + 'km' : 'Lv' + p.pitches[k]}</small></button>`).join('')}</div>
     <div class="row"><button class="btn go" id="thBtn" style="flex:2;font-size:20px">⚾ 던지기</button>${picks.length ? picks.map(i => `<button class="btn" data-pick="${i}" style="flex:1;font-size:13px;padding:8px 4px">견제<br>${i + 1}루</button>`).join('') : ''}</div>
-    <div class="row"><button class="btn ghost" id="autoBtn" style="flex:1;font-size:13px">이 타자 자동</button><button class="btn ghost" id="pullBtn" style="flex:1;font-size:13px">교체 요청</button></div>
+    <div class="row"><div class="pad" id="aimPad">${['↖', '↑', '↗', '←', '●', '→', '↙', '↓', '↘'].map((a, k) => `<button data-c="${k}">${a}</button>`).join('')}</div><button class="btn ghost" id="autoBtn" style="flex:1;font-size:13px">이 타자 자동</button><button class="btn ghost" id="pullBtn" style="flex:1;font-size:13px">교체 요청</button></div>
     <div class="hint">화면을 눌러 포수 미트 위치(던질 곳)를 정하고 → 던지기 → 게이지를 가운데서 멈추세요${picks.length ? ' · 주자가 크게 리드하면 견제로 잡을 수 있어요' : ''}</div>`;
   $('panel').querySelectorAll('[data-pt]').forEach(b => b.onclick = () => { myPitch = b.dataset.pt; aimPanel(); });
   $('panel').querySelectorAll('[data-pick]').forEach(b => b.onclick = () => pickoff(+b.dataset.pick));
   $('thBtn').onclick = gaugePanel;
+  $('aimPad').querySelectorAll('[data-c]').forEach(b => b.onclick = () => { const k = +b.dataset.c, cx = k % 3, cy = Math.floor(k / 3); const wx = (ZN.x1 - ZN.x0) / 3, wy = (ZN.y1 - ZN.y0) / 3; const same = SC.padK === k; SC.padK = same ? -1 : k; let x = ZN.x0 + wx * (cx + .5), y = ZN.y1 - wy * (cy + .5); if (same && k !== 4) { x += (cx - 1) * .12; y -= (cy - 1) * .12; } SC.target = { x, y }; T3.setTarget(SC.target); });
   $('autoBtn').onclick = autoPA;
   $('pullBtn').onclick = async () => { if (await overlay('<h3>마운드에서 내려갈까요?</h3><div class="sub">남은 이닝은 불펜이 던져요</div>', [['계속 던지기', 'ghost'], ['교체', 'red']]) === 1) { G.pc = Math.max(G.pc, G.stam); autoPA(); } };
   T3.setTarget(SC.target);
@@ -1039,9 +1179,9 @@ function doSteal() {
   T3.stealAnim(i, ok).then(() => {
     G.bases[i] = 0;
     if (ok) { G.bases[i + 1] = 1; showBig('도루 성공', '#ff9a6a'); log(`🏃 주자가 ${i + 2}루 도루에 성공했어요`); }
-    else { G.outs++; G.line.ip3++; showBig('도루 저지!', '#ffd24a'); log(`🎯 포수가 ${i + 2}루 도루를 잡아냈어요!`); sfx.ok(); }
+    else { G.outs++; G.line.ip3++; G.pickOuts = (G.pickOuts || 0) + 1; showBig('도루 저지!', '#ffd24a'); log(`🎯 포수가 ${i + 2}루 도루를 잡아냈어요!`); sfx.ok(); }
     G.lead = 0; renderSB();
-    setTimeout(() => { if (G.outs >= 3) endPit('PICK'); else aimPanel(); }, 900);
+    setTimeout(() => { if (G.outs >= 3 || (G.mission && G.pickOuts)) endPit('PICK'); else aimPanel(); }, 900);
   });
   return true;
 }
@@ -1051,11 +1191,11 @@ async function pickoff(i) {
   G.pickN++;
   const out = R() < .03 + G.lead * .9;
   await T3.pickoffAnim(i, out);
-  if (out) { G.bases[i] = 0; G.outs++; G.line.ip3++; showBig('견제사!', '#ffd24a'); sfx.ok(); log(`🎯 ${i + 1}루 주자 견제사!`); }
+  if (out) { G.bases[i] = 0; G.outs++; G.line.ip3++; G.pickOuts = (G.pickOuts || 0) + 1; showBig('견제사!', '#ffd24a'); sfx.ok(); log(`🎯 ${i + 1}루 주자 견제사!`); }
   else { showBig('세이프', '#fff'); log(`${i + 1}루 견제 · 세이프 (주자가 리드를 줄였어요)`); }
   G.lead = Math.max(0, G.lead - .06); renderSB();
   await sleep(800);
-  if (G.outs >= 3) { endPit('PICK'); return; }
+  if (G.outs >= 3 || (G.mission && G.pickOuts)) { endPit('PICK'); return; }
   aimPanel();
 }
 function endPit(o) { if (!pitResolve) return; SC.mode = 'idle'; T3.setIdle(); $('panel').innerHTML = ''; const r = pitResolve; pitResolve = null; r(o); }
@@ -1104,13 +1244,20 @@ function make3D() {
   const scene = new THREE.Scene();
   scene.fog = new THREE.Fog(0x0b1838, 170, 460);
   const cam = new THREE.PerspectiveCamera(36, 1, .05, 1200);
-  scene.add(new THREE.HemisphereLight(0xd6e4ff, 0x30502c, .78));
+  const hemi = new THREE.HemisphereLight(0xd6e4ff, 0x30502c, .78); scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xfff6e6, .72); sun.position.set(-40, 90, 50); scene.add(sun);
   const fill = new THREE.DirectionalLight(0xbfd2ff, .25); fill.position.set(50, 40, -80); scene.add(fill);
-  // ---------- sky ----------
-  { const c = document.createElement('canvas'); c.width = 4; c.height = 256; const g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#02050f'); gr.addColorStop(.55, '#0b1a40'); gr.addColorStop(1, '#22407a'); g.fillStyle = gr; g.fillRect(0, 0, 4, 256); const t = new THREE.CanvasTexture(c); const sky = new THREE.Mesh(new THREE.SphereGeometry(900, 24, 16), new THREE.MeshBasicMaterial({ map: t, side: THREE.BackSide, fog: false })); scene.add(sky);
-    const sp = []; for (let i = 0; i < 500; i++) { const a = R() * 6.28, e = .15 + R() * 1.3, r = 850; sp.push(Math.cos(a) * Math.cos(e) * r, Math.sin(e) * r, Math.sin(a) * Math.cos(e) * r); }
-    const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3)); scene.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xffffff, size: 2, sizeAttenuation: false, fog: false, transparent: true, opacity: .7 }))); }
+  // ---------- sky (day / night) ----------
+  const skyTex = (stops) => { const c = document.createElement('canvas'); c.width = 4; c.height = 256; const g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 0, 256); stops.forEach(([o, col]) => gr.addColorStop(o, col)); g.fillStyle = gr; g.fillRect(0, 0, 4, 256); return new THREE.CanvasTexture(c); };
+  const SKY = { night: skyTex([[0, '#02050f'], [.55, '#0b1a40'], [1, '#22407a']]), day: skyTex([[0, '#1f6fd8'], [.5, '#55a6f0'], [1, '#d6efff']]) };
+  const skyM = new THREE.MeshBasicMaterial({ map: SKY.day, side: THREE.BackSide, fog: false }); scene.add(new THREE.Mesh(new THREE.SphereGeometry(900, 24, 16), skyM));
+  let stars; { const sp = []; for (let i = 0; i < 500; i++) { const a = R() * 6.28, e = .15 + R() * 1.3, r = 850; sp.push(Math.cos(a) * Math.cos(e) * r, Math.sin(e) * r, Math.sin(a) * Math.cos(e) * r); }
+    const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3)); stars = new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xffffff, size: 2, sizeAttenuation: false, fog: false, transparent: true, opacity: .7 })); scene.add(stars); }
+  const clouds = [];
+  { const c = document.createElement('canvas'); c.width = 256; c.height = 128; const g = c.getContext('2d');
+    for (let i = 0; i < 9; i++) { const x = 40 + i * 22 + Math.random() * 10, y = 70 - Math.sin(i / 8 * Math.PI) * 26, r = 26 + Math.sin(i / 8 * Math.PI) * 20; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(.7, 'rgba(255,255,255,.9)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); }
+    const ct = new THREE.CanvasTexture(c);
+    for (let i = 0; i < 16; i++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: ct, transparent: true, opacity: .92, fog: false, depthWrite: false })); const a = -1.6 + R() * 3.2, d = 420 + R() * 260, h = 90 + R() * 160; sp.position.set(Math.sin(a) * d, h, -Math.cos(a) * d); const sc = 120 + R() * 140; sp.scale.set(sc, sc / 2, 1); scene.add(sp); clouds.push(sp); } }
   const glowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); const r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(.3, 'rgba(255,255,255,.55)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
   const glow = (col, s, op = 1) => { const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: col, transparent: true, opacity: op, depthWrite: false, blending: THREE.AdditiveBlending })); m.scale.set(s, s, 1); return m; };
   // ---------- field texture ----------
@@ -1148,6 +1295,9 @@ function make3D() {
     const md = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 2.8, .25, 32), new THREE.MeshStandardMaterial({ color: 0xc08a5c, roughness: 1 })); md.position.set(0, .12, -18.44); scene.add(md);
     const rub = new THREE.Mesh(new THREE.BoxGeometry(.61, .03, .15), white); rub.position.set(0, .26, -18.44); scene.add(rub);
   }
+  const towerGlows = [];
+  function setDay(day) { skyM.map = day ? SKY.day : SKY.night; skyM.needsUpdate = true; stars.visible = !day; clouds.forEach(c => c.visible = day); towerGlows.forEach(g => g.visible = !day);
+    scene.fog.color.setHex(day ? 0xcfe8ff : 0x0b1838); hemi.color.setHex(day ? 0xffffff : 0xd6e4ff); hemi.groundColor.setHex(day ? 0x6a8a4a : 0x30502c); hemi.intensity = day ? .95 : .78; sun.intensity = day ? 1.0 : .72; sun.color.setHex(day ? 0xfffaf0 : 0xfff6e6); }
   // ---------- wall, stands, crowd, lights ----------
   { const wallM = new THREE.MeshStandardMaterial({ color: 0x1d4a36, roughness: .8, side: THREE.DoubleSide }), yel = new THREE.MeshBasicMaterial({ color: 0xffd23a, side: THREE.DoubleSide });
     const wp = [], yp = [];
@@ -1181,7 +1331,7 @@ function make3D() {
     for (const deg of [-70, -32, 32, 70]) { const ar = deg * Math.PI / 180, d = innerR(deg) + depth + 4; const x = Math.sin(ar) * d, z = -Math.cos(ar) * d;
       const pole = new THREE.Mesh(new THREE.CylinderGeometry(.5, .8, 52, 8), new THREE.MeshStandardMaterial({ color: 0x4a5060 })); pole.position.set(x, 26, z); scene.add(pole);
       const head = new THREE.Mesh(new THREE.BoxGeometry(12, 6, 1), new THREE.MeshBasicMaterial({ color: 0xfff8e0 })); head.position.set(x, 54, z); head.lookAt(0, 30, -20); scene.add(head);
-      const gl = glow(0xfff4d0, 70, .55); gl.position.set(x, 54, z); scene.add(gl); }
+      const gl = glow(0xfff4d0, 70, .55); gl.position.set(x, 54, z); scene.add(gl); towerGlows.push(gl); }
     // scoreboard in center field
     const bc = document.createElement('canvas'); bc.width = 512; bc.height = 192; const bt = new THREE.CanvasTexture(bc);
     const board = new THREE.Mesh(new THREE.PlaneGeometry(34, 12.75), new THREE.MeshBasicMaterial({ map: bt })); const bd = innerR(0) + depth - 6; board.position.set(0, 3.4 + rise + 9, -bd); scene.add(board);
@@ -1222,11 +1372,12 @@ function make3D() {
       const nm = new THREE.Mesh(new THREE.PlaneGeometry(.26, .26), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, side: THREE.DoubleSide })); nm.position.set(0, .3, -.17); nm.rotation.y = Math.PI; tor.add(nm); }
     const head = new THREE.Group(); head.position.y = .66; tor.add(head); f.head = head;
     const hd = new THREE.Mesh(sphG, mSkin); hd.scale.setScalar(.115); head.add(hd);
-    for (const s of [-1, 1]) { const e = new THREE.Mesh(sphG, mkM(0x111111)); e.scale.setScalar(.016); e.position.set(s * .04, .015, .105); head.add(e); }
+    for (const s of [-1, 1]) { const w = new THREE.Mesh(sphG, mkM(0xffffff)); w.scale.set(.026, .032, .012); w.position.set(s * .043, .01, .108); head.add(w); const e = new THREE.Mesh(sphG, mkM(0x111111)); e.scale.set(.017, .022, .01); e.position.set(s * .043, .008, .116); head.add(e); }
     if (o.helmet) { const hm = new THREE.Mesh(new THREE.SphereGeometry(.135, 16, 10, 0, 6.29, 0, Math.PI * .56), mCap); hm.position.y = .01; head.add(hm); const fl = new THREE.Mesh(new THREE.CylinderGeometry(.13, .13, .05, 14, 1, false, 0, Math.PI), mCap); fl.rotation.x = Math.PI / 2; fl.rotation.z = Math.PI; fl.position.set(0, .04, .1); fl.scale.set(1, 1, .6); head.add(fl); }
     else { const cp = new THREE.Mesh(new THREE.SphereGeometry(.122, 16, 8, 0, 6.29, 0, Math.PI / 2), mCap); cp.position.y = .03; head.add(cp); const br = new THREE.Mesh(new THREE.CylinderGeometry(.11, .11, .015, 14, 1, false, -Math.PI / 2, Math.PI), mCap); br.position.set(0, .035, .07); br.scale.set(1, 1, 1.2); head.add(br); }
     f.arms = [];
     for (const s of [-1, 1]) { const up = limb(mTop, .056), fo = limb(mSkin, .045); const hand = new THREE.Mesh(sphG, s === o.gloveSide ? mGlove : mSkin); hand.scale.setScalar(s === o.gloveSide ? .085 : .05); tor.add(up, fo, hand); f.arms.push({ s, up, fo, hand, S: V(s * .22, .47, 0) }); }
+    root.scale.y = .8; head.scale.set(1.75, 1.75 / .8 * .92, 1.75); head.position.y = .74;
     f.setOpacity = op => f.mats.forEach(m => { m.transparent = op < 1; m.opacity = op; m.depthWrite = op >= 1; });
     return f;
   }
@@ -1294,7 +1445,7 @@ function make3D() {
   q0.setFromUnitVectors(UP, V(-.3, .9, -.32).normalize()); qf.setFromUnitVectors(UP, V(-.55, .55, -.62).normalize());
   // ---------- actors ----------
   const actors = {};
-  const P_CAM = { pos: V(0, 2.0, 5.3), look: V(0, .95, -18.4) };
+  const P_CAM = { pos: V(0, 2.65, 6.3), look: V(0, .72, -17.5) };
   function figColors(team, home) { return { top: home ? 0xf4f4ee : new THREE.Color(team.c1).lerp(new THREE.Color(0x222222), .15).getHex(), pant: home ? 0xf0f0ea : 0xb8bcc4, cap: new THREE.Color(team.c1).getHex(), skin: 0xe8b88e }; }
   const ballM = (() => { const c = document.createElement('canvas'); c.width = 128; c.height = 64; const g = c.getContext('2d'); g.fillStyle = '#fbfbf6'; g.fillRect(0, 0, 128, 64); g.strokeStyle = '#d42a2a'; g.lineWidth = 3; for (const o of [0, 64]) { g.beginPath(); for (let x = 0; x <= 64; x += 2) { const y = 32 + Math.sin(x / 64 * Math.PI * 2) * 18; g[x ? 'lineTo' : 'moveTo'](o + x, y); } g.stroke(); } return new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(c), roughness: .35, emissive: 0x333333 }); })();
   const ball = new THREE.Mesh(new THREE.SphereGeometry(.037 * 1.35, 18, 12), ballM); ball.visible = false; scene.add(ball);
@@ -1348,7 +1499,7 @@ function make3D() {
     const batTeam = battingTeam() === 'me' ? teamOf(G.p.team) : G.opp, home = battingTeam() === 'me' ? G.weHome : !G.weHome;
     G.bases.forEach((on, i) => { if (!on) return; const f = mkFig({ ...figColors(batTeam, home), helmet: true }); const b = BASEV[i], nx = BASEV[i + 1]; const lead = b.clone().lerp(nx, (1.8 + (G.lead || 0) * 25) / 27.4); placeFig(f, lead, nx); f.base = i; f.lead0 = lead.clone(); figs.runners.push(f); });
   }
-  function newGame() { hist.length = 0; drawBoard(); setIdle(); }
+  function newGame() { hist.length = 0; if (G) { if (G.day == null) G.day = G.mission ? true : R() < .6; setDay(G.day); } drawBoard(); setIdle(); }
   function setIdle() {
     clearFigs(); if (!G) return;
     const defMe = battingTeam() === 'opp';
@@ -1559,7 +1710,7 @@ function make3D() {
     zoneG.visible = st.cam === 'pitch';
     // camera
     let wantPos, wantLook, wantFov = 36, k = 6;
-    if (st.cam === 'pitch') { wantPos = P_CAM.pos; wantLook = P_CAM.look; wantFov = st.phase === 'flight' && st.u > .3 && st.u < 1 ? 28.8 : 30; k = 8; }
+    if (st.cam === 'pitch') { wantPos = P_CAM.pos; wantLook = P_CAM.look; wantFov = st.phase === 'flight' && st.u > .3 && st.u < 1 ? 30.5 : 32; k = 8; }
     else if (st.cam === 'field' && st.play) { const b = ball.position, dist = Math.hypot(b.x, b.z); wantLook = V(b.x * .9, Math.min(b.y, 25) * .6, b.z * .9 - 6); wantPos = V(b.x * .35, 16 + dist * .22 + Math.min(b.y, 30) * .3, 26 + b.z * .25); wantFov = 48; k = 3.2; }
     else if (st.cam === 'pick' && st.pick) { const bb = st.pick.base; wantLook = V(bb.x * .55, 0, -19); wantPos = V(bb.x * .25, 13, 9); wantFov = 46; k = 5; }
     else if (st.cam === 'steal' && st.steal) { const bb = st.steal.to; wantLook = V(bb.x * .6, 0, bb.z * .8); wantPos = V(bb.x * .2, 14, 12); wantFov = 48; k = 4; }
