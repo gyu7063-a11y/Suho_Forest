@@ -72,6 +72,8 @@
   /* overlays */
   .ov { position: fixed; inset: 0; z-index: 30; background: rgba(0,0,0,.6); display: none; align-items: center; justify-content: center; padding: 14px; }
   .ov.on { display: flex; }
+  body.touch .pcOnly { display: none !important; }
+  .kb { padding: 8px 6px; font-size: 15px; background: #333; border: 3px solid #555; } .kb.wait { border-color: #ffe04a; background: #4a4a2a; }
   .ov .panel { width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto; }
   .ov h2 { margin: 0 0 10px; font-weight: 400; font-size: 22px; text-align: center; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 6px; }
@@ -92,7 +94,7 @@
 <div id="hud">
   <div id="cross"></div><div id="prog"></div>
   <div id="info"></div>
-  <div id="topbar"><button id="bView">👁️</button><button id="bInv">🎒</button><button id="bMenu">⏸</button></div><div id="held"></div>
+  <div id="topbar"><button id="bInv">🎒</button><button id="bMenu">⏸</button></div><div id="held"></div>
   <div id="msg"></div>
   <div id="hearts"></div>
   <div id="hotbar"></div>
@@ -130,13 +132,24 @@
   <h2>⏸ 게임 메뉴</h2>
   <div style="display:flex;flex-direction:column;gap:8px">
     <button class="btn go" id="mResume">게임으로 돌아가기</button>
-    <div class="sub">시야 거리 <b id="mRdV"></b></div><input type="range" id="mRd" min="2" max="8" step="1">
-    <div class="sub">시점 감도 <b id="mSensV"></b></div><input type="range" id="mSens" min="2" max="20" step="1">
-    <div class="sub">시야각 (넓을수록 멀리·넓게 보여요) <b id="mFovV"></b></div><input type="range" id="mFov" min="60" max="110" step="5">
-    <button class="btn" id="mView"></button>
+    <button class="btn" id="mKeys">⚙️ 설정 · 단축키 <span class="pcOnly">(F1)</span></button>
     <button class="btn" id="mMode"></button>
     <button class="btn" id="mTime"></button>
     <button class="btn red" id="mQuit">💾 저장하고 나가기</button>
+  </div></div></div>
+<div class="ov" id="ovKeys"><div class="panel">
+  <h2>⚙️ 설정 · 단축키</h2>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="sub">시야 거리 <b id="mRdV"></b></div><input type="range" id="mRd" min="2" max="8" step="1">
+    <div class="sub">시점 감도 <b id="mSensV"></b></div><input type="range" id="mSens" min="2" max="20" step="1">
+    <div class="sub">시야각 (넓을수록 멀리·넓게 보여요) <b id="mFovV"></b></div><input type="range" id="mFov" min="60" max="110" step="5">
+    <div class="row" style="gap:8px"><button class="btn" id="kDbl" style="flex:1"></button><button class="btn" id="kBob" style="flex:1"></button></div>
+    <div id="kKeysWrap" class="pcOnly">
+      <div class="sub" style="margin:6px 0">⌨️ 단축키 — 바꿀 칸을 누르고 원하는 키를 누르세요 (Esc: 취소)</div>
+      <div id="kList" style="display:grid;grid-template-columns:1fr 120px;gap:6px;align-items:center"></div>
+      <button class="btn" id="kReset" style="width:100%;margin-top:8px">↺ 단축키 기본값으로</button>
+    </div>
+    <button class="btn go" id="kClose">게임으로 돌아가기</button>
   </div></div></div>
 <div class="ov" id="ovInv"><div class="panel">
   <h2 id="iTitle">🎒 인벤토리</h2>
@@ -162,6 +175,7 @@
 const $ = id => document.getElementById(id);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), lerp = (a, b, t) => a + (b - a) * t;
 const IS_TOUCH = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+if (IS_TOUCH) document.body.classList.add('touch');
 const CS = 16, H = 128, WATER = 40;
 
 // ================== BLOCKS & ITEMS ==================
@@ -316,7 +330,7 @@ function itemIcon(id) {
 
 // ================== SAVE ==================
 const KEY = 'mgc.blocks';
-let META = { worlds: [], rd: IS_TOUCH ? 4 : 6, sens: 8, fov: 90, view: 3 };
+let META = { worlds: [], rd: IS_TOUCH ? 4 : 6, sens: 8, fov: 90, dblFly: true, bob: true, keys: {} };
 try { const t = JSON.parse(localStorage.getItem(KEY)); if (t && t.worlds) META = Object.assign(META, t); } catch (e) {}
 const saveMeta = () => { try { localStorage.setItem(KEY, JSON.stringify(META)); } catch (e) {} };
 let W = null; // current world meta
@@ -609,7 +623,7 @@ function setHandTex(id) {
   }
   heldId = id; if (avatar) avatar.setHeld(id);
 }
-let heldId = 0, view = 3; // 3 = third person, 1 = first person
+let heldId = 0, view = 1; // first person only
 // blocky avatar for third-person view
 const avatar = (() => {
   const g = new THREE.Group(); scene.add(g);
@@ -805,7 +819,7 @@ $('bInv').onclick = e => { e.stopPropagation(); openInv(); };
 // ================== MENU ==================
 function openMenu() { paused = true; exitLock(); $('ovMenu').classList.add('on'); menuLabels(); }
 function menuLabels() {
-  $('mRd').value = META.rd; $('mRdV').textContent = META.rd + '청크'; $('mFov').value = META.fov; $('mFovV').textContent = META.fov + '°'; $('mView').textContent = view === 3 ? '👁️ 1인칭 시점으로 바꾸기' : '👁️ 3인칭 시점으로 바꾸기'; $('mSens').value = META.sens; $('mSensV').textContent = META.sens;
+  $('mRd').value = META.rd; $('mRdV').textContent = META.rd + '청크'; $('mFov').value = META.fov; $('mFovV').textContent = META.fov + '°'; $('mSens').value = META.sens; $('mSensV').textContent = META.sens;
   $('mMode').textContent = W.mode === 'creative' ? (P.fly ? '🕊️ 날기 끄기' : '🕊️ 날기 켜기') : '⚔️ 서바이벌 모드';
   $('mMode').disabled = W.mode !== 'creative';
   $('mTime').textContent = DAY.stop ? '⏱️ 시간 흐르게 하기' : `⏱️ 시간 멈추기 (지금 ${DAY.t > .5 ? '밤' : '낮'})`;
@@ -813,9 +827,6 @@ function menuLabels() {
 $('mRd').oninput = () => { META.rd = +$('mRd').value; saveMeta(); menuLabels(); };
 $('mSens').oninput = () => { META.sens = +$('mSens').value; saveMeta(); menuLabels(); };
 $('mFov').oninput = () => { META.fov = +$('mFov').value; saveMeta(); applyFov(); menuLabels(); };
-$('mView').onclick = () => { setView(view === 3 ? 1 : 3); menuLabels(); };
-$('bView').onclick = e => { e.stopPropagation(); setView(view === 3 ? 1 : 3); };
-function setView(v) { view = v; META.view = v; saveMeta(); avatar.g.visible = v === 3 && playing; setHandTex(curItem()); msg(v === 3 ? '3인칭 시점' : '1인칭 시점'); }
 function applyFov() { const a = cam.aspect; let v = META.fov * .92; if (a < 1) { const hf = META.fov * .85 * Math.PI / 180; v = Math.min(105, 2 * Math.atan(Math.tan(hf / 2) / a) * 180 / Math.PI); } cam.fov = v; cam.updateProjectionMatrix(); }
 $('mMode').onclick = () => { P.fly = !P.fly; P.vy = 0; $('bDown').style.display = P.fly ? 'grid' : 'none'; menuLabels(); };
 $('mTime').onclick = () => { DAY.stop = !DAY.stop; menuLabels(); };
@@ -843,21 +854,62 @@ cvEl.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('mousemove', e => { if (document.pointerLockElement === cvEl && !paused) look(e.movementX, e.movementY, .0004); });
 function look(dx, dy, k) { const s = META.sens * k; P.yaw -= dx * s; P.pitch = clamp(P.pitch - dy * s, -1.55, 1.55); }
 window.addEventListener('wheel', e => { if (!playing || paused) return; sel = (sel + (e.deltaY > 0 ? 1 : 8)) % 9; renderHotbar(); });
+// ---- key bindings (F1) ----
+const ACTS = [['fwd', '앞으로', 'KeyW'], ['back', '뒤로', 'KeyS'], ['left', '왼쪽', 'KeyA'], ['right', '오른쪽', 'KeyD'], ['jump', '점프 · 위로 날기', 'Space'], ['sneak', '천천히 걷기 · 아래로', 'Shift'], ['inv', '인벤토리 · 제작', 'KeyE'], ['fly', '날기 켜기/끄기 (크리에이티브)', 'KeyF']];
+const ACT2KEY = { fwd: 'w', back: 's', left: 'a', right: 'd', jump: 'space', sneak: 'shift' };
+const ARROWS = { ArrowUp: 'fwd', ArrowDown: 'back', ArrowLeft: 'left', ArrowRight: 'right' };
+function bindOf(a) { return META.keys[a] || ACTS.find(x => x[0] === a)[2]; }
+function actOf(c) { for (const [a] of ACTS) if (bindOf(a) === c) return a; return ARROWS[c] || null; }
+function normCode(e) { const c = e.code || ''; if (/^Shift/.test(c)) return 'Shift'; if (/^Control/.test(c)) return 'Ctrl'; if (/^Alt/.test(c)) return 'Alt'; if (/^Meta/.test(c)) return 'Meta'; return c || e.key; }
+function keyName(c) { return c === 'Space' ? 'Space' : /^Key/.test(c) ? c.slice(3) : /^Digit/.test(c) ? c.slice(5) : /^Numpad/.test(c) ? 'Num ' + c.slice(6) : ({ ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→', Backquote: '`', Minus: '-', Equal: '=', BracketLeft: '[', BracketRight: ']', Semicolon: ';', Quote: "'", Comma: ',', Period: '.', Slash: '/', Backslash: '\\', CapsLock: 'Caps', Tab: 'Tab', Enter: 'Enter', Backspace: '⌫' })[c] || c; }
+let rebinding = null;
+function renderKeys() {
+  $('kList').innerHTML = ACTS.map(([a, n]) => `<div>${n}</div><button class="kb${rebinding === a ? ' wait' : ''}" data-a="${a}">${rebinding === a ? '키를 누르세요…' : keyName(bindOf(a))}</button>`).join('');
+  $('kList').querySelectorAll('.kb').forEach(b => b.onclick = () => { rebinding = rebinding === b.dataset.a ? null : b.dataset.a; renderKeys(); });
+  $('kDbl').textContent = '점프 두 번 → 날기: ' + (META.dblFly ? '켜짐' : '꺼짐');
+  $('kBob').textContent = '걸을 때 화면 흔들림: ' + (META.bob ? '켜짐' : '꺼짐');
+  menuLabels();
+}
+function openKeys() { paused = true; exitLock(); for (const k in keys) keys[k] = false; $('ovMenu').classList.remove('on'); $('ovInv').classList.remove('on'); $('ovKeys').classList.add('on'); rebinding = null; renderKeys(); }
+function closeKeys() { rebinding = null; $('ovKeys').classList.remove('on'); paused = false; enterLock(); }
+$('mKeys').onclick = openKeys; $('kClose').onclick = closeKeys;
+$('kDbl').onclick = () => { META.dblFly = !META.dblFly; saveMeta(); renderKeys(); };
+$('kBob').onclick = () => { META.bob = !META.bob; saveMeta(); renderKeys(); };
+$('kReset').onclick = () => { META.keys = {}; saveMeta(); rebinding = null; renderKeys(); };
+function setBind(a, c) {
+  const old = bindOf(a);
+  for (const [b] of ACTS) if (b !== a && bindOf(b) === c) META.keys[b] = old; // swap with the action that had this key
+  META.keys[a] = c; saveMeta();
+}
+function toggleFly() { if (W.mode !== 'creative') return; P.fly = !P.fly; P.vy = 0; $('bDown').style.display = P.fly && IS_TOUCH ? 'grid' : 'none'; msg(P.fly ? '🕊️ 날기 켜짐' : '날기 꺼짐'); }
+let lastSpace = 0;
 document.addEventListener('keydown', e => {
   if (!playing) return;
-  const k = e.key.toLowerCase();
-  if (k === 'e' || k === 'i') { if ($('ovInv').classList.contains('on')) $('iClose').click(); else if (!paused) openInv(); return; }
+  const c = normCode(e);
+  if (rebinding) {
+    e.preventDefault();
+    if (c === 'Escape' || c === 'F1') { rebinding = null; renderKeys(); return; }
+    if (/^Digit[1-9]$/.test(c)) { msg('1~9는 단축칸 선택용이에요'); return; }
+    setBind(rebinding, c); rebinding = null; renderKeys(); return;
+  }
+  if (c === 'F1') { e.preventDefault(); if (!e.repeat) { if ($('ovKeys').classList.contains('on')) closeKeys(); else openKeys(); } return; }
+  if ($('ovKeys').classList.contains('on')) { if (c === 'Escape') closeKeys(); return; }
+  const act = actOf(c);
+  if (act === 'inv') { if (e.repeat) return; if ($('ovInv').classList.contains('on')) $('iClose').click(); else if (!paused) openInv(); return; }
   if (paused) return;
-  if (k >= '1' && k <= '9') { sel = +k - 1; renderHotbar(); }
-  if (k === ' ') { keys.space = true; e.preventDefault(); const now = performance.now(); if (W.mode === 'creative' && now - lastSpace < 300) { P.fly = !P.fly; P.vy = 0; msg(P.fly ? '🕊️ 날기 켜짐' : '날기 꺼짐'); } lastSpace = now; }
-  if (k === 'shift') keys.shift = true;
-  if ('wasd'.includes(k) && k.length === 1) keys[k] = true;
-  if (k === 'arrowup') keys.w = true; if (k === 'arrowdown') keys.s = true; if (k === 'arrowleft') keys.a = true; if (k === 'arrowright') keys.d = true;
-  if (k === 'v' || k === 'f5') { e.preventDefault(); setView(view === 3 ? 1 : 3); }
-  if (k === 'f' && W.mode === 'creative') { P.fly = !P.fly; P.vy = 0; msg(P.fly ? '🕊️ 날기 켜짐' : '날기 꺼짐'); }
+  if (/^Digit[1-9]$/.test(c)) { sel = +c.slice(5) - 1; renderHotbar(); }
+  if (!act) return;
+  if (ACT2KEY[act]) keys[ACT2KEY[act]] = true;
+  if (act === 'jump') {
+    e.preventDefault();
+    if (e.repeat) return; // holding the key must not toggle flying over and over
+    const now = performance.now();
+    if (W.mode === 'creative' && META.dblFly && now - lastSpace < 300) { toggleFly(); lastSpace = 0; } else lastSpace = now;
+  }
+  if (act === 'fly' && !e.repeat) toggleFly();
 });
-let lastSpace = 0;
-document.addEventListener('keyup', e => { const k = e.key.toLowerCase(); if (k === ' ') keys.space = false; if (k === 'shift') keys.shift = false; if ('wasd'.includes(k) && k.length === 1) keys[k] = false; if (k === 'arrowup') keys.w = false; if (k === 'arrowdown') keys.s = false; if (k === 'arrowleft') keys.a = false; if (k === 'arrowright') keys.d = false; });
+document.addEventListener('keyup', e => { const act = actOf(normCode(e)); if (act && ACT2KEY[act]) keys[ACT2KEY[act]] = false; });
+window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
 // ---- touch ----
 const touchState = { stick: null, look: null };
 function setupTouch() {
@@ -882,7 +934,7 @@ function setupTouch() {
   function moveStick(e) { const S = touchState.stick; let dx = e.clientX - S.cx, dy = e.clientY - S.cy; const d = Math.hypot(dx, dy), m = 50; if (d > m) { dx *= m / d; dy *= m / d; } knob.style.left = (40 + dx) + 'px'; knob.style.top = (40 + dy) + 'px'; mv.x = dx / m; mv.z = dy / m; }
   const hold = (id, on, off) => { const el = $(id); el.addEventListener('pointerdown', e => { e.stopPropagation(); el.classList.add('on'); on(); }); const u = e => { el.classList.remove('on'); off(); }; el.addEventListener('pointerup', u); el.addEventListener('pointercancel', u); el.addEventListener('pointerleave', u); };
   let lastJ = 0;
-  hold('bJump', () => { wantJump = true; const now = performance.now(); if (W.mode === 'creative' && now - lastJ < 300) { P.fly = !P.fly; P.vy = 0; $('bDown').style.display = P.fly ? 'grid' : 'none'; msg(P.fly ? '🕊️ 날기 켜짐 (⤒⤓로 위아래)' : '날기 꺼짐'); } lastJ = now; }, () => { wantJump = false; });
+  hold('bJump', () => { wantJump = true; const now = performance.now(); if (W.mode === 'creative' && META.dblFly && now - lastJ < 300) { P.fly = !P.fly; P.vy = 0; $('bDown').style.display = P.fly ? 'grid' : 'none'; msg(P.fly ? '🕊️ 날기 켜짐 (⤒⤓로 위아래)' : '날기 꺼짐'); } lastJ = now; }, () => { wantJump = false; });
   hold('bDown', () => { wantDown = true; }, () => { wantDown = false; });
   hold('bBreak', () => { breakHeld = true; }, () => { breakHeld = false; });
   hold('bPlace', () => { doPlace(); }, () => {});
@@ -900,8 +952,8 @@ function renderTitle() {
     playWorld(META.worlds.find(w => w.id === b.dataset.id));
   });
   $('tHelp').innerHTML = IS_TOUCH
-    ? '📱 <b>조작법</b><br>왼쪽 아래 조이스틱: 이동 · 오른쪽 화면 드래그: 둘러보기<br>짧게 탭 / 🧱: 블록 놓기 · 길게 누르기 / ⛏️: 블록 캐기<br>⤒: 점프 (크리에이티브에서 두 번 누르면 날기) · 🎒: 인벤토리·제작 · 👁️: 1인칭/3인칭<br>⛏️ 나무 → 판자 → 작업대 → 곡괭이 → 돌·철·다이아몬드! 밤엔 횃불을 켜세요'
-    : '💻 <b>조작법</b><br>WASD 이동 · 마우스 둘러보기 · Space 점프 · Shift 천천히 걷기<br>왼쪽 클릭(누르고 있기): 캐기 · 오른쪽 클릭: 놓기 · 1~9 / 휠: 블록 선택<br>E: 인벤토리·제작 · V: 1인칭/3인칭 · F 또는 Space 두 번: 날기(크리에이티브) · Esc: 메뉴<br>⛏️ 나무 → 판자 → 작업대 → 곡괭이 → 돌·철·다이아몬드! 밤엔 횃불을 켜세요';
+    ? '📱 <b>조작법</b><br>왼쪽 아래 조이스틱: 이동 · 오른쪽 화면 드래그: 둘러보기<br>짧게 탭 / 🧱: 블록 놓기 · 길게 누르기 / ⛏️: 블록 캐기<br>⤒: 점프 (크리에이티브에서 두 번 누르면 날기) · 🎒: 인벤토리·제작 · ⏸ → ⚙️: 설정<br>⛏️ 나무 → 판자 → 작업대 → 곡괭이 → 돌·철·다이아몬드! 밤엔 횃불을 켜세요'
+    : '💻 <b>조작법</b><br>WASD 이동 · 마우스 둘러보기 · Space 점프 · Shift 천천히 걷기<br>왼쪽 클릭(누르고 있기): 캐기 · 오른쪽 클릭: 놓기 · 1~9 / 휠: 블록 선택<br>E: 인벤토리·제작 · F 또는 Space 두 번: 날기(크리에이티브) · Esc: 메뉴 · <b>F1: 설정·단축키 바꾸기</b><br>⛏️ 나무 → 판자 → 작업대 → 곡괭이 → 돌·철·다이아몬드! 밤엔 횃불을 켜세요';
 }
 let nMode = 'survival';
 $('tNew').onclick = () => { $('nName').value = ''; $('nSeed').value = ''; nMode = 'survival'; document.querySelectorAll('#nMode .chip').forEach(c => c.classList.toggle('on', c.dataset.m === nMode)); show('sNew'); };
@@ -926,13 +978,13 @@ function playWorld(w) {
   P.fly = false; P.hp = W.hp ?? 20;
   if (W.pos) { P.x = W.pos[0]; P.y = W.pos[1]; P.z = W.pos[2]; P.yaw = W.yaw || 0; P.pitch = W.pitch || 0; } else { P.x = W.spawn[0] + .5; P.z = W.spawn[2] + .5; P.y = H - 2; P.yaw = 0; P.pitch = -.2; }
   P.vx = P.vy = P.vz = 0;
-  view = META.view || 3; applyFov();
+  applyFov();
   updateChunks(40);
   if (!W.pos) spawnAt(W.spawn[0], W.spawn[2]); else ensureColumn();
   document.querySelectorAll('.scr').forEach(s => s.classList.remove('on'));
   $('hud').classList.add('on'); $('touch').classList.toggle('on', IS_TOUCH); $('bDown').style.display = 'none';
   sel = 0; renderHotbar(); renderHearts();
-  playing = true; paused = false; avatar.g.visible = view === 3; setHandTex(curItem());
+  playing = true; paused = false; avatar.g.visible = false; setHandTex(curItem());
   if (!IS_TOUCH) { paused = true; msg('화면을 클릭하면 시작해요'); }
   saveWorld();
 }
@@ -959,18 +1011,16 @@ function loop(now) {
   const moving = Math.hypot(P.vx, P.vz) > .5 && (P.onGround || P.inWater);
   bob += moving ? dt * 9 : 0;
   // camera: first person or behind the player
-  const eye = new THREE.Vector3(P.x, P.y + EYE + (moving && view === 1 ? Math.sin(bob) * .05 : 0), P.z);
+  const eye = new THREE.Vector3(P.x, P.y + EYE + (moving && META.bob ? Math.sin(bob) * .05 : 0), P.z);
   cam.rotation.order = 'YXZ'; cam.rotation.set(P.pitch, P.yaw, 0);
-  let want = 0;
-  if (view === 3) { const back = lookDir().multiplyScalar(-1); want = 4.2; for (let d = .3; d <= 4.2; d += .2) { const q = eye.clone().addScaledVector(back, d); if (isSolid(getB(Math.floor(q.x), Math.floor(q.y), Math.floor(q.z)))) { want = Math.max(.3, d - .35); break; } } camDist = want < camDist ? want : lerp(camDist, want, Math.min(1, dt * 6)); cam.position.copy(eye).addScaledVector(back, camDist); }
-  else { camDist = 0; cam.position.copy(eye); }
+  cam.position.copy(eye);
   if (!paused) { target = aim(); breakTick(dt); }
   // first-person hand bob & swing
   swing = Math.max(0, swing - dt * 4);
-  hand.position.set(.42 + (moving ? Math.cos(bob / 2) * .015 : 0), -.38 - swing * .12 + (moving ? Math.abs(Math.sin(bob / 2)) * .02 : 0), -.62 + swing * .1); hand.rotation.set(.3 - swing * .6, .6, 0);
-  toolMesh.position.set(.42, -.3 - swing * .1 + (moving ? Math.abs(Math.sin(bob / 2)) * .02 : 0), -.62); toolMesh.rotation.set(.1 - swing * .9, -.5, .2);
-  // avatar
-  if (view === 3) {
+  const mb = moving && META.bob; hand.position.set(.42 + (mb ? Math.cos(bob / 2) * .015 : 0), -.38 - swing * .12 + (mb ? Math.abs(Math.sin(bob / 2)) * .02 : 0), -.62 + swing * .1); hand.rotation.set(.3 - swing * .6, .6, 0);
+  toolMesh.position.set(.42, -.3 - swing * .1 + (mb ? Math.abs(Math.sin(bob / 2)) * .02 : 0), -.62); toolMesh.rotation.set(.1 - swing * .9, -.5, .2);
+  // (third-person avatar removed)
+  if (false) {
     const A = avatar; A.g.position.set(P.x, P.y, P.z); A.g.rotation.y = P.yaw; A.head.rotation.x = clamp(P.pitch, -.9, .9);
     const sw = moving ? Math.sin(bob) * .7 : 0; A.lL.rotation.x = sw; A.lR.rotation.x = -sw; A.aL.rotation.x = -sw * .8; A.aR.rotation.x = sw * .8 - swing * 1.4;
     const lt = Math.max(.25, U.uDay.value * (P.y + 1 > topAt(Math.floor(P.x), Math.floor(P.z)) ? 1 : .3)); A.mats.forEach(m => m.color.copy(m.userData.c).multiplyScalar(lt));
@@ -984,7 +1034,7 @@ function loop(now) {
   ren.render(scene, cam);
 }
 requestAnimationFrame(loop);
-window.__bw = { P, W: () => W, getB, setB, chunks, raycast, META, columnAt, aim, setView, U, DAY, genChunk, buildMesh };
+window.__bw = { P, W: () => W, getB, setB, chunks, raycast, META, columnAt, aim, U, DAY, genChunk, buildMesh };
 renderTitle();
 })();
 </script>
