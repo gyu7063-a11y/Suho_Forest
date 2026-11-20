@@ -31,6 +31,7 @@
   .game .tag { position: absolute; right: 12px; top: 12px; font-size: 12px; background: #ffffff26; border-radius: 999px; padding: 3px 9px; }
   .forest { background: linear-gradient(160deg, #2f7a3e, #14381e); }
   .baseball { background: linear-gradient(160deg, #2a5ab8, #122648); }
+  .blocks { background: linear-gradient(160deg, #6a9a3a, #5a3a20); }
   .soon { background: repeating-linear-gradient(135deg, #ffffff08 0 12px, #ffffff03 12px 24px); border-style: dashed; justify-content: center; align-items: center; text-align: center; min-height: 190px; color: #c8b8f0; box-shadow: none; }
   .foot { text-align: center; color: #8a7ab8; font-size: 12px; margin-top: 22px; line-height: 1.6; }
 </style>
@@ -48,6 +49,8 @@ const GAMES = [
     rec: () => { const b = +localStorage.getItem('forestTD.best') || 0; return b ? `🏆 최고 기록: 웨이브 ${b}` : '아직 기록 없음'; } },
   { id: 'baseball', href: 'games/baseball.html', cls: 'baseball', ic: '⚾', name: '나만의 프로야구', ds: '나만의 투수(선발·중계·마무리)·타자를 3D 구장에서 키워요. 견제·도루까지!', tag: '육성 · 스포츠',
     rec: () => { try { const s = JSON.parse(localStorage.getItem('mgc.baseball')); const ps = (s && s.slots || []).filter(Boolean); if (!ps.length) return '아직 선수 없음'; return ps.map(p => `${p.role === 'bat' ? '🏏' : '⚾'} ${p.name} · ${p.season.year}년차 ${p.league ? '1군' : '2군'}`).join('<br>'); } catch (e) { return '아직 선수 없음'; } } },
+  { id: 'blocks', href: 'games/blocks.html', cls: 'blocks', ic: '⛏️', name: '블록 월드', ds: '끝없이 펼쳐지는 블록 세상에서 캐고 쌓고 만들기. 서바이벌(제작·체력) / 크리에이티브(무제한·날기)', tag: '샌드박스',
+    rec: () => { try { const s = JSON.parse(localStorage.getItem('mgc.blocks')); const n = (s && s.worlds || []).length; return n ? `🌍 세계 ${n}개` : '아직 세계 없음'; } catch (e) { return '아직 세계 없음'; } } },
 ];
 const g = document.getElementById('grid');
 let h = '';
