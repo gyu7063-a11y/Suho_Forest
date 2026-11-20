@@ -220,7 +220,7 @@ const isSolid = id => id > 0 && id < 100 && !BL[id].liquid && !BL[id].torch;
 const isOpaque = id => id > 0 && !BL[id].transp;
 // items (not placeable)
 const TOOLMAT = [['나무', '#b8904e', 60, 2], ['돌', '#8d8d8d', 132, 4], ['철', '#e8e8e8', 250, 6], ['다이아몬드', '#5ff0e0', 1561, 8]];
-const IT = { 100: { n: '막대기' }, 101: { n: '석탄' }, 102: { n: '철 주괴' }, 103: { n: '금 주괴' }, 104: { n: '다이아몬드' } };
+const IT = { 100: { n: '막대기' }, 101: { n: '석탄' }, 102: { n: '철 주괴' }, 103: { n: '금 주괴' }, 104: { n: '다이아몬드' }, 105: { n: '숯' } };
 ['pick', 'shovel', 'axe'].forEach((k, ki) => TOOLMAT.forEach(([mn, col, dur, sp], ti) => { IT[110 + ki * 4 + ti] = { n: `${mn} ${['곡괭이', '삽', '도끼'][ki]}`, tool: k, tier: ti + 1, dur, sp, col }; }));
 const itemName = id => id < 100 ? BL[id].n : IT[id].n;
 const isBlock = id => id > 0 && id < 100;
@@ -231,9 +231,12 @@ const RECIPES = [
   { out: 100, n: 4, need: [[8, 2]], st: 0 },
   { out: 29, n: 1, need: [[8, 4]], st: 0 },
   { out: 31, n: 4, need: [[100, 1], [101, 1]], st: 0 },
+  { out: 31, n: 4, need: [[100, 1], [105, 1]], st: 0 },
   { out: 30, n: 1, need: [[9, 8]], st: 1 },
   ...[0, 1, 2, 3].flatMap(ti => { const m = [8, 9, 102, 104][ti]; return [{ out: 110 + ti, n: 1, need: [[m, 3], [100, 2]], st: 1 }, { out: 114 + ti, n: 1, need: [[m, 1], [100, 2]], st: 1 }, { out: 118 + ti, n: 1, need: [[m, 3], [100, 2]], st: 1 }]; }),
+  { out: 105, n: 1, need: [[4, 1]], st: 2 },
   { out: 102, n: 1, need: [[23, 1], [101, 1]], st: 2 },
+  { out: 102, n: 1, need: [[23, 1], [105, 1]], st: 2 },
   { out: 103, n: 1, need: [[24, 1], [101, 1]], st: 2 },
   { out: 3, n: 1, need: [[9, 1]], st: 2 },
   { out: 10, n: 1, need: [[6, 2]], st: 2 },
@@ -314,6 +317,7 @@ function itemIcon(id) {
   const stick = (n = 9) => { for (let i = 0; i < n; i++) { p(3 + i, 12 - i, '#6a4a28'); p(4 + i, 12 - i, '#8a6a3a'); } };
   const it = IT[id];
   if (id === 100) stick(11);
+  else if (id === 105) { for (let y = 4; y < 12; y++) for (let x = 4; x < 12; x++) if ((x - 8) ** 2 + (y - 8) ** 2 < 17) p(x, y, (x + y) % 3 ? '#3a2a1e' : '#5a4230'); }
   else if (id === 101) { for (let y = 4; y < 12; y++) for (let x = 4; x < 12; x++) if ((x - 8) ** 2 + (y - 8) ** 2 < 17) p(x, y, (x + y) % 3 ? '#222' : '#444'); }
   else if (id === 102 || id === 103) { const col = id === 102 ? '#e8e8e8' : '#ffd83a'; for (let y = 6; y < 11; y++) for (let x = 2 + (10 - y); x < 14 - (10 - y) * .3; x++) p(x, y, shade(col, y === 6 ? 1.1 : .85 + (x % 3) * .05)); }
   else if (id === 104) { const rows = [[6, 9], [4, 11], [3, 12], [4, 11], [5, 10], [6, 9], [7, 8]]; rows.forEach(([a, b], i) => { for (let x = a; x <= b; x++) p(x, 4 + i, shade('#5ff0e8', i < 2 ? 1.15 : .85 + (x % 2) * .1)); }); }
@@ -799,7 +803,7 @@ function renderInv() {
   document.querySelectorAll('#iTabs .chip').forEach(c => c.classList.toggle('on', c.dataset.t === invTab));
   let h = '';
   if (invTab === 'items') {
-    const list = W.mode === 'creative' ? CREATIVE_LIST.concat([110, 113, 117, 121, 100, 101, 102, 103, 104]) : Object.keys(W.inv).map(Number).filter(id => W.inv[id] > 0).sort((a, b) => a - b);
+    const list = W.mode === 'creative' ? CREATIVE_LIST.concat([110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 100, 101, 105, 102, 103, 104]) : Object.keys(W.inv).map(Number).filter(id => W.inv[id] > 0).sort((a, b) => a - b);
     h = list.length ? `<div class="grid">${list.map(id => `<button class="item" data-id="${id}" title="${itemName(id)}"><img src="${icons[id]}"><span>${itemName(id)}</span>${W.mode === 'survival' ? `<b>${W.inv[id]}</b>` : ''}</button>`).join('')}</div>` : '<div class="sub" style="text-align:center;padding:20px">아직 가진 게 없어요. 나무를 캐 보세요! (손으로도 캘 수 있어요)</div>';
     h += `<div class="sub" style="margin-top:10px">단축칸 비우기: <button class="btn" id="iClear" style="padding:6px 10px;font-size:13px">${sel + 1}번 칸 비우기</button></div>`;
   } else {
